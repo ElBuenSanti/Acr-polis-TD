@@ -3,7 +3,9 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     private Renderer tileColor;
+    private bool isOccupied = false;
     [SerializeField] private Color originalTileColor;
+
 
     void Awake()
     {
@@ -28,8 +30,14 @@ public class Tile : MonoBehaviour
 
     void OnMouseDown()
     {
-        tileColor.material.color = Color.green;
-        originalTileColor = Color.green;
+        if (!isOccupied)
+        {
+            tileColor.material.color = Color.green;
+            originalTileColor = Color.green;
+            isOccupied = true;
+            BuildingManager.Instance.PlaceBuilding(this);
+        }
+
     }
 
 }

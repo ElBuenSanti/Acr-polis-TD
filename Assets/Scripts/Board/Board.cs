@@ -42,8 +42,8 @@ public class Board : MonoBehaviour
 
                 for (short z = 0; z < columns; z++)
                 {
-                hightValue = Random.Range(0f, 0.5f);
-                positionOfTiles = new Vector3(x * spaceBetweenRows, hightValue, z * spaceBetweenTiles + rowOffset);
+                    hightValue = Random.Range(0f, 0.5f);
+                    positionOfTiles = new Vector3(x * spaceBetweenRows, hightValue, z * spaceBetweenTiles + rowOffset);
                     tileInstance = Instantiate(tilePrefab, positionOfTiles, Quaternion.Euler(90f, 0f, -90f)); //Quaternion.identity)
                     Tile tile = tileInstance.GetComponent<Tile>();
 
