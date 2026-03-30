@@ -456,6 +456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabToCreate: {fileID: 8337416981776415849, guid: 329d4452d75372749b14bdbc5a3c4482, type: 3}
+  constructionPooling: {fileID: 0}
 --- !u!4 &1275694190
 Transform:
   m_ObjectHideFlags: 0
@@ -482,7 +483,7 @@ GameObject:
   - component: {fileID: 1807865874}
   - component: {fileID: 1807865873}
   m_Layer: 0
-  m_Name: ConstructionsPoolingMaager
+  m_Name: PoolingManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

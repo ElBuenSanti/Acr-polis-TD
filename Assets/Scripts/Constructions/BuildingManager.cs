@@ -6,13 +6,9 @@ public class BuildingManager : MonoBehaviour
     public static BuildingManager Instance;
 
     public GameObject prefabToCreate;
-    private float hightOffset = 1.5f;
+    public Pooling constructionPooling;
 
-    /*
-    public List<GameObject> templesPrefab;
-    public List<GameObject> defensesPrefab;
-    public List<GameObject> barracksPrefab;
-    */
+    private float hightOffset = 1.5f;
 
     void Awake()
     {
@@ -21,14 +17,12 @@ public class BuildingManager : MonoBehaviour
 
     void Start()
     {
-        /*
-        templesPrefab = new List<GameObject>();
-        defensesPrefab = new List<GameObject>();
-        barracksPrefab = new List<GameObject>();
-        */
+        constructionPooling = FindAnyObjectByType<Pooling>();
     }
     public void PlaceBuilding(Tile tile)
     {
-        Instantiate(prefabToCreate, tile.transform.position + new Vector3(0, hightOffset, 0), Quaternion.identity);
+        GameObject building = constructionPooling.CreateObject(prefabToCreate, tile.transform);
+        building.transform.position = tile.transform.position + new Vector3(0, hightOffset, 0);
+        building.transform.rotation = Quaternion.identity;
     }
 }

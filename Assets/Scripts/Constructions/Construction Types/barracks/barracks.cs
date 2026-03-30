@@ -3,12 +3,12 @@ using System.Collections;
 
 public class Barracks : MonoBehaviour, IConstructable
 {
-    public ConstructionPooling soldierPooling;
+    public Pooling soldierPooling;
     public GameObject soldierPrefab;
 
     void Start()
     {
-        soldierPooling = FindAnyObjectByType<ConstructionPooling>();
+        soldierPooling = FindAnyObjectByType<Pooling>();
         StartCoroutine(SpawnLoop());
     }
 

@@ -4,20 +4,21 @@ using UnityEngine;
 public class HandToHandSoldier : MonoBehaviour
 {
     public Barracks barrack;
+
+    [SerializeField]
+    private float speed = 5f;
     void Start()
     {
-        SoldierCreated();
+        Debug.Log("Soldado creado");
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        transform.position += transform.forward * speed * Time.deltaTime; //temporal
     }
 
     public void SoldierCreated()
     {
-        //EventManager.TriggerEvent("soldierCreated", 100);
-        Debug.Log("Soldado");
+
     }
 }
