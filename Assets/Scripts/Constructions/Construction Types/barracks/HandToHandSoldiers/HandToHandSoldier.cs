@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using UnityEngine;
 
-public class Soldier : MonoBehaviour
+public class HandToHandSoldier : MonoBehaviour
 {
-    public Temple temple;
+    public Barracks barrack;
     void Start()
     {
         SoldierCreated();
@@ -17,7 +17,7 @@ public class Soldier : MonoBehaviour
 
     public void SoldierCreated()
     {
-        EventManager.TriggerEvent("soldierCreated", 100);
+        //EventManager.TriggerEvent("soldierCreated", 100);
         Debug.Log("Soldado");
     }
 }
