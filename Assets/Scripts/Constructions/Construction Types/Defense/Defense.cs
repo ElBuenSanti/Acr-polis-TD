@@ -1,16 +1,18 @@
 using UnityEngine;
 
-public class Defense : MonoBehaviour
+public class Defense : MonoBehaviour, IConstructable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
     }
+
+    public void ReceiveDamage() { }
+    public void Recover() { }
+    public void Upgrade() { }
 }

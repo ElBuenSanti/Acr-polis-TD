@@ -5,6 +5,7 @@ public class Barracks : MonoBehaviour, IConstructable
 {
     public Pooling soldierPooling;
     public GameObject soldierPrefab;
+    private float timeToSpawnSoldiers= 10f;
 
     void Start()
     {
@@ -19,7 +20,7 @@ public class Barracks : MonoBehaviour, IConstructable
             GameObject newSoldier = soldierPooling.CreateObject(soldierPrefab, transform);
             newSoldier.GetComponent<HandToHandSoldier>().barrack = this;
 
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(timeToSpawnSoldiers);
         }
     }
 

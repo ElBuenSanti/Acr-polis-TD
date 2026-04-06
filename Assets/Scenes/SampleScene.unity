@@ -818,7 +818,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0959b63ef36244e41897a46897264139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabToCreate: {fileID: 8337416981776415849, guid: 329d4452d75372749b14bdbc5a3c4482, type: 3}
+  buildingPrefabs:
+  - {fileID: 5282484829317743894, guid: 728dbdb6ed0f2e148983ab1fb62d00ac, type: 3}
+  - {fileID: 4570978340087042814, guid: 0d3a6f2b628ae49428f6fd5ca1c4d174, type: 3}
+  - {fileID: 8337416981776415849, guid: 329d4452d75372749b14bdbc5a3c4482, type: 3}
+  tempVariable: 0
   constructionPooling: {fileID: 0}
 --- !u!4 &1275694190
 Transform:
