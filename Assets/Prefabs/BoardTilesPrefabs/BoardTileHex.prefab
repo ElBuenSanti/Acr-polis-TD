@@ -62,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: dd8f485ca7efa944ba2efe7ca2c06d78, type: 3}
       propertyPath: m_Name
-      value: tiles single
+      value: BoardTileHex
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -74,6 +74,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dd8f485ca7efa944ba2efe7ca2c06d78, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6590340548611745232}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dd8f485ca7efa944ba2efe7ca2c06d78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8066849294800472743}
   m_SourcePrefab: {fileID: 100100000, guid: dd8f485ca7efa944ba2efe7ca2c06d78, type: 3}
 --- !u!1 &2810558400138071260 stripped
 GameObject:
@@ -110,7 +113,29 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.017320508, y: 0.02, z: 0.02}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!64 &8066849294800472743
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2810558400138071260}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4026644384297347843, guid: dd8f485ca7efa944ba2efe7ca2c06d78, type: 3}

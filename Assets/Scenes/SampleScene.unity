@@ -545,9 +545,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc20ec0430ebe7d46af1e57025307099, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePrefab: {fileID: 2810558400138071260, guid: 14b9a19c7a56e4b40aed7cb679127065, type: 3}
+  tilePrefab: {fileID: 6220893090412885349, guid: 552e771205df4d747bfe6a8717d3fd25, type: 3}
   rows: 10
   columns: 6
+  navSurface: {fileID: 0}
 --- !u!4 &1998598049
 Transform:
   m_ObjectHideFlags: 0
