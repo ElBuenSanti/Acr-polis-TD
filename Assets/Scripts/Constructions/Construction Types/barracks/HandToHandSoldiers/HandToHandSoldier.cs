@@ -1,24 +1,36 @@
-using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class HandToHandSoldier : MonoBehaviour
+public class HandToHandSoldier : NavMeshAgentBehaviour
 {
     public Barracks barrack;
 
     [SerializeField]
     private float speed = 5f;
-    void Start()
+    [SerializeField]
+    private Transform currentTarget;
+
+
+
+    protected override void Awake()
     {
+        base.Awake();
         Debug.Log("Soldado creado");
+
+        if (agent != null)
+        {
+            agent.speed = speed;
+        }
     }
 
     void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime; //temporal
+        currentTarget = FindTarget<Enemy>(); 
+
+        if (currentTarget != null)
+        {
+            MoveTo(currentTarget.position);
+        }
     }
 
-    public void SoldierCreated()
-    {
-
-    }
 }

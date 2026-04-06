@@ -19,11 +19,12 @@ public class Board : MonoBehaviour
 
     void Start()
     {
-
+        
         GameObject navObj = new GameObject(navMeshObject);
         navSurface = navObj.AddComponent<NavMeshSurface>();
         navSurface.collectObjects = CollectObjects.All;
         navSurface.layerMask = LayerMask.GetMask(layerMaskName); 
+        
 
         GenerateBoard();
         navSurface.BuildNavMesh(); //
