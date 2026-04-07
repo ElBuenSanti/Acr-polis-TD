@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class Temple : MonoBehaviour
+public class Temple : ConstructionBehaviour
 {
     //private const string nameOfEvent = "soldierCreated";
     //const sring que no cambia jamás, variable de solo lectura.
 
 
-    void Start()
+    public override void Start()
     {
+        base.Start();
     }
 
     /*

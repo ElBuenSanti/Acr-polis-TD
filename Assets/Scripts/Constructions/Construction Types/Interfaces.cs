@@ -1,10 +1,24 @@
 using UnityEngine;
 
-public interface IConstructable
+public interface IConstructable : IDamageable
 {
-    void ReceiveDamage();
-
     void Recover();
 
     void Upgrade();
+}
+
+public interface IDamageable
+{
+    void ReceiveDamage(float damage);
+}
+
+public interface IAttacker
+{
+    void Attack(IDamageable target);
+}
+
+public interface ITeam
+{
+    Team GetTeam();
+    void SetTeam(Team newTeam);
 }

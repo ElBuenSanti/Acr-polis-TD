@@ -10,7 +10,6 @@ public class BuildingManager : MonoBehaviour
     private GameObject selectedBuilding;
     public short tempVariable = 0;
 
-    //public GameObject prefabToCreate;
     public Pooling constructionPooling;
 
     private float hightOffset = 1.5f;
@@ -31,10 +30,6 @@ public class BuildingManager : MonoBehaviour
         GameObject building = constructionPooling.CreateObject(selectedBuilding, tile.transform);
         building.transform.position = tile.transform.position + new Vector3(0, hightOffset, 0);
         building.transform.rotation = Quaternion.identity;
-        /*
-        GameObject building = constructionPooling.CreateObject(prefabToCreate, tile.transform);
-        building.transform.position = tile.transform.position + new Vector3(0, hightOffset, 0);
-        building.transform.rotation = Quaternion.identity;
-        */
+
     }
 }

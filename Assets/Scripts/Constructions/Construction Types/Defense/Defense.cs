@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class Defense : MonoBehaviour, IConstructable
+public class Defense : ConstructionBehaviour
 {
-    void Start()
+    public override void Start()
     {
-        
+        base.Start();
     }
 
     void Update()
@@ -12,7 +12,4 @@ public class Defense : MonoBehaviour, IConstructable
         
     }
 
-    public void ReceiveDamage() { }
-    public void Recover() { }
-    public void Upgrade() { }
 }
