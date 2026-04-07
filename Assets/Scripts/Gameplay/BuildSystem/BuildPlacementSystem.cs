@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Handles the basic building placement flow
@@ -11,6 +12,12 @@ public class BuildPlacementSystem : MonoBehaviour
 
     [Header("Preview Settings")]
     [SerializeField] private Vector3 defaultPreviewPosition = new Vector3(0f, 0f, 0f);
+
+    [Header("Build Costs")]
+    [SerializeField] private List<BuildCostData> buildCosts = new List<BuildCostData>();
+
+    [Header("System References")]
+    [SerializeField] private ResourceSystem resourceSystem;
 
     private GameState returnStateAfterPlacement = GameState.Preparation;
 
@@ -38,10 +45,27 @@ public class BuildPlacementSystem : MonoBehaviour
             return;
         }
 
+        if (resourceSystem == null)
+        {
+            Debug.LogWarning("BuildPlacementSystem: ResourceSystem reference is missing.");
+            return;
+        }
+
         if (!CanStartPlacement())
         {
             Debug.Log("Build placement cannot start in the current state.");
             return;
+        }
+
+        List<ResourceAmount> costList = GetBuildCost(buildType);
+
+        if (costList != null && costList.Count > 0)
+        {
+            if (!resourceSystem.CanAfford(costList))
+            {
+                Debug.Log("Not enough resources to start placement for: " + buildType);
+                return;
+            }
         }
 
         GameState currentState = GameStateManager.Instance.CurrentState;
@@ -75,6 +99,33 @@ public class BuildPlacementSystem : MonoBehaviour
         if (!IsPlacing)
         {
             return;
+        }
+
+        if (resourceSystem == null)
+        {
+            Debug.LogWarning("BuildPlacementSystem: ResourceSystem reference is missing.");
+            return;
+        }
+
+        List<ResourceAmount> costList = GetBuildCost(CurrentBuildType);
+
+        if (costList != null && costList.Count > 0)
+        {
+            if (!resourceSystem.CanAfford(costList))
+            {
+                Debug.Log("Not enough resources to confirm placement for: " + CurrentBuildType);
+                CancelPlacement();
+                return;
+            }
+
+            bool resourcesSpent = resourceSystem.SpendResources(costList);
+
+            if (!resourcesSpent)
+            {
+                Debug.Log("Placement failed because resources could not be spent.");
+                CancelPlacement();
+                return;
+            }
         }
 
         Debug.Log("Placement confirmed for: " + CurrentBuildType);
@@ -116,6 +167,20 @@ public class BuildPlacementSystem : MonoBehaviour
         }
 
         buildPreview.SetPosition(newPosition);
+    }
+
+    // Return the configured cost for a build type
+    public List<ResourceAmount> GetBuildCost(BuildType buildType)
+    {
+        foreach (BuildCostData buildCost in buildCosts)
+        {
+            if (buildCost.buildType == buildType)
+            {
+                return buildCost.costs;
+            }
+        }
+
+        return null;
     }
 
     // Check if placement can begin in the current game state

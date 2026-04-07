@@ -16,7 +16,7 @@ public class RoundControlButtonUI : MonoBehaviour
             roundControlButton.onClick.AddListener(OnRoundControlButtonPressed);
         }
 
-        UpdateButtonVisual(GameStateManager.Instance.CurrentState);
+        RefreshButtonVisual();
     }
 
     private void OnDestroy()
@@ -47,13 +47,11 @@ public class RoundControlButtonUI : MonoBehaviour
         }
 
         GameState currentState = GameStateManager.Instance.CurrentState;
+        GameState mainState = GameStateManager.Instance.LastMainState;
 
         switch (currentState)
         {
             case GameState.Preparation:
-            case GameState.BuildingPlacement:
-            case GameState.StructureSelected:
-            case GameState.RadialUpgradeOpen:
                 GameStateManager.Instance.ChangeState(GameState.Combat);
                 break;
 
@@ -63,6 +61,19 @@ public class RoundControlButtonUI : MonoBehaviour
 
             case GameState.Paused:
                 GameStateManager.Instance.ChangeState(GameState.Combat);
+                break;
+
+            case GameState.StructureSelected:
+            case GameState.BuildingPlacement:
+            case GameState.RadialUpgradeOpen:
+                if (mainState == GameState.Combat)
+                {
+                    GameStateManager.Instance.ChangeState(GameState.Paused);
+                }
+                else
+                {
+                    GameStateManager.Instance.ChangeState(GameState.Combat);
+                }
                 break;
 
             case GameState.BlessingSelection:
@@ -76,26 +87,41 @@ public class RoundControlButtonUI : MonoBehaviour
     // Called when the game state changes
     private void OnStateChanged(object eventData)
     {
-        if (eventData is GameState newState)
-        {
-            UpdateButtonVisual(newState);
-        }
+        RefreshButtonVisual();
     }
 
-    // Update the button text based on the current game state
-    private void UpdateButtonVisual(GameState currentState)
+    // Update the button text based on the main gameplay state
+    private void RefreshButtonVisual()
     {
-        if (roundControlText == null)
+        if (roundControlText == null || GameStateManager.Instance == null)
         {
             return;
         }
 
-        switch (currentState)
+        GameState currentState = GameStateManager.Instance.CurrentState;
+        GameState mainState = GameStateManager.Instance.LastMainState;
+
+        if (currentState == GameState.BlessingSelection)
+        {
+            roundControlText.text = "Locked";
+            return;
+        }
+
+        if (currentState == GameState.Victory)
+        {
+            roundControlText.text = "Victory";
+            return;
+        }
+
+        if (currentState == GameState.Defeat)
+        {
+            roundControlText.text = "Defeat";
+            return;
+        }
+
+        switch (mainState)
         {
             case GameState.Preparation:
-            case GameState.BuildingPlacement:
-            case GameState.StructureSelected:
-            case GameState.RadialUpgradeOpen:
                 roundControlText.text = "Start";
                 break;
 
@@ -107,16 +133,8 @@ public class RoundControlButtonUI : MonoBehaviour
                 roundControlText.text = "Resume";
                 break;
 
-            case GameState.BlessingSelection:
-                roundControlText.text = "Locked";
-                break;
-
-            case GameState.Victory:
-                roundControlText.text = "Victory";
-                break;
-
-            case GameState.Defeat:
-                roundControlText.text = "Defeat";
+            default:
+                roundControlText.text = "Start";
                 break;
         }
     }

@@ -5,7 +5,6 @@ public class HUDStateController : MonoBehaviour
 {
     [Header("Panel References")]
     [SerializeField] private GameObject buildCardsPanel;
-    [SerializeField] private GameObject radialMenuPanel;
     [SerializeField] private GameObject blessingSelectionPanel;
 
     private void OnEnable()
@@ -53,7 +52,6 @@ public class HUDStateController : MonoBehaviour
 
             case GameState.RadialUpgradeOpen:
                 SetBuildCardsVisible(true);
-                SetRadialMenuVisible(true);
                 break;
 
             case GameState.Combat:
@@ -79,7 +77,6 @@ public class HUDStateController : MonoBehaviour
     // Hide panels that depend on specific game states
     private void HideAllStatePanels()
     {
-        SetRadialMenuVisible(false);
         SetBlessingSelectionVisible(false);
     }
 
@@ -89,15 +86,6 @@ public class HUDStateController : MonoBehaviour
         if (buildCardsPanel != null)
         {
             buildCardsPanel.SetActive(isVisible);
-        }
-    }
-
-    // Show or hide the radial menu panel
-    private void SetRadialMenuVisible(bool isVisible)
-    {
-        if (radialMenuPanel != null)
-        {
-            radialMenuPanel.SetActive(isVisible);
         }
     }
 

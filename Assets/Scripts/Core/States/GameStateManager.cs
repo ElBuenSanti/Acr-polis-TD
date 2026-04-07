@@ -9,6 +9,7 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] private GameState initialState = GameState.Preparation;
 
     public GameState CurrentState { get; private set; }
+    public GameState LastMainState { get; private set; }
 
     public event Action<GameState, GameState> OnStateChanged;
 
@@ -23,6 +24,7 @@ public class GameStateManager : MonoBehaviour
 
         Instance = this;
         CurrentState = initialState;
+        LastMainState = initialState;
     }
 
     private void Start()
@@ -41,8 +43,12 @@ public class GameStateManager : MonoBehaviour
         GameState previousState = CurrentState;
         CurrentState = newState;
 
-        Debug.Log("State changed: " + previousState + " -> " + CurrentState);
+        if (IsMainState(newState))
+        {
+            LastMainState = newState;
+        }
 
+        Debug.Log("State changed: " + previousState + " -> " + CurrentState);
         OnStateChanged?.Invoke(previousState, CurrentState);
         GameEvents.TriggerEvent(EventNames.StateChanged, CurrentState);
 
@@ -62,5 +68,13 @@ public class GameStateManager : MonoBehaviour
                CurrentState == GameState.BlessingSelection ||
                CurrentState == GameState.Victory ||
                CurrentState == GameState.Defeat;
+    }
+
+    // Return true if this is a main gameplay loop state
+    private bool IsMainState(GameState state)
+    {
+        return state == GameState.Preparation ||
+               state == GameState.Combat ||
+               state == GameState.Paused;
     }
 }

@@ -61,7 +61,7 @@ public class BuildCardUI : MonoBehaviour
 
         buildPlacementSystem.StartPlacement(buildType);
 
-        if (currentState == GameState.Combat)
+        if (buildPlacementSystem.IsPlacing && currentState == GameState.Combat)
         {
             cooldownSystem.StartCooldown(cooldownType);
         }
