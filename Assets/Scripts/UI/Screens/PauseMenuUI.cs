@@ -7,12 +7,11 @@ public class PauseMenuUI : MonoBehaviour
     [SerializeField] private GameObject pauseMenuContent;
     [SerializeField] private GameObject settingsMenuContent;
     [SerializeField] private GameObject controlsMenuContent;
+    [SerializeField] private UIScreenFlowController screenFlowController;
 
     private void Awake()
     {
-        SetPauseMenuVisible(false);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(false);
+        CloseAllMenus();
     }
 
     private void OnEnable()
@@ -46,82 +45,101 @@ public class PauseMenuUI : MonoBehaviour
     // Open the base pause menu
     public void OpenPauseMenu()
     {
-        SetPauseMenuVisible(true);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(false);
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowPause();
+        }
+
+        SelectMenuDefault(pauseMenuContent);
     }
 
     // Open the settings menu
     public void OpenSettingsMenu()
     {
-        SetPauseMenuVisible(false);
-        SetSettingsMenuVisible(true);
-        SetControlsMenuVisible(false);
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowSettingsFromPause();
+        }
+
+        SelectMenuDefault(settingsMenuContent);
     }
 
     // Open the controls menu
     public void OpenControlsMenu()
     {
-        SetPauseMenuVisible(false);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(true);
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowControlsFromPause();
+        }
+
+        SelectMenuDefault(controlsMenuContent);
     }
 
     // Return to the pause menu
     public void BackToPauseMenu()
     {
-        OpenPauseMenu();
+        if (screenFlowController != null)
+        {
+            screenFlowController.BackToPauseScreen();
+        }
+
+        SelectMenuDefault(pauseMenuContent);
     }
 
     // Resume the game
     public void ResumeGame()
     {
+        if (screenFlowController != null)
+        {
+            screenFlowController.HidePause();
+        }
+
         if (GameStateManager.Instance == null)
         {
             return;
         }
 
-        GameState mainState = GameStateManager.Instance.LastMainState;
+        GameStateManager.Instance.ChangeState(GameState.Combat);
+    }
 
-        if (mainState == GameState.Paused)
+    // Return to main menu from pause
+    public void ReturnToMainMenu()
+    {
+        if (screenFlowController != null)
         {
-            GameStateManager.Instance.ChangeState(GameState.Combat);
+            screenFlowController.ShowMainMenu();
         }
-        else
+
+        if (GameStateManager.Instance != null)
         {
             GameStateManager.Instance.ChangeState(GameState.Preparation);
         }
+
+        Debug.Log("Pause menu -> Return to Main Menu");
     }
 
     // Close all pause-related menus
     private void CloseAllMenus()
     {
-        SetPauseMenuVisible(false);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(false);
-    }
-
-    private void SetPauseMenuVisible(bool isVisible)
-    {
-        if (pauseMenuContent != null)
+        if (screenFlowController != null)
         {
-            pauseMenuContent.SetActive(isVisible);
+            screenFlowController.HidePause();
         }
     }
 
-    private void SetSettingsMenuVisible(bool isVisible)
+    // Force the default selection for a menu content root
+    private void SelectMenuDefault(GameObject menuContent)
     {
-        if (settingsMenuContent != null)
+        if (menuContent == null)
         {
-            settingsMenuContent.SetActive(isVisible);
+            return;
         }
-    }
 
-    private void SetControlsMenuVisible(bool isVisible)
-    {
-        if (controlsMenuContent != null)
+        MenuNavigationUI navigationUI = menuContent.GetComponent<MenuNavigationUI>();
+
+        if (navigationUI != null)
         {
-            controlsMenuContent.SetActive(isVisible);
+            navigationUI.SelectDefault();
         }
     }
 }

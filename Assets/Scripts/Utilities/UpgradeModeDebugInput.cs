@@ -12,14 +12,7 @@ public class UpgradeModeDebugInput : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            upgradeModeSystem.ConfirmUpgrade();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            upgradeModeSystem.CancelUpgrade();
-        }
+        // Let UI submit / radial selection handle Enter.
+        // This script no longer uses Backspace to avoid conflicts.
     }
 }

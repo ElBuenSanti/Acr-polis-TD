@@ -1,13 +1,14 @@
-using UnityEngine;
+using System;
 
 public enum GameState
 {
     Preparation,
-    BuildingPlacement,
-    StructureSelected,
-    RadialUpgradeOpen,
     Combat,
     Paused,
+    StructureSelected,
+    BuildingPlacement,
+    MoveStructure,
+    RadialUpgradeOpen,
     BlessingSelection,
     Victory,
     Defeat

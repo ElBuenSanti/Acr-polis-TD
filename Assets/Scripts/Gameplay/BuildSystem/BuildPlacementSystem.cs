@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 // Handles the basic building placement flow
 public class BuildPlacementSystem : MonoBehaviour
 {
     public BuildType CurrentBuildType { get; private set; }
     public bool IsPlacing { get; private set; }
+    public Vector3 CurrentPreviewPosition { get; private set; }
 
     [Header("Preview Reference")]
     [SerializeField] private BuildPreview buildPreview;
@@ -18,8 +20,13 @@ public class BuildPlacementSystem : MonoBehaviour
 
     [Header("System References")]
     [SerializeField] private ResourceSystem resourceSystem;
+    [SerializeField] private HUDNavigationUI buildCardsNavigationUI;
+
+    [Header("Input Protection")]
+    [SerializeField] private float inputBlockDuration = 0.15f;
 
     private GameState returnStateAfterPlacement = GameState.Preparation;
+    private float inputUnlockTime;
 
     private void OnEnable()
     {
@@ -48,6 +55,12 @@ public class BuildPlacementSystem : MonoBehaviour
         if (resourceSystem == null)
         {
             Debug.LogWarning("BuildPlacementSystem: ResourceSystem reference is missing.");
+            return;
+        }
+
+        if (buildPreview == null)
+        {
+            Debug.LogWarning("BuildPlacementSystem: BuildPreview reference is missing.");
             return;
         }
 
@@ -81,15 +94,20 @@ public class BuildPlacementSystem : MonoBehaviour
 
         CurrentBuildType = buildType;
         IsPlacing = true;
+        inputUnlockTime = Time.unscaledTime + inputBlockDuration;
+        CurrentPreviewPosition = defaultPreviewPosition;
 
-        if (buildPreview != null)
+        buildPreview.gameObject.SetActive(true);
+        buildPreview.SetBuildType(buildType);
+        buildPreview.SetPosition(CurrentPreviewPosition);
+
+        // Clear current UI focus so arrow keys move the preview instead of the menu
+        if (EventSystem.current != null)
         {
-            buildPreview.gameObject.SetActive(true);
-            buildPreview.SetBuildType(buildType);
-            buildPreview.SetPosition(defaultPreviewPosition);
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
-        Debug.Log("Started placement for: " + buildType);
+        Debug.Log("Started placement for: " + buildType + " at " + CurrentPreviewPosition);
         GameStateManager.Instance.ChangeState(GameState.BuildingPlacement);
     }
 
@@ -97,6 +115,11 @@ public class BuildPlacementSystem : MonoBehaviour
     public void ConfirmPlacement()
     {
         if (!IsPlacing)
+        {
+            return;
+        }
+
+        if (!CanReceivePlacementInput())
         {
             return;
         }
@@ -128,7 +151,7 @@ public class BuildPlacementSystem : MonoBehaviour
             }
         }
 
-        Debug.Log("Placement confirmed for: " + CurrentBuildType);
+        Debug.Log("Placement confirmed for: " + CurrentBuildType + " at " + CurrentPreviewPosition);
 
         GameState nextState = returnStateAfterPlacement;
         ResetPlacement();
@@ -137,12 +160,19 @@ public class BuildPlacementSystem : MonoBehaviour
         {
             GameStateManager.Instance.ChangeState(nextState);
         }
+
+        RestoreBuildCardsFocus();
     }
 
     // Cancel the current placement
     public void CancelPlacement()
     {
         if (!IsPlacing)
+        {
+            return;
+        }
+
+        if (!CanReceivePlacementInput())
         {
             return;
         }
@@ -156,9 +186,11 @@ public class BuildPlacementSystem : MonoBehaviour
         {
             GameStateManager.Instance.ChangeState(nextState);
         }
+
+        RestoreBuildCardsFocus();
     }
 
-    // Move the preview object to a new world position
+    // Move the preview object to an absolute world position
     public void MovePreview(Vector3 newPosition)
     {
         if (!IsPlacing || buildPreview == null)
@@ -166,7 +198,38 @@ public class BuildPlacementSystem : MonoBehaviour
             return;
         }
 
-        buildPreview.SetPosition(newPosition);
+        if (!CanReceivePlacementInput())
+        {
+            return;
+        }
+
+        CurrentPreviewPosition = newPosition;
+        buildPreview.SetPosition(CurrentPreviewPosition);
+    }
+
+    // Move the preview by an offset from the current position
+    public void MovePreviewBy(Vector3 offset)
+    {
+        if (!IsPlacing || buildPreview == null)
+        {
+            return;
+        }
+
+        if (!CanReceivePlacementInput())
+        {
+            return;
+        }
+
+        CurrentPreviewPosition += offset;
+        buildPreview.SetPosition(CurrentPreviewPosition);
+
+        Debug.Log("Preview moved to: " + CurrentPreviewPosition);
+    }
+
+    // Return true when placement input can be used
+    public bool CanReceivePlacementInput()
+    {
+        return IsPlacing && Time.unscaledTime >= inputUnlockTime;
     }
 
     // Return the configured cost for a build type
@@ -225,12 +288,23 @@ public class BuildPlacementSystem : MonoBehaviour
         }
     }
 
+    // Restore default focus to build cards after exiting placement
+    private void RestoreBuildCardsFocus()
+    {
+        if (buildCardsNavigationUI != null)
+        {
+            buildCardsNavigationUI.SelectDefault();
+        }
+    }
+
     // Reset the current placement state
     private void ResetPlacement()
     {
         IsPlacing = false;
         CurrentBuildType = default;
+        CurrentPreviewPosition = defaultPreviewPosition;
         returnStateAfterPlacement = GameState.Preparation;
+        inputUnlockTime = 0f;
 
         if (buildPreview != null)
         {

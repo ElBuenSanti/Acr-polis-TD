@@ -5,33 +5,34 @@ public class MainMenuUI : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject mainMenuContent;
-    [SerializeField] private GameObject gameplayHUDRoot;
-    [SerializeField] private GameObject settingsMenuContent;
-    [SerializeField] private GameObject controlsMenuContent;
-    [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private UIScreenFlowController screenFlowController;
 
     private void Awake()
     {
-        OpenMainMenu();
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowMainMenu();
+        }
     }
 
-    // Show the main menu and hide all other main-menu-related screens
+    // Show the main menu and hide all other screens
     public void OpenMainMenu()
     {
-        SetMainMenuVisible(true);
-        SetGameplayHUDVisible(false);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(false);
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowMainMenu();
+        }
+
+        SelectMenuDefault(mainMenuContent);
     }
 
     // Start the game and show gameplay HUD
     public void StartGame()
     {
-        SetMainMenuVisible(false);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(false);
-        SetMainMenuPanelVisible(false);
-        SetGameplayHUDVisible(true);
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowGameplay();
+        }
 
         if (GameStateManager.Instance != null)
         {
@@ -45,64 +46,50 @@ public class MainMenuUI : MonoBehaviour
     public void OpenSettingsFromMainMenu()
     {
         Debug.Log("Main menu -> Open Settings");
-        SetMainMenuVisible(false);
-        SetSettingsMenuVisible(true);
-        SetControlsMenuVisible(false);
+
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowSettingsFromMainMenu();
+        }
     }
 
     // Open controls from the main menu
     public void OpenControlsFromMainMenu()
     {
         Debug.Log("Main menu -> Open Controls");
-        SetMainMenuVisible(false);
-        SetSettingsMenuVisible(false);
-        SetControlsMenuVisible(true);
+
+        if (screenFlowController != null)
+        {
+            screenFlowController.ShowControlsFromMainMenu();
+        }
     }
 
     // Return from settings or controls back to main menu
     public void BackToMainMenu()
     {
         Debug.Log("Return to Main Menu");
-        OpenMainMenu();
-    }
 
-    private void SetMainMenuVisible(bool isVisible)
-    {
-        if (mainMenuContent != null)
+        if (screenFlowController != null)
         {
-            mainMenuContent.SetActive(isVisible);
+            screenFlowController.BackToMainMenuScreen();
         }
+
+        SelectMenuDefault(mainMenuContent);
     }
 
-    private void SetGameplayHUDVisible(bool isVisible)
+    // Force the default selection for a menu content root
+    private void SelectMenuDefault(GameObject menuContent)
     {
-        if (gameplayHUDRoot != null)
+        if (menuContent == null)
         {
-            gameplayHUDRoot.SetActive(isVisible);
+            return;
         }
-    }
 
-    private void SetSettingsMenuVisible(bool isVisible)
-    {
-        if (settingsMenuContent != null)
-        {
-            settingsMenuContent.SetActive(isVisible);
-        }
-    }
+        MenuNavigationUI navigationUI = menuContent.GetComponent<MenuNavigationUI>();
 
-    private void SetControlsMenuVisible(bool isVisible)
-    {
-        if (controlsMenuContent != null)
+        if (navigationUI != null)
         {
-            controlsMenuContent.SetActive(isVisible);
-        }
-    }
-
-    private void SetMainMenuPanelVisible(bool isVisible)
-    {
-        if (mainMenuPanel != null)
-        {
-            mainMenuPanel.SetActive(isVisible);
+            navigationUI.SelectDefault();
         }
     }
 }

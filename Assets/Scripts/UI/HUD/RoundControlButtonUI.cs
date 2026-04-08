@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +7,8 @@ public class RoundControlButtonUI : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Button roundControlButton;
-    [SerializeField] private TMP_Text roundControlText;
+    [SerializeField] private TMP_Text roundControlIconText;
+    [SerializeField] private TMP_Text roundControlLabelText;
 
     private void Start()
     {
@@ -90,10 +91,10 @@ public class RoundControlButtonUI : MonoBehaviour
         RefreshButtonVisual();
     }
 
-    // Update the button text based on the main gameplay state
+    // Update the button icon and optional label based on the main gameplay state
     private void RefreshButtonVisual()
     {
-        if (roundControlText == null || GameStateManager.Instance == null)
+        if (GameStateManager.Instance == null)
         {
             return;
         }
@@ -103,39 +104,53 @@ public class RoundControlButtonUI : MonoBehaviour
 
         if (currentState == GameState.BlessingSelection)
         {
-            roundControlText.text = "Locked";
+            SetVisual("■", "Locked");
             return;
         }
 
         if (currentState == GameState.Victory)
         {
-            roundControlText.text = "Victory";
+            SetVisual("✔", "Victory");
             return;
         }
 
         if (currentState == GameState.Defeat)
         {
-            roundControlText.text = "Defeat";
+            SetVisual("✖", "Defeat");
             return;
         }
 
         switch (mainState)
         {
             case GameState.Preparation:
-                roundControlText.text = "Start";
+                SetVisual("▶", "Start");
                 break;
 
             case GameState.Combat:
-                roundControlText.text = "Pause";
+                SetVisual("❚❚", "Pause");
                 break;
 
             case GameState.Paused:
-                roundControlText.text = "Resume";
+                SetVisual("▶", "Resume");
                 break;
 
             default:
-                roundControlText.text = "Start";
+                SetVisual("▶", "Start");
                 break;
+        }
+    }
+
+    // Apply icon and optional label text
+    private void SetVisual(string iconText, string labelText)
+    {
+        if (roundControlIconText != null)
+        {
+            roundControlIconText.text = iconText;
+        }
+
+        if (roundControlLabelText != null)
+        {
+            roundControlLabelText.text = labelText;
         }
     }
 }

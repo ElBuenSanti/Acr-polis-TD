@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private RadialOptionButtonUI optionC;
     [SerializeField] private TMP_Text selectedOptionText;
     [SerializeField] private UpgradeModeSystem upgradeModeSystem;
-    [SerializeField] private SelectionSystem selectionSystem;
+    [SerializeField] private StructureUpgradeSystem structureUpgradeSystem;
 
     [Header("Selection Feedback")]
     [SerializeField] private float selectedOptionVisibleTime = 3f;
@@ -30,12 +31,16 @@ public class RadialMenuUI : MonoBehaviour
     {
         GameEvents.StartListening(EventNames.StateChanged, OnStateChanged);
         GameEvents.StartListening(EventNames.ResourcesChanged, OnResourcesChanged);
+        GameEvents.StartListening(EventNames.StructureSelected, OnStructureChanged);
+        GameEvents.StartListening(EventNames.StructureDeselected, OnStructureChanged);
     }
 
     private void OnDisable()
     {
         GameEvents.StopListening(EventNames.StateChanged, OnStateChanged);
         GameEvents.StopListening(EventNames.ResourcesChanged, OnResourcesChanged);
+        GameEvents.StopListening(EventNames.StructureSelected, OnStructureChanged);
+        GameEvents.StopListening(EventNames.StructureDeselected, OnStructureChanged);
     }
 
     private void Start()
@@ -45,9 +50,22 @@ public class RadialMenuUI : MonoBehaviour
         ClearSelection();
     }
 
-
     // Refresh radial option states when resources change
     private void OnResourcesChanged(object eventData)
+    {
+        if (GameStateManager.Instance == null)
+        {
+            return;
+        }
+
+        if (GameStateManager.Instance.CurrentState == GameState.RadialUpgradeOpen)
+        {
+            RefreshBranchAvailability();
+        }
+    }
+
+    // Refresh radial option states when structure selection changes
+    private void OnStructureChanged(object eventData)
     {
         if (GameStateManager.Instance == null)
         {
@@ -129,10 +147,6 @@ public class RadialMenuUI : MonoBehaviour
         }
 
         SetSelectedOptionVisible(true);
-
-        Debug.Log("Radial option selected: " + selectedOption.OptionTitle);
-
-        // Hide the radial content after selecting an option
         SetContentVisible(false);
 
         if (selectionRoutine != null)
@@ -158,129 +172,63 @@ public class RadialMenuUI : MonoBehaviour
         ClearSelection();
     }
 
-    // Apply the selected branch upgrade to the selected structure
-    // Apply the selected branch upgrade to the selected structure
+    // Apply the selected branch upgrade through the upgrade system
     private void ApplySelectedUpgrade()
     {
-        if (currentSelectedOption == null || selectionSystem == null || !selectionSystem.HasSelection())
+        if (currentSelectedOption == null)
         {
             return;
         }
 
-        if (GameStateManager.Instance == null)
+        if (structureUpgradeSystem == null)
         {
+            Debug.LogWarning("RadialMenuUI: StructureUpgradeSystem reference is missing.");
             return;
         }
 
-        MonoBehaviour selectedBehaviour = selectionSystem.CurrentSelected as MonoBehaviour;
-
-        if (selectedBehaviour == null)
-        {
-            return;
-        }
-
-        StructureUpgradeProgress upgradeProgress = selectedBehaviour.GetComponent<StructureUpgradeProgress>();
-        StructureUpgradeCosts upgradeCosts = selectedBehaviour.GetComponent<StructureUpgradeCosts>();
-        ResourceSystem resourceSystem = FindAnyObjectByType<ResourceSystem>();
-
-        if (upgradeProgress == null)
-        {
-            Debug.LogWarning("Selected structure is missing StructureUpgradeProgress.");
-            return;
-        }
-
-        if (upgradeCosts == null)
-        {
-            Debug.LogWarning("Selected structure is missing StructureUpgradeCosts.");
-            return;
-        }
-
-        if (resourceSystem == null)
-        {
-            Debug.LogWarning("ResourceSystem was not found in the scene.");
-            return;
-        }
-
-        UpgradeBranchType branchType = currentSelectedOption.BranchType;
-        int currentLevel = upgradeProgress.GetBranchLevel(branchType);
-        int targetLevel = currentLevel + 1;
-
-        var costList = upgradeCosts.GetUpgradeCost(branchType, targetLevel);
-
-        if (costList == null)
-        {
-            Debug.LogWarning("No upgrade cost found for " + branchType + " level " + targetLevel);
-            return;
-        }
-
-        if (!resourceSystem.CanAfford(costList))
-        {
-            Debug.Log("Not enough resources to upgrade " + branchType + " to level " + targetLevel);
-            return;
-        }
-
-        bool resourcesSpent = resourceSystem.SpendResources(costList);
-
-        if (!resourcesSpent)
-        {
-            Debug.Log("Upgrade failed because resources could not be spent.");
-            return;
-        }
-
-        bool upgraded = upgradeProgress.ApplyUpgrade(branchType);
-
-        if (upgraded)
-        {
-            Debug.Log("Upgrade applied to branch: " + branchType + " | New Level: " + targetLevel);
-        }
+        structureUpgradeSystem.TryApplyUpgrade(currentSelectedOption.BranchType);
     }
+
+    // Refresh all branch states
     private void RefreshBranchAvailability()
     {
-        if (selectionSystem == null || !selectionSystem.HasSelection())
+        if (structureUpgradeSystem == null)
         {
+            Debug.LogWarning("RadialMenuUI: StructureUpgradeSystem reference is missing.");
             return;
         }
 
-        MonoBehaviour selectedBehaviour = selectionSystem.CurrentSelected as MonoBehaviour;
-
-        if (selectedBehaviour == null)
-        {
-            return;
-        }
-
-        StructureUpgradeProgress upgradeProgress = selectedBehaviour.GetComponent<StructureUpgradeProgress>();
-
-        if (upgradeProgress == null)
-        {
-            return;
-        }
-
-        RefreshSingleBranch(optionA, upgradeProgress);
-        RefreshSingleBranch(optionB, upgradeProgress);
-        RefreshSingleBranch(optionC, upgradeProgress);
+        RefreshSingleBranch(optionA);
+        RefreshSingleBranch(optionB);
+        RefreshSingleBranch(optionC);
     }
 
     // Update a single branch visual state
-    private void RefreshSingleBranch(RadialOptionButtonUI option, StructureUpgradeProgress upgradeProgress)
+    private void RefreshSingleBranch(RadialOptionButtonUI option)
     {
-        if (option == null || upgradeProgress == null)
+        if (option == null)
         {
             return;
         }
 
-        MonoBehaviour selectedBehaviour = selectionSystem.CurrentSelected as MonoBehaviour;
+        bool hasData = structureUpgradeSystem.TryGetBranchPreviewData(
+            option.BranchType,
+            out int currentLevel,
+            out bool isLocked,
+            out bool isMaxed,
+            out List<ResourceAmount> costList,
+            out bool canAfford
+        );
 
-        if (selectedBehaviour == null)
+        if (!hasData)
         {
+            option.SetLocked(true);
+            option.SetMaxed(false);
+            option.SetLevelText("N/A");
+            option.SetCostText("");
+            option.SetAffordable(false);
             return;
         }
-
-        StructureUpgradeCosts upgradeCosts = selectedBehaviour.GetComponent<StructureUpgradeCosts>();
-        ResourceSystem resourceSystem = FindAnyObjectByType<ResourceSystem>();
-
-        int currentLevel = upgradeProgress.GetBranchLevel(option.BranchType);
-        bool isLocked = upgradeProgress.IsBranchLocked(option.BranchType);
-        bool isMaxed = currentLevel >= 3;
 
         option.SetLocked(isLocked);
         option.SetMaxed(isMaxed);
@@ -303,16 +251,6 @@ public class RadialMenuUI : MonoBehaviour
 
         option.SetLevelText("Lv." + currentLevel);
 
-        if (upgradeCosts == null)
-        {
-            option.SetCostText("No Cost");
-            option.SetAffordable(true);
-            return;
-        }
-
-        int targetLevel = currentLevel + 1;
-        var costList = upgradeCosts.GetUpgradeCost(option.BranchType, targetLevel);
-
         if (costList == null || costList.Count == 0)
         {
             option.SetCostText("Free");
@@ -320,25 +258,18 @@ public class RadialMenuUI : MonoBehaviour
             return;
         }
 
-        option.SetCostText(BuildCostText(costList));
-
-        if (resourceSystem == null)
-        {
-            option.SetAffordable(true);
-            return;
-        }
-
-        bool canAfford = resourceSystem.CanAfford(costList);
+        string builtCostText = BuildCostText(costList);
+        option.SetCostText(builtCostText);
         option.SetAffordable(canAfford);
 
         if (!canAfford)
         {
-            option.SetCostText(BuildCostText(costList) + " - Not enough");
+            option.SetCostText(builtCostText + " - Not enough");
         }
     }
 
     // Build a readable cost string from a resource list
-    private string BuildCostText(System.Collections.Generic.List<ResourceAmount> costList)
+    private string BuildCostText(List<ResourceAmount> costList)
     {
         if (costList == null || costList.Count == 0)
         {
@@ -360,7 +291,6 @@ public class RadialMenuUI : MonoBehaviour
 
         return result;
     }
-
 
     // Update all option visual states
     private void RefreshOptionVisuals()

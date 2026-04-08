@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 // Debug input used to test move mode
 public class MoveModeDebugInput : MonoBehaviour
 {
     [SerializeField] private MoveModeSystem moveModeSystem;
+    [SerializeField] private float moveStep = 2f;
 
     private void Update()
     {
@@ -12,27 +14,38 @@ public class MoveModeDebugInput : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.I))
+        if (IsUIFocused())
         {
-            moveModeSystem.MovePreviewTo(new Vector3(0f, 0f, 2f));
+            return;
         }
 
-        if (Input.GetKeyDown(KeyCode.K))
+        if (!moveModeSystem.CanReceiveMoveInput())
         {
-            moveModeSystem.MovePreviewTo(new Vector3(0f, 0f, -2f));
+            return;
         }
 
-        if (Input.GetKeyDown(KeyCode.J))
+        // T = up, G = down, F = left, H = right
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            moveModeSystem.MovePreviewTo(new Vector3(-2f, 0f, 0f));
+            moveModeSystem.MovePreviewBy(new Vector3(0f, 0f, moveStep));
         }
 
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.G))
         {
-            moveModeSystem.MovePreviewTo(new Vector3(2f, 0f, 0f));
+            moveModeSystem.MovePreviewBy(new Vector3(0f, 0f, -moveStep));
         }
 
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            moveModeSystem.MovePreviewBy(new Vector3(-moveStep, 0f, 0f));
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            moveModeSystem.MovePreviewBy(new Vector3(moveStep, 0f, 0f));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             moveModeSystem.ConfirmMove();
         }
@@ -41,5 +54,10 @@ public class MoveModeDebugInput : MonoBehaviour
         {
             moveModeSystem.CancelMove();
         }
+    }
+
+    private bool IsUIFocused()
+    {
+        return EventSystem.current != null && EventSystem.current.currentSelectedGameObject != null;
     }
 }
