@@ -1,33 +1,69 @@
-using Mono.Cecil.Cil;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class ConstructionController : MonoBehaviour
 {
     public ConstructionDatabase database;
-    public BaseConstruction construction;
+    private Pooling pooling;
 
-    private ConstructionType type; //condiciones iniciales 
-    private GodType god;
-    private int level = 1;
+    private ConstructionType type;
+    private GodType god, selectedGod;
+    private int level;
 
-    public void Initialize(ConstructionType t, GodType g) //como comenzará el edificio
+    private Transform parentTile;
+
+
+    void Awake()
     {
-        type = t;
-        god = g;
-        level = 1;
+        pooling = FindAnyObjectByType<Pooling>();
+        database = FindAnyObjectByType<ConstructionDatabase>();
+    }
 
-        UpdateConstruction();
+    public void Initialize(ConstructionData data)
+    {
+        type = data.type;
+        god = data.god;
+        level = data.level;
+        parentTile = transform.parent;
     }
 
     public void Upgrade()
     {
-        level++;
-        UpdateConstruction();
+        int nextLevel = level + 1;
+
+            ConstructionData newData = database.GetData(type, god, nextLevel);
+
+        if (newData == null)
+        {
+            Debug.Log("No hay más niveles");
+            return;
+        }
+
+        Vector3 position = transform.position;
+        Quaternion rotation = transform.rotation;
+
+
+        gameObject.SetActive(false);
+
+        Debug.Log("NewData: " + newData);
+        Debug.Log("Prefab: " + newData.prefab);
+        Debug.Log("ParentTile: " + parentTile);
+        GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile);
+
+        newBuilding.transform.position = position;
+        newBuilding.transform.rotation = rotation;
+
+        BaseConstruction newConstruction = newBuilding.GetComponent<BaseConstruction>();
+        ConstructionController newController = newBuilding.GetComponent<ConstructionController>();
+
+        newConstruction.Initialize(newData);
+        newController.Initialize(newData);
+
     }
 
-    void UpdateConstruction()
+    void OnMouseDown()
     {
-        var data = database.GetData(type, god, level); //busca la construcción solicitada
-        construction.Initialize(data); //actualiza
+        Upgrade();
     }
+
 }

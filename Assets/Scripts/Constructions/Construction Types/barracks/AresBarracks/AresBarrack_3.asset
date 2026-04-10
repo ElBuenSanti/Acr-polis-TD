@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 380dc6981712e094f87d5b0150ea9856, type: 3}
-  m_Name: AresBarrack_2
+  m_Name: AresBarrack_3
   m_EditorClassIdentifier: 
   type: 0
   god: 1
   will: 2
-  level: 2
+  level: 3
   resistance: 300
   damage: 0
   resourceRate: 0
   actionVelocity: 12
   Range: 0
   proyectileVelocity: 0
-  cost: 425
-  prefab: {fileID: 8337416981776415849, guid: da41bdd1b9353d446ac353e57f00f831, type: 3}
+  cost: 850
+  prefab: {fileID: 8337416981776415849, guid: d9ff3107835a22348ab508255e1c1c8a, type: 3}

@@ -7,7 +7,9 @@ public class BuildingManager : MonoBehaviour
     public static BuildingManager Instance;
 
     [SerializeField]
-    private List<ConstructionData> buildingDataList; // ?? CAMBIO
+    private List<ConstructionData> buildingDataList;
+    BaseConstruction baseConstruction;
+    ConstructionController constructionController;
 
     public short tempVariable = 0;
 
@@ -24,7 +26,36 @@ public class BuildingManager : MonoBehaviour
     {
         constructionPooling = FindAnyObjectByType<Pooling>();
     }
+    public void PlaceBuilding(Tile tile)
+    {
+        ConstructionData data = buildingDataList[tempVariable];
 
+        GameObject building = constructionPooling.CreateObject(data.prefab, tile.transform);
+
+        building.transform.position = tile.transform.position + new Vector3(0, hightOffset, 0);
+        building.transform.rotation = Quaternion.identity;
+
+        baseConstruction = building.GetComponent<BaseConstruction>();
+        constructionController = building.GetComponent<ConstructionController>();
+
+        baseConstruction.Initialize(data);
+        constructionController.Initialize(data);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
     public void PlaceBuilding(Tile tile)
     {
         ConstructionData data = buildingDataList[tempVariable];
@@ -37,6 +68,7 @@ public class BuildingManager : MonoBehaviour
         BaseConstruction construction = building.GetComponent<BaseConstruction>();
         construction.Initialize(data);
     }
+    */
 }
 /*
 using System.Collections.Generic;

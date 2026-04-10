@@ -42,7 +42,16 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         if (agent != null)
         {
             agent.isStopped = false;
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
         }
+
+        StartCoroutine(SearchTargetRoutine());
+    }
+
+    void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     void Update()
