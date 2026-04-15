@@ -9,9 +9,11 @@ public class ConstructionData : ScriptableObject
     public int level;
 
     public float resistance;
-    public float damage;
+    public float soldierResistance;
+    public float attackDamage;
     public float resourceRate;
     public float actionVelocity;
+    public float movementSpeed;
     public float Range;
     public float proyectileVelocity;
     public float cost;

@@ -6,7 +6,10 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 
     protected NavMeshAgent agent;
 
-    protected float health;
+    protected float resistance;
+    protected float attackDamage;
+    protected float movementSpeed;
+
     protected bool isDead = false;
     protected bool isStunned = false;
 
@@ -32,10 +35,10 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         {
             return;
         }
-            
-        health -= damage;
 
-        if (health <= 0)
+        resistance -= damage;
+
+        if (resistance <= 0)
         {
             isDead = true;
             OnDeath();

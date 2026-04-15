@@ -5,27 +5,31 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 {
     public Barracks barrack;
 
-    [SerializeField] private float speed = 5f;
-    [SerializeField] private int soldierHealth = 100;
     [SerializeField] private Transform currentTarget;
 
     [SerializeField] private float searchInterval = 1.5f;
     [SerializeField] private float timeToDie = 1.5f;
     [SerializeField] private float timeToBeStunned = 1.5f;
 
+    private float resourceRate;
+
     private TargetFinder targetFinder;
 
     protected override void Awake()
     {
         base.Awake();
-        health = soldierHealth;
 
-        Debug.Log("Soldado creado");
+        
         targetFinder = FindAnyObjectByType<TargetFinder>();
-        if (agent != null)
-        {
-            agent.speed = speed;
-        }
+    }
+
+    public void Initialize(ConstructionData data, Barracks barrack)
+    {
+        this.barrack = barrack;
+        SetTeam(Team.Ally);
+        SetSoldier(data);
+        Debug.Log("Soldado creado");
+        Debug.Log($"Mis datos son: {resistance} {attackDamage} ({resourceRate}) ({movementSpeed})");
     }
 
     void Start()
@@ -90,6 +94,20 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         Debug.Log("Soldado Murió");
         StartCoroutine(DeathRoutine());
     }
+
+    public void SetSoldier(ConstructionData data)
+    {
+        resistance = data.soldierResistance;
+        attackDamage = data.attackDamage;
+        resourceRate = data.resourceRate;
+        movementSpeed = data.movementSpeed;
+
+        if (agent != null)
+        {
+            agent.speed = movementSpeed;
+        }
+    }
+
 
 
 

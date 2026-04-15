@@ -17,9 +17,11 @@ MonoBehaviour:
   will: 2
   level: 3
   resistance: 300
-  damage: 0
-  resourceRate: 0
+  soldierResistance: 500
+  attackDamage: 95
+  resourceRate: 15
   actionVelocity: 12
+  movementSpeed: 1
   Range: 0
   proyectileVelocity: 0
   cost: 850

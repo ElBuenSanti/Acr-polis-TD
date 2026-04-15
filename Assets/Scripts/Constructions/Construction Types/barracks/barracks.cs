@@ -34,8 +34,8 @@ public class Barracks : BaseConstruction
 
             if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
             {
-                soldier.barrack = this;
-                soldier.SetTeam(Team.Ally);
+                //soldier.barrack = this;
+                soldier.Initialize(data, this);
             }
 
             yield return new WaitForSeconds(timeToSpawnSoldiers);
