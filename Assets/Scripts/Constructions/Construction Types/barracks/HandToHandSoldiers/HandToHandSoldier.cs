@@ -35,7 +35,6 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         }
 
         SetTeam(Team.Ally);
-        //SetSoldier(data);
         Debug.Log("Soldado creado");
         Debug.Log($"Mis datos son: {resistance} {attackDamage} ({resourceRate}) ({movementSpeed})");
     }
@@ -102,21 +101,6 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         Debug.Log("Soldado Murió");
         StartCoroutine(DeathRoutine());
     }
-
-    /*
-    public void SetSoldier(ConstructionData data)
-    {
-        resistance = data.soldierResistance;
-        attackDamage = data.attackDamage;
-        resourceRate = data.resourceRate;
-        movementSpeed = data.movementSpeed;
-
-        if (agent != null)
-        {
-            agent.speed = movementSpeed;
-        }
-    }
-    */
 
 
 

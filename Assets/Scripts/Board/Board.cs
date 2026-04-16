@@ -7,15 +7,15 @@ public class Board : MonoBehaviour
     [SerializeField] private int rows = 10;
     [SerializeField] private int columns = 6;
 
-    [SerializeField] private NavMeshSurface navSurface; //
-    private string navMeshObject = "NavMeshSurfaceBoard"; //
-    private string layerMaskName = "Tiles"; //
+    [SerializeField] private NavMeshSurface navSurface; 
+    private string navMeshObject = "NavMeshSurfaceBoard"; 
+    private string layerMaskName = "Tiles"; 
 
     private float spaceBetweenTiles = 1.75f;
     private float spaceBetweenRows = 1.5f;
     private float rowOffset = 0f;
 
-    private float hightValue;
+    //private float hightValue;
 
     void Start()
     {
@@ -26,7 +26,7 @@ public class Board : MonoBehaviour
         
 
         GenerateBoard();
-        navSurface.BuildNavMesh(); //
+        navSurface.BuildNavMesh(); 
     }
     void GenerateBoard()
     {
@@ -38,18 +38,18 @@ public class Board : MonoBehaviour
         {
             if(x % 2 != 0)
             {
-                currentColumns--; //columns--;
+                currentColumns--; 
                 rowOffset = spaceBetweenTiles / 2;
             }
             else
             {
-                currentColumns = columns; // columns++;
+                currentColumns = columns; 
                 rowOffset = 0f;
             }
 
-                for (short z = 0; z < currentColumns; z++) //columns
+                for (short z = 0; z < currentColumns; z++) 
                 {
-                    hightValue = Random.Range(0f, 0.5f);
+                    //hightValue = Random.Range(0f, 0.5f);
                     positionOfTiles = new Vector3(x * spaceBetweenRows, 0, z * spaceBetweenTiles + rowOffset); //y=hightValue
                 tileInstance = Instantiate(tilePrefab, positionOfTiles, Quaternion.Euler(90f, 0f, -90f)); 
                     Tile tile = tileInstance.GetComponent<Tile>();

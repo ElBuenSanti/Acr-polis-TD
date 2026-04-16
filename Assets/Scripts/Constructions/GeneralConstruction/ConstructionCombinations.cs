@@ -15,7 +15,7 @@ public enum GodType
     Hephaestus
 }
 
-public enum WillCurrency
+public enum Will
 {
     Meraki,
     Agape,

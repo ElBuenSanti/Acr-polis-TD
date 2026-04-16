@@ -17,12 +17,12 @@ MonoBehaviour:
   will: 2
   level: 2
   resistance: 300
-  soldierResistance: 250
+  aditamentResistance: 250
   attackDamage: 30
   resourceRate: 5
   actionVelocity: 12
   movementSpeed: 1.2
-  Range: 0
+  range: 0
   proyectileVelocity: 0
   cost: 425
   prefab: {fileID: 8337416981776415849, guid: da41bdd1b9353d446ac353e57f00f831, type: 3}

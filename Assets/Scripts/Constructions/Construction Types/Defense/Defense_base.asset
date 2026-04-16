@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: Defense_base
   m_EditorClassIdentifier: 
   type: 4
-  god: 0
-  will: 1
+  god: 1
   level: 1
   resistance: 300
   aditamentResistance: 0
   attackDamage: 30
   resourceRate: 5
-  actionVelocity: 10
+  willObtained: 0
+  actionVelocity: 5
   movementSpeed: 0
   range: 4
-  proyectileVelocity: 10
+  proyectileVelocity: 3
   cost: 200
+  willToPay: 1
   prefab: {fileID: 4570978340087042814, guid: 0d3a6f2b628ae49428f6fd5ca1c4d174, type: 3}

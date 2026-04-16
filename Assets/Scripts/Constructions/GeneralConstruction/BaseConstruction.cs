@@ -3,16 +3,11 @@ using UnityEngine;
 
 public abstract class BaseConstruction : MonoBehaviour
 {
-    protected ConstructionData data; //configuración actual
+    protected ConstructionData data; 
     protected float resistance;
-    protected float aditamentResistance;
-    protected float damage;
     protected float resourceRate;
     protected float actionVelocity;
-    protected float movementSpeed;
-    protected float range;
-    protected float projectileVelocity;
-    protected float cost;
+    protected float cost; 
 
     protected Pooling pooling;
     protected float timeToSpawnAditaments;
@@ -36,16 +31,13 @@ public abstract class BaseConstruction : MonoBehaviour
         spawnCoroutine = null;
     }
 
+    //Funciones
+
     protected virtual void ApplyStats()
     {
         resistance = data.resistance;
-        aditamentResistance = data.aditamentResistance;
-        damage = data.attackDamage;
         resourceRate = data.resourceRate;
         actionVelocity = data.actionVelocity;
-        movementSpeed = data.movementSpeed;
-        range = data.range;
-        projectileVelocity = data.proyectileVelocity;
         cost = data.cost;
 
         Debug.Log($"Initialized {data.type} Lv{data.level} ({data.god})");

@@ -22,13 +22,16 @@ public class BuildingManager : MonoBehaviour
         constructionPooling = FindAnyObjectByType<Pooling>();
     }
 
-    void Start()
-    {
-        //constructionPooling = FindAnyObjectByType<Pooling>();
-    }
+    //Funciones
     public void PlaceBuilding(Tile tile)
     {
         ConstructionData data = buildingDataList[tempVariable];
+
+        if (!WillManager.Instance.SpendMoney(data.willToPay, data.cost))
+        {
+            Debug.Log("No te alcanza para construir");
+            return;
+        }
 
         GameObject building = constructionPooling.CreateObject(data.prefab, tile.transform);
 

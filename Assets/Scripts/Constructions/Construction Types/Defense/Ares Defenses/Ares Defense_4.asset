@@ -10,19 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 380dc6981712e094f87d5b0150ea9856, type: 3}
-  m_Name: Aphrodite Barrack_3
+  m_Name: Ares Defense_4
   m_EditorClassIdentifier: 
-  type: 0
-  god: 2
-  will: 1
-  level: 3
-  resistance: 0
-  aditamentResistance: 600
-  attackDamage: 35
-  resourceRate: 8
-  actionVelocity: 0
-  movementSpeed: 1.5
-  range: 0
-  proyectileVelocity: 0
-  cost: 0
-  prefab: {fileID: 8337416981776415849, guid: d9ff3107835a22348ab508255e1c1c8a, type: 3}
+  type: 4
+  god: 1
+  level: 4
+  resistance: 300
+  aditamentResistance: 0
+  attackDamage: 40
+  resourceRate: 5
+  willObtained: 2
+  actionVelocity: 1
+  movementSpeed: 0
+  range: 4
+  proyectileVelocity: 15
+  cost: 2200
+  willToPay: 2
+  prefab: {fileID: 4570978340087042814, guid: 6155edac50958e6439833deda676bde1, type: 3}

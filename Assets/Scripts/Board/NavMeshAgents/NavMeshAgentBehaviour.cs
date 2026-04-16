@@ -20,6 +20,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         agent = GetComponent<NavMeshAgent>();
     }
 
+    //Funciones
     public virtual void MoveTo(Vector3 destination)
     {
         if (agent != null)

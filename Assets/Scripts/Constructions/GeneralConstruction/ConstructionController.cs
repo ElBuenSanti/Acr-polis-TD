@@ -39,6 +39,12 @@ public class ConstructionController : MonoBehaviour
             return;
         }
 
+        if(!WillManager.Instance.SpendMoney(newData.willToPay, newData.cost))
+        {
+            Debug.Log("No te alcanza");
+            return;
+        }
+
         Vector3 position = transform.position;
         Quaternion rotation = transform.rotation;
 
@@ -50,11 +56,14 @@ public class ConstructionController : MonoBehaviour
         Debug.Log("ParentTile: " + parentTile);
         GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile);
 
+        /*
         newBuilding.transform.position = position;
         newBuilding.transform.rotation = rotation;
+        */
+        newBuilding.transform.SetPositionAndRotation(position, rotation);
 
-        BaseConstruction newConstruction = newBuilding.GetComponent<BaseConstruction>();
-        ConstructionController newController = newBuilding.GetComponent<ConstructionController>();
+        var newConstruction = newBuilding.GetComponent<BaseConstruction>(); //BaseConstruction
+        var newController = newBuilding.GetComponent<ConstructionController>(); //ConstructionController
 
         newConstruction.Initialize(newData);
         newController.Initialize(newData);

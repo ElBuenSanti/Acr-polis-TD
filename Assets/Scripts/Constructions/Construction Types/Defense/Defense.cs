@@ -8,6 +8,12 @@ public class Defense : BaseConstruction
     private TargetFinder targetFinder;
     private Transform currentTarget;
 
+    private float distanceToShoot;
+
+    private float aditamentResistance;
+    private float damage;
+    private float range;
+    private float projectileVelocity;
 
     protected override void Awake()
     {
@@ -19,16 +25,21 @@ public class Defense : BaseConstruction
     {
         base.Initialize(newData);
 
-        timeToSpawnAditaments = data.actionVelocity;
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 
         spawnCoroutine = StartCoroutine(SpawnLoop(SpawnArrows));
     }
 
+
+    //Funciones
+    protected override void ApplyStats()
+    {
+        base.ApplyStats();
+    }
+
     void SpawnArrows()
     {
-
         currentTarget = targetFinder.FindTarget<Enemy>(transform);
 
         if (currentTarget == null)
@@ -36,9 +47,9 @@ public class Defense : BaseConstruction
             return;
         }
 
-        float distance = Vector3.Distance(transform.position, currentTarget.position);
+        distanceToShoot = Vector3.Distance(transform.position, currentTarget.position);
 
-        if (distance > range)
+        if (distanceToShoot > range)
             return;
 
         GameObject newArrow = pooling.CreateObject(arrowPrefab, transform);

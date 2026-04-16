@@ -7,14 +7,13 @@ public class Arrow : TeamAssigner, IDamageable
     private float resistance;
     private float attackDamage;
     private float resourceRate;
-    private float range;
     private float proyectileVelocity;
 
     private Vector3 startPoint;
     private Vector3 targetPoint;
 
     private float time;
-    private float arcHeight = 3f;
+    private float arcHeight = 5f;
     public void Initialize(ConstructionData data, Vector3 start, Vector3 target, Defense defense)
     {
         this.defense = defense;
@@ -22,10 +21,8 @@ public class Arrow : TeamAssigner, IDamageable
         startPoint = start;
         targetPoint = target;
 
-        resistance = data.aditamentResistance;
         attackDamage = data.attackDamage;
         resourceRate = data.resourceRate;
-        range = data.range;
         proyectileVelocity = data.proyectileVelocity;
 
         SetTeam(Team.Ally);
@@ -44,7 +41,6 @@ public class Arrow : TeamAssigner, IDamageable
 
     void Update()
     {
-        
         time += Time.deltaTime * proyectileVelocity;
 
         float t = time;
@@ -62,6 +58,8 @@ public class Arrow : TeamAssigner, IDamageable
         transform.position = pos;
     }
 
+
+    //Fnciones
     void Hit()
     {
         gameObject.SetActive(false);

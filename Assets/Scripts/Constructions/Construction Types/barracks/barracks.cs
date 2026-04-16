@@ -3,22 +3,21 @@ using UnityEngine;
 
 public class Barracks : BaseConstruction
 {
-    //public Pooling soldierPooling;
     public GameObject soldierPrefab;
-
-    //private float timeToSpawnSoldiers;
-    //private Coroutine spawnCoroutine;
 
     protected override void Awake()
     {
         base.Awake();
     }
 
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+    }
+
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
-
-        //timeToSpawnAditaments = data.actionVelocity;
 
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
@@ -26,14 +25,11 @@ public class Barracks : BaseConstruction
         spawnCoroutine = StartCoroutine(SpawnLoop(SpawnSoldier));
     }
 
+    //Funciones
+
     public override void ResetConstruction()
     {
         base.ResetConstruction();
-    }
-
-    protected override void OnDisable()
-    {
-        base.OnDisable();
     }
 
     void SpawnSoldier()
