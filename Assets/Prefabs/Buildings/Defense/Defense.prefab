@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 4993492229719292812}
   - component: {fileID: 4165671560360598342}
   - component: {fileID: 18837393010277405}
+  - component: {fileID: -7436682676355322981}
+  - component: {fileID: 5105624048700881122}
   m_Layer: 0
   m_Name: Defense
   m_TagString: Untagged
@@ -110,3 +112,29 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-7436682676355322981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570978340087042814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d1d77524ad00104eb90bede9f48d7ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arrowPrefab: {fileID: 7029725475303230253, guid: 9d534371a8ae79b43860adf8396bfda2, type: 3}
+--- !u!114 &5105624048700881122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570978340087042814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16057c8af60b5a84abfe9ad08e6a3b07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  database: {fileID: 0}

@@ -8,14 +8,14 @@ public class ConstructionData : ScriptableObject
     public WillCurrency will;
     public int level;
 
-    public float resistance;
-    public float soldierResistance;
-    public float attackDamage;
-    public float resourceRate;
-    public float actionVelocity;
-    public float movementSpeed;
-    public float Range;
-    public float proyectileVelocity;
-    public float cost;
-    public GameObject prefab;
+    public float resistance; //3
+    public float aditamentResistance; //Defense, Barrack
+    public float attackDamage; //Defense, Barrack
+    public float resourceRate; //3
+    public float actionVelocity; //3
+    public float movementSpeed; //Barrack
+    public float range; //Defense
+    public float proyectileVelocity; //defense
+    public float cost; //3
+    public GameObject prefab; //3
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 using UnityEngine;
 
 public class BuildingManager : MonoBehaviour
@@ -20,11 +19,12 @@ public class BuildingManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        constructionPooling = FindAnyObjectByType<Pooling>();
     }
 
     void Start()
     {
-        constructionPooling = FindAnyObjectByType<Pooling>();
+        //constructionPooling = FindAnyObjectByType<Pooling>();
     }
     public void PlaceBuilding(Tile tile)
     {

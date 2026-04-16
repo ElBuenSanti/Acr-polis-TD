@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ConstructionBehaviour : TeamAssigner, IConstructable
+public class ConstructionBehaviour : TeamAssigner
 {
     public virtual void Start()
     {

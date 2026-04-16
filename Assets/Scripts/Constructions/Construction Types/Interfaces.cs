@@ -1,12 +1,5 @@
 using UnityEngine;
 
-public interface IConstructable : IDamageable
-{
-    void Recover();
-
-    void Upgrade();
-}
-
 public interface IDamageable
 {
     void ReceiveDamage(float damage);

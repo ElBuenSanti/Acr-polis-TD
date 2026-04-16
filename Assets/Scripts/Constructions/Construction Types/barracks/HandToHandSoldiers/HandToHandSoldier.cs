@@ -18,16 +18,24 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     protected override void Awake()
     {
         base.Awake();
-
-        
         targetFinder = FindAnyObjectByType<TargetFinder>();
     }
 
     public void Initialize(ConstructionData data, Barracks barrack)
     {
         this.barrack = barrack;
+        resistance = data.aditamentResistance;
+        attackDamage = data.attackDamage;
+        resourceRate = data.resourceRate;
+        movementSpeed = data.movementSpeed;
+
+        if (agent != null)
+        {
+            agent.speed = movementSpeed;
+        }
+
         SetTeam(Team.Ally);
-        SetSoldier(data);
+        //SetSoldier(data);
         Debug.Log("Soldado creado");
         Debug.Log($"Mis datos son: {resistance} {attackDamage} ({resourceRate}) ({movementSpeed})");
     }
@@ -95,6 +103,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         StartCoroutine(DeathRoutine());
     }
 
+    /*
     public void SetSoldier(ConstructionData data)
     {
         resistance = data.soldierResistance;
@@ -107,6 +116,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
             agent.speed = movementSpeed;
         }
     }
+    */
 
 
 

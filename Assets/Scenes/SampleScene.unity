@@ -872,6 +872,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c96fa610be5a74b42b7b960af3d0e668, type: 2}
   - {fileID: 11400000, guid: a39e0ec119070d640a1f5ce05a91f711, type: 2}
   - {fileID: 11400000, guid: be4d376e892567b4cb3376a30f9838e9, type: 2}
+  - {fileID: 11400000, guid: 3e4c6199cdc2d2f4ba607d4a0888a12b, type: 2}
 --- !u!4 &1229641981
 Transform:
   m_ObjectHideFlags: 0
@@ -918,6 +919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingDataList:
   - {fileID: 11400000, guid: f04d6955ffbd7f4468ab922de7ab96e6, type: 2}
+  - {fileID: 11400000, guid: 3e4c6199cdc2d2f4ba607d4a0888a12b, type: 2}
   tempVariable: 0
   constructionPooling: {fileID: 0}
 --- !u!4 &1275694190

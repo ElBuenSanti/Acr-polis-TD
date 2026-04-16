@@ -3,100 +3,47 @@ using UnityEngine;
 
 public class Barracks : BaseConstruction
 {
-    public Pooling soldierPooling;
+    //public Pooling soldierPooling;
     public GameObject soldierPrefab;
 
-    private float timeToSpawnSoldiers;
-    private Coroutine spawnCoroutine;
+    //private float timeToSpawnSoldiers;
+    //private Coroutine spawnCoroutine;
 
-    void Awake()
+    protected override void Awake()
     {
-        soldierPooling = FindAnyObjectByType<Pooling>();
+        base.Awake();
     }
 
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
 
-        timeToSpawnSoldiers = data.actionVelocity;
+        //timeToSpawnAditaments = data.actionVelocity;
 
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 
-        spawnCoroutine = StartCoroutine(SpawnLoop());
-    }
-
-    IEnumerator SpawnLoop()
-    {
-        while (isActiveAndEnabled)
-        {
-            GameObject newSoldier = soldierPooling.CreateObject(soldierPrefab, transform);
-
-            if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
-            {
-                //soldier.barrack = this;
-                soldier.Initialize(data, this);
-            }
-
-            yield return new WaitForSeconds(timeToSpawnSoldiers);
-        }
+        spawnCoroutine = StartCoroutine(SpawnLoop(SpawnSoldier));
     }
 
     public override void ResetConstruction()
     {
         base.ResetConstruction();
-
- 
-        if (spawnCoroutine != null)
-            StopCoroutine(spawnCoroutine);
     }
 
-    void OnDisable()
+    protected override void OnDisable()
     {
-        StopAllCoroutines();
-    }
-}
-/*
-using UnityEngine;
-using System.Collections;
-
-public class Barracks : ConstructionBehaviour
-{
-    public Pooling soldierPooling;
-    public GameObject soldierPrefab;
-    private float timeToSpawnSoldiers= 10f;
-    
-
-    public override void Start()
-    {
-        base.Start();
-        soldierPooling = FindAnyObjectByType<Pooling>();
-        StartCoroutine(SpawnLoop());
+        base.OnDisable();
     }
 
-    //Coorutinas
-    IEnumerator SpawnLoop()
+    void SpawnSoldier()
     {
-        while (isActiveAndEnabled)
+        GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
+
+        if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
         {
-            GameObject newSoldier = soldierPooling.CreateObject(soldierPrefab, transform);
-
-            if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
-            {
-                soldier.barrack = this;
-                soldier.SetTeam(Team.Ally);
-            }
-
-            /*
-            GameObject newSoldier = soldierPooling.CreateObject(soldierPrefab, transform);
-            newSoldier.GetComponent<HandToHandSoldier>().barrack = this;
-            
-
-            yield return new WaitForSeconds(timeToSpawnSoldiers);
+            soldier.Initialize(data, this);
         }
+
     }
-
-
 }
-
-*/
