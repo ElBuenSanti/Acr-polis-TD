@@ -21,7 +21,7 @@ public class WillManager : MonoBehaviour
             
         foreach (Will w in System.Enum.GetValues(typeof(Will)))
         {
-            money[w] = 1000;
+            money[w] = 300;
         }
     }
 

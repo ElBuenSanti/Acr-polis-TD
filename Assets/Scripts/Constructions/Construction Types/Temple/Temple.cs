@@ -1,27 +1,49 @@
 using UnityEngine;
 
-public class Temple : MonoBehaviour
+public class Temple : Plaza
 {
-    //private const string nameOfEvent = "soldierCreated";
-    //const sring que no cambia jamás, variable de solo lectura.
-
-
-
-    /*
-    private void OnEnable()
+    protected override void Awake()
     {
-        EventManager.StartListening(nameOfEvent, OnSoliderCreated);
+        base.Awake();
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        EventManager.StopListening(nameOfEvent, OnSoliderCreated);
+        base.OnDisable();
     }
 
-    public void OnSoliderCreated(object referenceOfObject) //no hay restruicciones con object
+    public override void Initialize(ConstructionData newData)
     {
-        int getNumber = (int)referenceOfObject;
-        Debug.Log(getNumber);
+        base.Initialize(newData);
     }
-    */
+
+    protected override void SpawnWill()
+    {
+        base.SpawnWill();
+        Debug.Log("Pero de templo");
+    }
 }
+
+
+//private const string nameOfEvent = "soldierCreated";
+//const sring que no cambia jamás, variable de solo lectura.
+
+
+
+/*
+private void OnEnable()
+{
+    EventManager.StartListening(nameOfEvent, OnSoliderCreated);
+}
+
+private void OnDisable()
+{
+    EventManager.StopListening(nameOfEvent, OnSoliderCreated);
+}
+
+public void OnSoliderCreated(object referenceOfObject) //no hay restruicciones con object
+{
+    int getNumber = (int)referenceOfObject;
+    Debug.Log(getNumber);
+}
+*/

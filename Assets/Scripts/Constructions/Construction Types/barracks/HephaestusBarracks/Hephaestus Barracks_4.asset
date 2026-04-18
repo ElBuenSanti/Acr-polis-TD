@@ -14,15 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   god: 3
-  will: 0
   level: 4
   resistance: 390
-  aditamentResistance: 0
-  attackDamage: 0
-  resourceRate: 0
+  aditamentResistance: 1
+  attackDamage: 1
+  willObtaied:
+  - type: 0
+    amount: 15
   actionVelocity: 20
   movementSpeed: 5
-  range: 0
+  range: 10
   proyectileVelocity: 0
-  cost: 200
+  willToPay:
+  - type: 0
+    amount: 2000
   prefab: {fileID: 8337416981776415849, guid: 1ef5c90e2697b884bac1ee8fc9d9628d, type: 3}

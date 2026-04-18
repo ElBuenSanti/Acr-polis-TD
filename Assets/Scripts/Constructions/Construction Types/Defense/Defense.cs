@@ -10,10 +10,7 @@ public class Defense : BaseConstruction
 
     private float distanceToShoot;
 
-    private float aditamentResistance;
-    private float damage;
     private float range;
-    private float projectileVelocity;
 
     protected override void Awake()
     {
@@ -36,11 +33,14 @@ public class Defense : BaseConstruction
     protected override void ApplyStats()
     {
         base.ApplyStats();
+        range = data.range;
     }
+
 
     void SpawnArrows()
     {
-        currentTarget = targetFinder.FindTarget<Enemy>(transform);
+        Debug.Log("AllUnits count: " + NavMeshAgentBehaviour.AllUnits.Count);
+        currentTarget = targetFinder.FindTarget<Enemy>(transform, range);
 
         if (currentTarget == null)
         {
@@ -48,9 +48,10 @@ public class Defense : BaseConstruction
         }
 
         distanceToShoot = Vector3.Distance(transform.position, currentTarget.position);
-
+        /*
         if (distanceToShoot > range)
             return;
+        */
 
         GameObject newArrow = pooling.CreateObject(arrowPrefab, transform);
 

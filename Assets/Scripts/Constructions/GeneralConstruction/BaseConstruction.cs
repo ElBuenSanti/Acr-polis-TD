@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class BaseConstruction : MonoBehaviour
+public abstract class BaseConstruction : TeamAssigner
 {
     protected ConstructionData data; 
     protected float resistance;
-    protected float resourceRate;
+    //protected float resourceRate;
     protected float actionVelocity;
     protected float cost; 
 
@@ -16,6 +16,7 @@ public abstract class BaseConstruction : MonoBehaviour
     public virtual void Initialize(ConstructionData newData) //recibe la información de la construcción
     {
         data = newData; //la guarda
+        SetTeam(Team.Ally);
         timeToSpawnAditaments = data.actionVelocity;
         ApplyStats();
     }
@@ -36,9 +37,7 @@ public abstract class BaseConstruction : MonoBehaviour
     protected virtual void ApplyStats()
     {
         resistance = data.resistance;
-        resourceRate = data.resourceRate;
         actionVelocity = data.actionVelocity;
-        cost = data.cost;
 
         Debug.Log($"Initialized {data.type} Lv{data.level} ({data.god})");
     }

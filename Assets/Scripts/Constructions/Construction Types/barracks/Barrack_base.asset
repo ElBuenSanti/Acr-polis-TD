@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: Barrack_base
   m_EditorClassIdentifier: 
   type: 0
-  god: 1
+  god: 2
   level: 1
   resistance: 300
   aditamentResistance: 150
   attackDamage: 10
-  resourceRate: 2
-  willObtained: 0
+  willObtaied:
+  - type: 2
+    amount: 2
   actionVelocity: 15
   movementSpeed: 2
-  range: 0
+  range: 10
   proyectileVelocity: 0
-  cost: 200
-  willToPay: 0
+  willToPay:
+  - type: 1
+    amount: 200
   prefab: {fileID: 8337416981776415849, guid: 329d4452d75372749b14bdbc5a3c4482, type: 3}

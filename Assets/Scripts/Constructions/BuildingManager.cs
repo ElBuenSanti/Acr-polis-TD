@@ -27,11 +27,23 @@ public class BuildingManager : MonoBehaviour
     {
         ConstructionData data = buildingDataList[tempVariable];
 
-        if (!WillManager.Instance.SpendMoney(data.willToPay, data.cost))
+        foreach (var w in data.willToPay)
+        {
+            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
+            {
+                Debug.Log("No te alcanza");
+                return;
+            }
+
+        }
+
+        /*
+        if (!WillManager.Instance.SpendMoney(data.willToPay, data.amount))
         {
             Debug.Log("No te alcanza para construir");
             return;
         }
+        */
 
         GameObject building = constructionPooling.CreateObject(data.prefab, tile.transform);
 

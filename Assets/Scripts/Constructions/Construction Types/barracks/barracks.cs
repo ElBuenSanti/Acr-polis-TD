@@ -4,6 +4,7 @@ using UnityEngine;
 public class Barracks : BaseConstruction
 {
     public GameObject soldierPrefab;
+    private float timeToSpwanInBetweenSoldiers = 0.5f;
 
     protected override void Awake()
     {
@@ -34,12 +35,21 @@ public class Barracks : BaseConstruction
 
     void SpawnSoldier()
     {
-        GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
+        StartCoroutine(SpawnSoldiersWithDelay());
+    }
 
-        if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
+    IEnumerator SpawnSoldiersWithDelay()
+    {
+        for (int i = 0; i < 3; i++)
         {
-            soldier.Initialize(data, this);
-        }
+            GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
 
+            if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
+            {
+                soldier.Initialize(data, this);
+            }
+
+            yield return new WaitForSeconds(timeToSpwanInBetweenSoldiers);
+        }
     }
 }

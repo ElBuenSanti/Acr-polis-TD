@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 380dc6981712e094f87d5b0150ea9856, type: 3}
-  m_Name: AresBarrack_2
+  m_Name: Hephaestus Defense_4
   m_EditorClassIdentifier: 
-  type: 0
-  god: 1
-  level: 2
-  resistance: 300
-  aditamentResistance: 250
-  attackDamage: 30
+  type: 4
+  god: 3
+  level: 4
+  resistance: 400
+  aditamentResistance: 0
+  attackDamage: 50
   willObtaied:
-  - type: 2
-    amount: 5
-  actionVelocity: 12
-  movementSpeed: 1.2
-  range: 10
-  proyectileVelocity: 0
+  - type: 0
+    amount: 15
+  actionVelocity: 1
+  movementSpeed: 0
+  range: 5
+  proyectileVelocity: 10
   willToPay:
-  - type: 2
-    amount: 425
-  prefab: {fileID: 8337416981776415849, guid: da41bdd1b9353d446ac353e57f00f831, type: 3}
+  - type: 0
+    amount: 2000
+  prefab: {fileID: 4570978340087042814, guid: 6155edac50958e6439833deda676bde1, type: 3}

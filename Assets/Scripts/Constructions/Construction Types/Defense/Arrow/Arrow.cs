@@ -4,7 +4,6 @@ public class Arrow : TeamAssigner, IDamageable
 {
     public Defense defense;
 
-    private float resistance;
     private float attackDamage;
     private float resourceRate;
     private float proyectileVelocity;
@@ -22,8 +21,13 @@ public class Arrow : TeamAssigner, IDamageable
         targetPoint = target;
 
         attackDamage = data.attackDamage;
-        resourceRate = data.resourceRate;
         proyectileVelocity = data.proyectileVelocity;
+
+        foreach (var w in data.willObtaied)
+        {
+            resourceRate = w.amount;
+            //prob. tipo de voluntad = w.
+        }
 
         SetTeam(Team.Ally);
 
@@ -31,7 +35,7 @@ public class Arrow : TeamAssigner, IDamageable
         time = 0f;
 
         Debug.Log("Flecha creada");
-        Debug.Log($"Mis datos son: {resistance} {attackDamage} ({resourceRate}) ({proyectileVelocity})");
+        Debug.Log($"Mis datos son: attackDamage: {attackDamage} velocity: ({proyectileVelocity})");
     }
 
    void OnEnable()

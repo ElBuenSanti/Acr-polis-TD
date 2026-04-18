@@ -2,12 +2,16 @@ using UnityEngine;
 
 public class Enemy : NavMeshAgentBehaviour
 {
-    void Start()
+
+    protected override void Awake()
     {
-        
+        SetTeam(Team.Enemy);
+        resistance = 50f;
     }
-    void Update()
+
+    public override void OnDeath()
     {
-        
+        base.OnDeath();
+        Die();
     }
 }

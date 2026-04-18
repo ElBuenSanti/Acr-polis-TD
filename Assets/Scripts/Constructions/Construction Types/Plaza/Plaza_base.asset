@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 380dc6981712e094f87d5b0150ea9856, type: 3}
-  m_Name: AresBarrack_2
+  m_Name: Plaza_base
   m_EditorClassIdentifier: 
-  type: 0
-  god: 1
-  level: 2
+  type: 3
+  god: 0
+  level: 1
   resistance: 300
-  aditamentResistance: 250
-  attackDamage: 30
+  aditamentResistance: 0
+  attackDamage: 0
   willObtaied:
-  - type: 2
-    amount: 5
-  actionVelocity: 12
-  movementSpeed: 1.2
-  range: 10
+  - type: 1
+    amount: 25
+  actionVelocity: 5
+  movementSpeed: 0
+  range: 0
   proyectileVelocity: 0
   willToPay:
-  - type: 2
-    amount: 425
-  prefab: {fileID: 8337416981776415849, guid: da41bdd1b9353d446ac353e57f00f831, type: 3}
+  - type: 1
+    amount: 200
+  prefab: {fileID: 7350530366797588461, guid: 210d099e598081945b63f4ce649dcda0, type: 3}

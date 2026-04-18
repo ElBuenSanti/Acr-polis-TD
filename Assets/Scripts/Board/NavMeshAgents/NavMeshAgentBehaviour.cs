@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,29 +11,50 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected float attackDamage;
     protected float movementSpeed;
 
-    protected bool isDead = false;
-    protected bool isStunned = false;
+    /*
+    public bool isDead = false;
+    public bool isStunned = false;
+    public bool IsDead => isDead;
+    public bool IsStunned => isStunned;
+    */
+    public bool IsDead { get; protected set; }
+    public bool IsStunned { get; protected set; }
 
     protected Coroutine stunCoroutine;
+    public static List<NavMeshAgentBehaviour> AllUnits = new List<NavMeshAgentBehaviour>();
 
     protected virtual void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
+    protected virtual void OnEnable()
+    {
+        AllUnits.Add(this);
+        IsDead = false;
+        IsStunned = false;
+        
+    }
+
+    protected virtual void OnDisable()
+    {
+        AllUnits.Remove(this);
+    }
+
     //Funciones
     public virtual void MoveTo(Vector3 destination)
     {
-        if (agent != null)
-        {
-            agent.SetDestination(destination);
-        }
-            
+        if (agent == null || IsDead || IsStunned)
+            return;
+
+        agent.SetDestination(destination);
     }
+            
+    
 
     public virtual void ReceiveDamage(float damage)
     {
-        if (isDead)
+        if (IsDead)
         {
             return;
         }
@@ -41,15 +63,16 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 
         if (resistance <= 0)
         {
-            isDead = true;
+            IsDead = true;
             OnDeath();
+            return;
         }
         OnDamage();
     }
 
     public virtual void OnDamage()
     {
-        isStunned = true;
+        IsStunned = true;
         if (agent != null)
         {
             agent.isStopped = true; 
@@ -71,6 +94,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         {
             StopCoroutine(stunCoroutine);
         }
+        
     }
 }
 

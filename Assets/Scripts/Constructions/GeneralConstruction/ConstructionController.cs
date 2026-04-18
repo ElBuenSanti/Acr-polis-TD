@@ -39,11 +39,23 @@ public class ConstructionController : MonoBehaviour
             return;
         }
 
+        foreach (var w in newData.willToPay)
+        {
+            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
+            {
+                Debug.Log("No te alcanza");
+                return;
+            }
+            
+        }
+
+        /*
         if(!WillManager.Instance.SpendMoney(newData.willToPay, newData.cost))
         {
             Debug.Log("No te alcanza");
             return;
         }
+        */
 
         Vector3 position = transform.position;
         Quaternion rotation = transform.rotation;

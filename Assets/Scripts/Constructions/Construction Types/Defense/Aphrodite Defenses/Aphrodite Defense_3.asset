@@ -18,12 +18,14 @@ MonoBehaviour:
   resistance: 270
   aditamentResistance: 0
   attackDamage: 35
-  resourceRate: 5
-  willObtained: 0
+  willObtaied:
+  - type: 0
+    amount: 5
   actionVelocity: 1.5
   movementSpeed: 0
   range: 8
   proyectileVelocity: 10
-  cost: 0
-  willToPay: 0
+  willToPay:
+  - type: 1
+    amount: 1000
   prefab: {fileID: 4570978340087042814, guid: 43c6cbd149614794788929fac80c39c5, type: 3}
