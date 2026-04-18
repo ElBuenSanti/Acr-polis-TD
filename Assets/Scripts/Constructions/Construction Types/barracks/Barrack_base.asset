@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Barrack_base
   m_EditorClassIdentifier: 
   type: 0
-  god: 2
+  god: 1
   level: 1
   resistance: 300
   aditamentResistance: 150

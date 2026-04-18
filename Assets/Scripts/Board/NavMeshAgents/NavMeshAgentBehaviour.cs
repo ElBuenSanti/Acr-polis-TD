@@ -6,17 +6,11 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 {
 
     protected NavMeshAgent agent;
+    protected TargetFinder targetFinder;
 
     protected float resistance;
     protected float attackDamage;
     protected float movementSpeed;
-
-    /*
-    public bool isDead = false;
-    public bool isStunned = false;
-    public bool IsDead => isDead;
-    public bool IsStunned => isStunned;
-    */
     public bool IsDead { get; protected set; }
     public bool IsStunned { get; protected set; }
 
@@ -26,6 +20,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        targetFinder = FindAnyObjectByType<TargetFinder>();
     }
 
     protected virtual void OnEnable()
@@ -50,8 +45,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         agent.SetDestination(destination);
     }
             
-    
-
+   
     public virtual void ReceiveDamage(float damage)
     {
         if (IsDead)

@@ -1,12 +1,13 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class HandToHandSoldier : NavMeshAgentBehaviour
 {
     public Barracks barrack;
 
     private Transform currentTarget;
-    private TargetFinder targetFinder;
+    //private TargetFinder targetFinder;
 
     [SerializeField] private float searchInterval = 1.5f;
 
@@ -18,12 +19,14 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
     private float lastAttackTime;
 
+    private List<WillProduction> willObtaied;
+
     private float range;
 
     protected override void Awake()
     {
         base.Awake();
-        targetFinder = FindAnyObjectByType<TargetFinder>();
+        //targetFinder = FindAnyObjectByType<TargetFinder>();
     }
 
     public void Initialize(ConstructionData data, Barracks barrack)
@@ -33,6 +36,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         resistance = data.aditamentResistance;
         attackDamage = data.attackDamage;
         movementSpeed = data.movementSpeed;
+        willObtaied = data.willObtaied;
         range = data.range;
 
         if (agent != null)
@@ -106,7 +110,17 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         if (currentTarget.TryGetComponent<IDamageable>(out var target))
         {
             target.ReceiveDamage(attackDamage);
+            SpawnWill();
             Debug.Log("Atacando a enemigo");
+
+        }
+    }
+
+   void SpawnWill()
+    {
+        foreach (var w in willObtaied)
+        {
+            WillManager.Instance.AddMoney(w.type, w.amount);
         }
     }
 
