@@ -4,7 +4,7 @@ using UnityEngine;
 public class Barracks : BaseConstruction
 {
     public GameObject soldierPrefab;
-    private float timeToSpwanInBetweenSoldiers = 0.5f;
+    private float timeToSpwanInBetweenSoldiers = 1f;
 
     protected override void Awake()
     {

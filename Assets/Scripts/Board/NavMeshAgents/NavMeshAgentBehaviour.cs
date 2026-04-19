@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,6 +16,8 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     public bool IsStunned { get; protected set; }
 
     protected Coroutine stunCoroutine;
+    protected Coroutine deathCoroutine;
+
     public static List<NavMeshAgentBehaviour> AllUnits = new List<NavMeshAgentBehaviour>();
 
     protected virtual void Awake()
@@ -26,23 +29,30 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual void OnEnable()
     {
         AllUnits.Add(this);
-        IsDead = false;
-        IsStunned = false;
-        
+        IsDead = false; //ambos empiezan vivos
+        IsStunned = false; //ambos empiezan sin estar aturdidos
+
+        if (agent != null)
+        {
+            agent.isStopped = false; //no está detenido
+            agent.ResetPath();
+        }
+
     }
 
     protected virtual void OnDisable()
     {
         AllUnits.Remove(this);
+        StopAllCoroutines();
     }
 
     //Funciones
     public virtual void MoveTo(Vector3 destination)
     {
-        if (agent == null || IsDead || IsStunned)
+        if (agent == null || IsDead || IsStunned) //si no hay agente asignado, esta muerto o aturdido, no hace nada
             return;
 
-        agent.SetDestination(destination);
+        agent.SetDestination(destination); //se mueve hacia él
     }
             
    
@@ -50,45 +60,87 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     {
         if (IsDead)
         {
-            return;
+            return; //si esta muerto, ya no tiene sentido que reciva daño
         }
 
-        resistance -= damage;
+        resistance -= damage; //se le quita vida
 
-        if (resistance <= 0)
+        if (resistance <= 0) //si llega a 0
         {
-            IsDead = true;
+            IsDead = true; //ya esta muerto
             OnDeath();
-            return;
+            return; //evitar que se actuive ondamage
         }
         OnDamage();
     }
 
     public virtual void OnDamage()
     {
+        if (IsDead)
+            return;
+
         IsStunned = true;
+
         if (agent != null)
-        {
-            agent.isStopped = true; 
-        }
+            agent.isStopped = true;
+
+        if (stunCoroutine != null)
+            StopCoroutine(stunCoroutine);
+
+        stunCoroutine = StartCoroutine(StunnedRoutine(GetStunTime()));
     }
+
 
     public virtual void Die()
     {
-        gameObject.SetActive(false);
+        gameObject.SetActive(false); //se desactiva
     }
 
     public virtual void OnDeath()
     {
         if (agent != null)
-        {
             agent.isStopped = true;
-        }
+
         if (stunCoroutine != null)
-        {
             StopCoroutine(stunCoroutine);
-        }
-        
+
+        if (deathCoroutine != null)
+            StopCoroutine(deathCoroutine);
+
+        deathCoroutine = StartCoroutine(DeathRoutine(GetDeathTime()));
+    }
+
+    protected virtual float GetStunTime()
+    {
+        return 0;
+    }
+
+    protected virtual float GetDeathTime()
+    {
+        return 0;
+    }
+
+
+    //Coorutinas
+
+    protected IEnumerator StunnedRoutine(float stunTime)
+    {
+        yield return new WaitForSeconds(stunTime);
+
+        IsStunned = false;
+
+        if (agent != null)
+            agent.isStopped = false;
+
+        stunCoroutine = null;
+    }
+
+    protected IEnumerator DeathRoutine(float deathTime)
+    {
+        yield return new WaitForSeconds(deathTime);
+
+        Die();
+        deathCoroutine = null;
     }
 }
 
