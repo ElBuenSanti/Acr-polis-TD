@@ -19,11 +19,17 @@ public class Barracks : BaseConstruction
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
+        timeToBeDestroyed = 2f;
 
+        /*
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 
         spawnCoroutine = StartCoroutine(SpawnLoop(SpawnSoldier));
+        */
+
+        StartWaveDependentSpawn(SpawnSoldier);
+        
     }
 
     //Funciones

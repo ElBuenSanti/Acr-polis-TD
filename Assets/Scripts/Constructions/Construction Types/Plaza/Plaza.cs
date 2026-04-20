@@ -15,12 +15,17 @@ public class Plaza : BaseConstruction
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
+        timeToBeDestroyed = 2f;
         //SetTeam(Team.Ally);
 
+        /*
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
+        */
 
-        spawnCoroutine = StartCoroutine(SpawnLoop(SpawnWill));
+        //spawnCoroutine = StartCoroutine(SpawnLoop(SpawnWill));
+
+        StartWaveDependentSpawn(SpawnWill);
     }
 
     protected virtual void SpawnWill()

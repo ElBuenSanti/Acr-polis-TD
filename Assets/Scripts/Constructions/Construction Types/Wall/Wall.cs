@@ -15,5 +15,6 @@ public class Wall : BaseConstruction
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
+        timeToBeDestroyed = 2f;
     }
 }

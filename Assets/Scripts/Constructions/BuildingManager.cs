@@ -134,6 +134,8 @@ public class BuildingManager : MonoBehaviour
             var baseConstruction = building.GetComponent<BaseConstruction>();
             var constructionController = building.GetComponent<ConstructionController>();
 
+            baseConstruction.SetTile(t);
+
             baseConstruction.Initialize(currentBuilding);
             constructionController.Initialize(currentBuilding);
         }

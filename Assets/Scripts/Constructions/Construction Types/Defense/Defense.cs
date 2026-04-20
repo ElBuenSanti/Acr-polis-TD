@@ -21,11 +21,16 @@ public class Defense : BaseConstruction
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
+        timeToBeDestroyed = 2f;
 
+        /*
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
+        */
 
-        spawnCoroutine = StartCoroutine(SpawnLoop(SpawnArrows));
+        //spawnCoroutine = StartCoroutine(SpawnLoop(SpawnArrows));
+
+        StartWaveDependentSpawn(SpawnArrows);
     }
 
 
@@ -39,7 +44,7 @@ public class Defense : BaseConstruction
 
     void SpawnArrows()
     {
-        Debug.Log("AllUnits count: " + NavMeshAgentBehaviour.AllUnits.Count);
+        //Debug.Log("AllUnits count: " + NavMeshAgentBehaviour.AllUnits.Count);
         currentTarget = targetFinder.FindTarget<Enemy>(transform, range);
 
         if (currentTarget == null)
