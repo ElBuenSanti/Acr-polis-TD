@@ -108,7 +108,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
             StopCoroutine(deathCoroutine);
 
         deathCoroutine = StartCoroutine(DeathRoutine(GetDeathTime()));
-        Die();
+        //Die();
     }
 
     protected virtual float GetStunTime()

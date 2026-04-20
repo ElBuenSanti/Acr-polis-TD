@@ -29,16 +29,29 @@ public class Tile : MonoBehaviour
 
     void OnMouseEnter()
     {
-        BuildingManager.Instance.SetHoveredTile(this);
+        if (!WaveSpawner.Instance.IsWaveRunning())
+        {
+            BuildingManager.Instance.SetHoveredTile(this);
+        }
+        //BuildingManager.Instance.SetHoveredTile(this);
     }
 
     void OnMouseExit()
     {
-        BuildingManager.Instance.ClearHover();
+        if (!WaveSpawner.Instance.IsWaveRunning())
+        {
+            BuildingManager.Instance.ClearHover();
+        }
+        //BuildingManager.Instance.ClearHover();
     }
 
     void OnMouseDown()
     {
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            return;
+        }
+
         if (isOccupied)
             return;
 

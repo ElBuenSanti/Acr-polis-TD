@@ -10,8 +10,8 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
     [SerializeField] private float searchInterval = 1.5f;
 
-    [SerializeField] private float attackRange = 2.5f;
-    [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackCooldown = 3f;
 
     [SerializeField] private float stunTime = 3f;
     [SerializeField] private float deathTime = 1.5f;

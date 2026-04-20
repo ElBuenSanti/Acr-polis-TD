@@ -12,7 +12,7 @@ public class Enemy : NavMeshAgentBehaviour
     public Transform combatTarget; // soldado cercano
     private float combatDistance;
     private float distance;
-    [SerializeField] private float combatRange = 6f;
+    [SerializeField] private float combatRange = 5f;
 
     [SerializeField] private float searchInterval = 1.5f;
 
@@ -50,7 +50,10 @@ public class Enemy : NavMeshAgentBehaviour
     {
         base.OnEnable(); 
 
-        currentTarget = null; 
+        currentTarget = null;
+
+        if (WaveSpawner.Instance != null)
+            WaveSpawner.Instance.OnWaveEnded += HandleWaveEnd;
 
         StartCoroutine(SearchTargetRoutine()); 
     }
@@ -58,6 +61,9 @@ public class Enemy : NavMeshAgentBehaviour
     protected override void OnDisable()
     {
         base.OnDisable();
+
+        if (WaveSpawner.Instance != null)
+            WaveSpawner.Instance.OnWaveEnded -= HandleWaveEnd;
     }
 
     void Update()
@@ -151,6 +157,13 @@ public class Enemy : NavMeshAgentBehaviour
     protected override float GetDeathTime()
     {
         return deathTime;
+    }
+
+    private void HandleWaveEnd()
+    {
+        if (IsDead) return;
+
+        OnDeath();
     }
 
 

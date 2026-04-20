@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System;
 
 public class WaveSpawner : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class WaveSpawner : MonoBehaviour
 
     private int currentWaveIndex;
     private bool waveRunning;
+
+    public event Action OnWaveEnded;
 
     void Awake()
     {
@@ -47,15 +50,17 @@ public class WaveSpawner : MonoBehaviour
 
             timer += wave.spawnFrequency;
         }
-
         currentWaveIndex++;
         waveRunning = false;
+
         Debug.Log("Fin de la oleada");
+
+        OnWaveEnded?.Invoke();
     }
 
     void SpawnEnemy(WaveData wave)
     {
-        var enemyType = wave.enemies[Random.Range(0, wave.enemies.Count)];
+        var enemyType = wave.enemies[UnityEngine.Random.Range(0, wave.enemies.Count)];
 
         Transform spawnPoint = GetRandomSpawnPoint();
 
@@ -70,7 +75,7 @@ public class WaveSpawner : MonoBehaviour
         if (spawnPoints == null || spawnPoints.Length == 0)
             return transform;
 
-        return spawnPoints[Random.Range(0, spawnPoints.Length)];
+        return spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
     }
 
     public bool IsWaveRunning()

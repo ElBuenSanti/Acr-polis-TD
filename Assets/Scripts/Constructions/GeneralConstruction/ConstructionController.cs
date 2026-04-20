@@ -82,7 +82,11 @@ public class ConstructionController : MonoBehaviour
 
     void OnMouseDown()
     {
-        BuildingManager.Instance.Select(this);
+        if (!WaveSpawner.Instance.IsWaveRunning())
+        {
+            BuildingManager.Instance.Select(this);
+        }
+        //BuildingManager.Instance.Select(this);
         //Upgrade();
     }
 
