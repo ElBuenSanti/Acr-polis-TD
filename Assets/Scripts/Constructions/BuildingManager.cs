@@ -8,6 +8,7 @@ public class BuildingManager : MonoBehaviour
     [SerializeField]
     private List<ConstructionData> buildingDataList;
     public ConstructionData currentBuilding;
+    public ConstructionController selectedConstruction;
 
     BaseConstruction baseConstruction;
     ConstructionController constructionController;
@@ -140,35 +141,10 @@ public class BuildingManager : MonoBehaviour
         return true;
     }
 
-    /*
-    public bool PlaceBuilding(Tile tile)
+    public void Select(ConstructionController construction)
     {
-        if (currentBuilding == null)
-            return false; //no se pudo poner
-
-        foreach (var w in currentBuilding.willToPay)
-        {
-            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
-            {
-                Debug.Log("No te alcanza");
-                return false; //no se pudo poner
-            }
-
-        }
-
-        GameObject building = constructionPooling.CreateObject(currentBuilding.prefab, tile.transform);
-
-        building.transform.position = tile.transform.position + new Vector3(0, hightOffset, 0);
-        building.transform.rotation = Quaternion.identity;
-
-        var baseConstruction = building.GetComponent<BaseConstruction>();
-        var constructionController = building.GetComponent<ConstructionController>();
-
-        baseConstruction.Initialize(currentBuilding);
-        constructionController.Initialize(currentBuilding);
-
-        return true; //si se pudo
+        selectedConstruction = construction;
+        Debug.Log("Seleccionado: " + construction.name);
     }
-    */
 
 }

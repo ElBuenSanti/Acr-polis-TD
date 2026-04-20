@@ -631,6 +631,7 @@ GameObject:
   m_Component:
   - component: {fileID: 556090607}
   - component: {fileID: 556090606}
+  - component: {fileID: 556090608}
   m_Layer: 0
   m_Name: UI CHAFA
   m_TagString: Untagged
@@ -665,6 +666,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &556090608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556090605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b81fabb28086e864a90371a57f12c364, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &669334312
 GameObject:
   m_ObjectHideFlags: 0
@@ -1026,6 +1039,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f9b8b0c82e95c9c4b9756cc23f843de7, type: 2}
   - {fileID: 11400000, guid: 1222b33cd99a3e542b37d7c3db60c909, type: 2}
   currentBuilding: {fileID: 0}
+  selectedConstruction: {fileID: 0}
   tempVariable: 2
   constructionPooling: {fileID: 0}
 --- !u!4 &1275694190

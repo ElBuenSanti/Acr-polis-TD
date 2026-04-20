@@ -21,11 +21,11 @@ MonoBehaviour:
   willObtaied:
   - type: 1
     amount: 8
-  actionVelocity: 0
+  actionVelocity: 20
   movementSpeed: 1.5
   range: 10
   proyectileVelocity: 0
   willToPay:
   - type: 1
-    amount: 8
+    amount: 500
   prefab: {fileID: 8337416981776415849, guid: d9ff3107835a22348ab508255e1c1c8a, type: 3}

@@ -7,8 +7,11 @@ public class ConstructionController : MonoBehaviour
     private Pooling pooling;
 
     private ConstructionType type;
-    private GodType god, selectedGod;
+    //private GodType god, selectedGod;
     private int level;
+
+    private GodType currentGod;
+    private GodType selectedGod = GodType.Base;
 
     private Transform parentTile;
 
@@ -22,16 +25,19 @@ public class ConstructionController : MonoBehaviour
     public void Initialize(ConstructionData data)
     {
         type = data.type;
-        god = data.god;
+        //god = data.god;
         level = data.level;
         parentTile = transform.parent;
+        selectedGod = data.god;
     }
 
     public void Upgrade()
     {
         int nextLevel = level + 1;
 
-            ConstructionData newData = database.GetData(type, god, nextLevel);
+        Debug.Log("UPGRADE con dios: " + selectedGod);
+
+        ConstructionData newData = database.GetData(type, selectedGod, nextLevel); //god
 
         if (newData == null)
         {
@@ -48,14 +54,6 @@ public class ConstructionController : MonoBehaviour
             }
             
         }
-
-        /*
-        if(!WillManager.Instance.SpendMoney(newData.willToPay, newData.cost))
-        {
-            Debug.Log("No te alcanza");
-            return;
-        }
-        */
 
         Vector3 position = transform.position;
         Quaternion rotation = transform.rotation;
@@ -84,7 +82,19 @@ public class ConstructionController : MonoBehaviour
 
     void OnMouseDown()
     {
-        Upgrade();
+        BuildingManager.Instance.Select(this);
+        //Upgrade();
+    }
+
+    public void SetSelectedGod(GodType god)
+    {
+        if (level > 1)
+        {
+            Debug.Log("El dios ya está fijado");
+            return;
+        }
+
+        selectedGod = god;
     }
 
 }
