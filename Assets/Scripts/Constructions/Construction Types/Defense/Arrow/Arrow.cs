@@ -1,105 +1,77 @@
 using UnityEngine;
 using System.Collections;
 
-public class Arrow : TeamAssigner
+public class Arrow : Projectile
 {
     public Defense defense;
+    public ConstructionData defenseData;
 
-    private float attackDamage;
+    //protected float attackDamage;
     private float resourceRate;
-    private float proyectileVelocity;
+    private bool hasHit;
+    //protected float proyectileVelocity;
 
-    private Vector3 startPoint;
-    private Vector3 targetPoint;
+    //protected Vector3 startPoint;
+    //protected Vector3 targetPoint;
 
-    private float time;
-    private float arcHeight = 5f;
+    //protected float time;
+    //protected float arcHeight = 5f;
 
     public void Initialize(ConstructionData data, Vector3 start, Vector3 target, Defense defense)
     {
         this.defense = defense;
-
-        startPoint = start;
-        targetPoint = target;
-
-        attackDamage = data.attackDamage;
-        proyectileVelocity = data.proyectileVelocity;
+        defenseData = data;
 
         foreach (var w in data.willObtaied)
         {
             resourceRate = w.amount;
-            //prob. tipo de voluntad = w.
         }
 
+        Setup(start, target, data.attackDamage, data.proyectileVelocity);
         SetTeam(Team.Ally);
-
-        transform.position = startPoint;
-        time = 0f;
 
         Debug.Log("Flecha creada");
         Debug.Log($"Mis datos son: attackDamage: {attackDamage} velocity: ({proyectileVelocity})");
     }
 
-   void OnEnable()
+    protected override void OnEnable()
     {
-        time = 0f;
-    }
-
-    void Update()
-    {
-        time += Time.deltaTime * proyectileVelocity;
-
-        float t = time;
-
-        if (t >= 1f)
-        {
-            Hit();
-            return;
-        }
-
-        Vector3 pos = Vector3.Lerp(startPoint, targetPoint, t);
-
-        pos.y += arcHeight * (t * (1 - t)) * 4;
-
-        transform.position = pos;
+        base.OnEnable();
+        hasHit = false;
     }
 
     //Colisiones
     void OnTriggerEnter(Collider other)
     {
+        if (hasHit) return;
         if (other.TryGetComponent<Enemy>(out var enemy))
         {
             if (other.TryGetComponent<IDamageable>(out var target))
             {
+                hasHit = true;
                 target.ReceiveDamage(attackDamage);
+                SpawnWill(); //por golpe se spawnea la voluntad
+                Debug.Log("Atacando a enemigo");
             }
 
             Hit();
         }
     }
 
-
     //Fnciones
-    void Hit()
+
+    void SpawnWill()
     {
-        StartCoroutine(HitRoutine());
+        foreach (var w in defenseData.willObtaied) //puede ser más de una voluntad generada
+        {
+            WillManager.Instance.AddMoney(w.type, w.amount);
+        }
     }
 
-    public virtual void OnHit()
+    protected override void OnHit()
     {
-        Debug.Log("Golpeo flecha y se reproduce animación");
+        Debug.Log("Golpeo flecha y se reproduce animación de destrucción de flecha");
         //aqui animación
-    }
-
-    //Coorutinas
-
-    IEnumerator HitRoutine()
-    {
-        OnHit(); 
-
-        yield return new WaitForSeconds(0.5f); 
-
-        gameObject.SetActive(false);
     }
 
 }

@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bdd6fcae068c3b4baceb38066bf381c, type: 3}
-  m_Name: Wave_1
+  m_Name: Wave_20
   m_EditorClassIdentifier: 
-  waveIndex: 1
-  waveType: 0
-  waveDuration: 45
-  spawnFrequency: 5
-  enemies:
-  - enemy: {fileID: 11400000, guid: e6389f5ad65b7e048977da14bccc750b, type: 2}
-    percentageInWave: 0
-  possibleBosses: []
+  waveIndex: 0
+  waveType: 3
+  waveDuration: 0
+  spawnFrequency: 0
+  enemies: []
+  possibleBosses:
+  - {fileID: 11400000, guid: 6f871fc97016d664285c0b6c6a4fd7e4, type: 2}
+  - {fileID: 11400000, guid: c0302c341ead9654cbda497080989e37, type: 2}
+  - {fileID: 11400000, guid: 2294a50b84317af44a3f301ac699359a, type: 2}

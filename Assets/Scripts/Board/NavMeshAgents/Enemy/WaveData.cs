@@ -5,14 +5,15 @@ public enum Wave
 {
     Tutorial,
     Standard,
-    Breach
+    Breach,
+    FinalBattle
 }
 
 [System.Serializable]
 public class EnemyWaveEntry
 {
     public EnemyData enemy;
-    public float porcentageInWave;
+    public float percentageInWave;
 }
 
 [CreateAssetMenu(menuName = "Wave/Data")]
@@ -23,5 +24,6 @@ public class WaveData : ScriptableObject
     public float waveDuration;
     public float spawnFrequency;
     public List<EnemyWaveEntry> enemies;
+    public List<EnemyData> possibleBosses;
 
 }

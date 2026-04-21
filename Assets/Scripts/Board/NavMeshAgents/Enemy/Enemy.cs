@@ -16,14 +16,14 @@ public class Enemy : NavMeshAgentBehaviour
 
     [SerializeField] private float searchInterval = 1.5f;
 
-    private float actionVelocity;
-    private float attackRange;
-    private float searchRange = 20f;
+    protected float actionVelocity;
+    protected float attackRange;
+    protected float searchRange = 20f;
 
     [SerializeField] private float stunTime = 1f;
     [SerializeField] private float deathTime = 1.5f;
 
-    private float lastAttackTime;
+    protected float lastAttackTime;
 
     protected override void Awake()
     {
@@ -119,7 +119,7 @@ public class Enemy : NavMeshAgentBehaviour
         //Vector3.Distance(transform.position, target.position);
     }
 
-    void Attack(Transform currentTarget)
+    protected virtual void Attack(Transform currentTarget)
     {
         if (Time.time < lastAttackTime + actionVelocity) //si aun no pasa el tiempo para atacar, no hace nada
             return;
