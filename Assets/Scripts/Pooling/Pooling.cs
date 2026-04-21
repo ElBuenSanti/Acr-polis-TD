@@ -34,7 +34,7 @@ public class Pooling : MonoBehaviour
 
                 obj.SetActive(true);
 
-                obj.transform.SetParent(spawnPoint);
+                obj.transform.SetParent(null); //antes SpawnPoint
 
                 obj.transform.position = spawnPoint.position;
                 obj.transform.rotation = Quaternion.identity;
@@ -46,7 +46,7 @@ public class Pooling : MonoBehaviour
 
         GameObject newObject = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
-        newObject.transform.SetParent(spawnPoint); 
+        //newObject.transform.SetParent(spawnPoint); 
 
         objectList.Add(newObject);
 

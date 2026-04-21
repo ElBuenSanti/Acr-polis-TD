@@ -52,8 +52,10 @@ public class Enemy : NavMeshAgentBehaviour
 
         currentTarget = null;
 
+        /*
         if (WaveSpawner.Instance != null)
             WaveSpawner.Instance.OnWaveEnded += HandleWaveEnd;
+        */
 
         StartCoroutine(SearchTargetRoutine()); 
     }
@@ -62,8 +64,10 @@ public class Enemy : NavMeshAgentBehaviour
     {
         base.OnDisable();
 
+        /*
         if (WaveSpawner.Instance != null)
             WaveSpawner.Instance.OnWaveEnded -= HandleWaveEnd;
+        */
     }
 
     void Update()
@@ -159,9 +163,10 @@ public class Enemy : NavMeshAgentBehaviour
         return deathTime;
     }
 
-    private void HandleWaveEnd()
+    protected override void HandleWaveEnd()
     {
-        if (IsDead) return;
+        base.HandleWaveEnd();
+        //if (IsDead) return;
 
         OnDeath();
     }

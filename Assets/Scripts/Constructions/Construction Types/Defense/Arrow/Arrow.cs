@@ -1,6 +1,7 @@
 using UnityEngine;
+using System.Collections;
 
-public class Arrow : TeamAssigner, IDamageable
+public class Arrow : TeamAssigner
 {
     public Defense defense;
 
@@ -13,6 +14,7 @@ public class Arrow : TeamAssigner, IDamageable
 
     private float time;
     private float arcHeight = 5f;
+
     public void Initialize(ConstructionData data, Vector3 start, Vector3 target, Defense defense)
     {
         this.defense = defense;
@@ -62,15 +64,42 @@ public class Arrow : TeamAssigner, IDamageable
         transform.position = pos;
     }
 
+    //Colisiones
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent<Enemy>(out var enemy))
+        {
+            if (other.TryGetComponent<IDamageable>(out var target))
+            {
+                target.ReceiveDamage(attackDamage);
+            }
+
+            Hit();
+        }
+    }
+
 
     //Fnciones
     void Hit()
     {
+        StartCoroutine(HitRoutine());
+    }
+
+    public virtual void OnHit()
+    {
+        Debug.Log("Golpeo flecha y se reproduce animación");
+        //aqui animación
+    }
+
+    //Coorutinas
+
+    IEnumerator HitRoutine()
+    {
+        OnHit(); 
+
+        yield return new WaitForSeconds(0.5f); 
+
         gameObject.SetActive(false);
     }
 
-    public void ReceiveDamage(float damage)
-    {
-
-    }
 }

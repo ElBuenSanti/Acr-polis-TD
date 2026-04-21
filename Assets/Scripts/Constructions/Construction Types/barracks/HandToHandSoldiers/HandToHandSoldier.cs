@@ -15,12 +15,15 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
     [SerializeField] private float stunTime = 3f;
     [SerializeField] private float deathTime = 1.5f;
+    [SerializeField] private float SurvivalTime = 5f;
 
     private float lastAttackTime;
 
     private List<WillProduction> willObtaied;
 
     private float range;
+
+    private Coroutine survivalCoroutine;
 
     protected override void Awake()
     {
@@ -55,7 +58,8 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     protected override void OnDisable()
     {
         base.OnDisable();
-        //StopAllCoroutines();
+        survivalCoroutine = null;
+
     }
 
     void Update()
@@ -133,6 +137,35 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         base.OnDeath();
     }
 
+    protected override void HandleWaveEnd()
+    {
+        base.HandleWaveEnd();
+        OnSurvival();
+    }
+
+    public void OnSurvival()
+    {
+        if (!gameObject.activeInHierarchy)
+            return;
+
+        currentTarget = null;
+
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+        }
+
+        StopAllCoroutines();
+
+        survivalCoroutine = StartCoroutine(SurvivalRoutine());
+    }
+
+    void Survival()
+    {
+        Debug.Log("Animación de victoria");
+    }
+
     protected override float GetStunTime()
     {
         return stunTime;
@@ -155,6 +188,26 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
             yield return new WaitForSeconds(searchInterval);
         }
+    }
+
+    IEnumerator SurvivalRoutine()
+    {
+        Survival();
+
+        float timer = 0f;
+
+        while (timer < SurvivalTime)
+        {
+            if (!gameObject.activeInHierarchy)
+                yield break; // evita ejecución fantasma
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        gameObject.SetActive(false);
+
+        survivalCoroutine = null;
     }
 }
 

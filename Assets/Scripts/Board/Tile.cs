@@ -55,12 +55,13 @@ public class Tile : MonoBehaviour
         if (isOccupied)
             return;
 
-        bool success = BuildingManager.Instance.PlaceBuilding(this);
+        //bool success = 
+        BuildingManager.Instance.PlaceBuilding(this);
 
-        if (!success)
-            return;
+        //if (!success)
+            //return;
 
-        SetOccupied(true); 
+        //SetOccupied(true); 
     }
 
     public void SetTempColor(Color color)

@@ -21,7 +21,15 @@ public class WillManager : MonoBehaviour
             
         foreach (Will w in System.Enum.GetValues(typeof(Will)))
         {
-            money[w] = 300;
+            if (w == Will.Agape)
+            {
+                money[w] = 1000;
+            }
+            else
+            {
+                money[w] = 0;
+            }
+                
         }
     }
 

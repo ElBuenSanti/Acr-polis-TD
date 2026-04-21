@@ -17,7 +17,7 @@ MonoBehaviour:
   level: 1
   resistance: 300
   aditamentResistance: 0
-  attackDamage: 30
+  attackDamage: 100
   willObtaied:
   - type: 0
     amount: 5

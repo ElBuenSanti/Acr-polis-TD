@@ -23,12 +23,17 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        agent.radius = 0.8f;
         targetFinder = FindAnyObjectByType<TargetFinder>();
     }
 
     protected virtual void OnEnable()
     {
         AllUnits.Add(this);
+
+        if (WaveSpawner.Instance != null)
+            WaveSpawner.Instance.OnWaveEnded += HandleWaveEnd;
+
         IsDead = false; //ambos empiezan vivos
         IsStunned = false; //ambos empiezan sin estar aturdidos
 
@@ -43,6 +48,10 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual void OnDisable()
     {
         AllUnits.Remove(this);
+
+        if (WaveSpawner.Instance != null)
+            WaveSpawner.Instance.OnWaveEnded -= HandleWaveEnd;
+
         StopAllCoroutines();
     }
 
@@ -119,6 +128,11 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual float GetDeathTime()
     {
         return 0;
+    }
+
+    protected virtual void HandleWaveEnd()
+    {
+        if (IsDead) return;
     }
 
 

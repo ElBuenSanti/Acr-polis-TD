@@ -16,14 +16,6 @@ public class Plaza : BaseConstruction
     {
         base.Initialize(newData);
         timeToBeDestroyed = 2f;
-        //SetTeam(Team.Ally);
-
-        /*
-        if (spawnCoroutine != null)
-            StopCoroutine(spawnCoroutine);
-        */
-
-        //spawnCoroutine = StartCoroutine(SpawnLoop(SpawnWill));
 
         StartWaveDependentSpawn(SpawnWill);
     }

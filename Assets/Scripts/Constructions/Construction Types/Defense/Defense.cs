@@ -23,13 +23,6 @@ public class Defense : BaseConstruction
         base.Initialize(newData);
         timeToBeDestroyed = 2f;
 
-        /*
-        if (spawnCoroutine != null)
-            StopCoroutine(spawnCoroutine);
-        */
-
-        //spawnCoroutine = StartCoroutine(SpawnLoop(SpawnArrows));
-
         StartWaveDependentSpawn(SpawnArrows);
     }
 
@@ -44,7 +37,6 @@ public class Defense : BaseConstruction
 
     void SpawnArrows()
     {
-        //Debug.Log("AllUnits count: " + NavMeshAgentBehaviour.AllUnits.Count);
         currentTarget = targetFinder.FindTarget<Enemy>(transform, range);
 
         if (currentTarget == null)
@@ -52,18 +44,26 @@ public class Defense : BaseConstruction
             return;
         }
 
-        distanceToShoot = Vector3.Distance(transform.position, currentTarget.position);
-        /*
-        if (distanceToShoot > range)
-            return;
-        */
+        Vector3 spawnPos = transform.position + Vector3.up * 1.5f;
 
+        GameObject newArrow = pooling.CreateObject(arrowPrefab, transform);
+
+        newArrow.transform.position = spawnPos;
+
+        if (newArrow.TryGetComponent<Arrow>(out var arrow))
+        {
+            arrow.Initialize(data, spawnPos, currentTarget.position, this);
+        }
+
+        //distanceToShoot = Vector3.Distance(transform.position, currentTarget.position);
+        /*
         GameObject newArrow = pooling.CreateObject(arrowPrefab, transform);
 
         if (newArrow.TryGetComponent<Arrow>(out var arrow))
         {
             arrow.Initialize(data, transform.position, currentTarget.position, this);
         }
+        */
     }
 
 }

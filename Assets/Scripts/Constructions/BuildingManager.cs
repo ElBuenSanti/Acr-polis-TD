@@ -86,10 +86,10 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
-    public bool PlaceBuilding(Tile tile)
+    public void PlaceBuilding(Tile tile)
     {
         if (currentBuilding == null)
-            return false;
+            return;
 
         List<Tile> tilesToBuild = new List<Tile>();
 
@@ -103,12 +103,12 @@ public class BuildingManager : MonoBehaviour
             foreach (Tile t in tilesToBuild)
             {
                 if (t == null)
-                    return false;
+                    return;
 
                 if (t.IsOccupied)
                 {
                     Debug.Log("Espacio ocupado");
-                    return false;
+                    return;
                 }
             }
         }
@@ -118,13 +118,15 @@ public class BuildingManager : MonoBehaviour
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
                 Debug.Log("No te alcanza");
-                return false;
+                return;
             }
         }
 
         foreach (Tile t in tilesToBuild)
         {
             if (t == null) continue;
+
+            t.SetOccupied(true);
 
             GameObject building = constructionPooling.CreateObject(currentBuilding.prefab, t.transform);
 
@@ -140,7 +142,7 @@ public class BuildingManager : MonoBehaviour
             constructionController.Initialize(currentBuilding);
         }
 
-        return true;
+        return;
     }
 
     public void Select(ConstructionController construction)

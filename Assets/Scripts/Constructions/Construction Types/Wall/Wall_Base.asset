@@ -15,11 +15,11 @@ MonoBehaviour:
   type: 2
   god: 0
   level: 0
-  resistance: 0
-  aditamentResistance: 0
+  resistance: 1200
+  aditamentResistance: 240
   attackDamage: 0
   willObtaied: []
-  actionVelocity: 0
+  actionVelocity: 10
   movementSpeed: 0
   range: 0
   proyectileVelocity: 0

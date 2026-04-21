@@ -15,6 +15,6 @@ MonoBehaviour:
   resistance: 450
   attackDamage: 20
   actionVelocity: 2
-  attackRange: 1
+  attackRange: 2.5
   movementSpeed: 8
   enemyPrefab: {fileID: 6151428317803034837, guid: eca22e3dfae91b74aa6eb9139fe442b6, type: 3}

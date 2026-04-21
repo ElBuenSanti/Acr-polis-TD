@@ -1,7 +1,9 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Wall : BaseConstruction
 {
+    private float healAmount;
     protected override void Awake()
     {
         base.Awake();
@@ -16,5 +18,24 @@ public class Wall : BaseConstruction
     {
         base.Initialize(newData);
         timeToBeDestroyed = 2f;
+        healAmount = data.aditamentResistance;
+
+        StartWaveDependentSpawn(RecoverResistance);
+    }
+
+    protected virtual void RecoverResistance()
+    {
+        if (IsDestroyed)
+        {
+            return;
+        }
+
+        if(data.resistance == resistance)
+        {
+            return;
+        }
+        resistance += healAmount;
+
+        Debug.Log($"Muralla regeneró {healAmount} de vida");
     }
 }

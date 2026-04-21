@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public abstract class BaseConstruction : TeamAssigner, IDamageable
 {
     protected ConstructionData data;
+    private NavMeshObstacle obstacle;
+
     protected Tile parentTile;
 
     protected float resistance;
@@ -35,6 +38,7 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
             StopCoroutine(spawnCoroutine);
 
         ApplyStats();
+        SetupNavObstacle();
     }
 
     protected virtual void Awake()
@@ -46,6 +50,9 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     {
         AllConstructions.Add(this);
         IsDestroyed = false;
+
+        if (obstacle != null)
+            obstacle.enabled = true;
     }
 
     protected virtual void OnDisable()
@@ -53,6 +60,9 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         AllConstructions.Remove(this);
         StopAllCoroutines();
         spawnCoroutine = null;
+
+        if (obstacle != null)
+            obstacle.enabled = false;
     }
 
     //Funciones
@@ -167,6 +177,19 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     public void SetTile(Tile tile)
     {
         parentTile = tile;
+    }
+
+    void SetupNavObstacle()
+    {
+        if (!TryGetComponent(out obstacle))
+            obstacle = gameObject.AddComponent<NavMeshObstacle>();
+
+        obstacle.shape = NavMeshObstacleShape.Box;
+        obstacle.carving = true;
+        obstacle.carveOnlyStationary = true;
+
+        obstacle.size = new Vector3(1.5f, 1.5f, 1.5f); // ancho, alto, profundidad
+        obstacle.center = Vector3.zero; // puedes ajustarlo si está desalineado
     }
 
 }

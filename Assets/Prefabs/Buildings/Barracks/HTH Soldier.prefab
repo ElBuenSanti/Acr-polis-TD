@@ -124,10 +124,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barrack: {fileID: 2865254419040775960, guid: 329d4452d75372749b14bdbc5a3c4482, type: 3}
-  currentTarget: {fileID: 0}
   searchInterval: 1.5
-  timeToDie: 1.5
-  timeToBeStunned: 1.5
+  attackRange: 2
+  attackCooldown: 3
+  stunTime: 3
+  deathTime: 1.5
+  SurvivalTime: 3
 --- !u!195 &867768945470377923
 NavMeshAgent:
   m_ObjectHideFlags: 0
