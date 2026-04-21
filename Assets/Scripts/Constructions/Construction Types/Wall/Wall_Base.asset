@@ -28,4 +28,7 @@ MonoBehaviour:
   willToPay:
   - type: 1
     amount: 600
+  bonusWillToPay:
+  - type: 1
+    amount: 360
   prefab: {fileID: 9111215904111434566, guid: 35f23c69e954fe44c988f36caa495d71, type: 3}

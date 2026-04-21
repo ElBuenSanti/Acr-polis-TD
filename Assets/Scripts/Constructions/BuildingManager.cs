@@ -113,6 +113,22 @@ public class BuildingManager : MonoBehaviour
             }
         }
 
+        bool hasSameType = ExistsConstructionOfType(currentBuilding.type);
+
+        var costList = hasSameType
+            ? currentBuilding.bonusWillToPay
+            : currentBuilding.willToPay;
+
+        foreach (var w in costList)
+        {
+            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
+            {
+                Debug.Log("No te alcanza");
+                return;
+            }
+        }
+
+        /*
         foreach (var w in currentBuilding.willToPay) //si tiene dinero
         {
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
@@ -121,6 +137,7 @@ public class BuildingManager : MonoBehaviour
                 return;
             }
         }
+        */
 
         ConstructionGroup group = null;
 
@@ -163,6 +180,21 @@ public class BuildingManager : MonoBehaviour
     {
         selectedConstruction = construction;
         Debug.Log("Seleccionado: " + construction.name);
+    }
+
+    bool ExistsConstructionOfType(ConstructionType type)
+    {
+        BaseConstruction[] all = FindObjectsByType<BaseConstruction>(FindObjectsSortMode.None);
+
+        foreach (var b in all)
+        {
+            if (b.Data.type == type)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

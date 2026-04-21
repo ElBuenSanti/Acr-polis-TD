@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public abstract class BaseConstruction : TeamAssigner, IDamageable
 {
     protected ConstructionData data;
+    public ConstructionData Data => data;
     private NavMeshObstacle obstacle;
 
     protected Tile parentTile;

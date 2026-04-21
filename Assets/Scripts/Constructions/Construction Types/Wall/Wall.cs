@@ -34,7 +34,7 @@ public class Wall : BaseConstruction
         if (controller == null || controller.group == null)
             return;
 
-        foreach (var w in data.willObtaied)
+        foreach (var w in data.bonusWillToPay)
         {
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {

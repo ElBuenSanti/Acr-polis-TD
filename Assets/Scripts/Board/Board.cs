@@ -4,6 +4,7 @@ using UnityEngine.AI; //
 public class Board : MonoBehaviour
 {
     [SerializeField] private GameObject tilePrefab;
+    [SerializeField] private ConstructionData templeInitialConstruction;
     [SerializeField] private int rows = 2;
     [SerializeField] private int columns = 1;
 
@@ -28,6 +29,7 @@ public class Board : MonoBehaviour
         
 
         GenerateBoard();
+        SpawnTempleInCenter(); //para poisicionar el templo al inicio
         AssignRowNeighbors();//
         navSurface.BuildNavMesh(); 
     }
@@ -107,5 +109,27 @@ public class Board : MonoBehaviour
                 }
             }
         }
+    }
+
+    public Tile GetMiddleTileFirstRow()
+    {
+        if (tiles == null || rows == 0 || columns == 0)
+            return null;
+
+        int middleIndex = columns / 2;
+
+        return tiles[0, middleIndex];
+    }
+
+    void SpawnTempleInCenter()
+    {
+        Tile middleTile = GetMiddleTileFirstRow();
+
+        Debug.Log("Middle tile: " + middleTile);
+
+        if (middleTile == null)
+            return;
+        BuildingManager.Instance.currentBuilding = templeInitialConstruction;
+        BuildingManager.Instance.PlaceBuilding(middleTile);
     }
 }

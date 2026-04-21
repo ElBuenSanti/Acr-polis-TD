@@ -20,8 +20,5 @@ public class DebugBuildingSelector : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
             BuildingManager.Instance.SetConstructionIndex(3);
-
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-            BuildingManager.Instance.SetConstructionIndex(4);
     }
 }

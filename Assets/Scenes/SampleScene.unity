@@ -745,7 +745,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f04d6955ffbd7f4468ab922de7ab96e6, type: 2}
   - {fileID: 11400000, guid: 3e4c6199cdc2d2f4ba607d4a0888a12b, type: 2}
   - {fileID: 11400000, guid: 3cf8a4e03bc7952408e1298dfc73f52b, type: 2}
-  - {fileID: 11400000, guid: f9b8b0c82e95c9c4b9756cc23f843de7, type: 2}
   - {fileID: 11400000, guid: 1222b33cd99a3e542b37d7c3db60c909, type: 2}
   currentBuilding: {fileID: 0}
   selectedConstruction: {fileID: 0}
@@ -871,6 +870,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 6220893090412885349, guid: 552e771205df4d747bfe6a8717d3fd25, type: 3}
+  templeInitialConstruction: {fileID: 11400000, guid: f9b8b0c82e95c9c4b9756cc23f843de7, type: 2}
   rows: 15
   columns: 3
   navSurface: {fileID: 0}

@@ -17,7 +17,7 @@ MonoBehaviour:
   level: 1
   resistance: 300
   aditamentResistance: 0
-  attackDamage: 100
+  attackDamage: 30
   willObtaied:
   - type: 0
     amount: 5
@@ -28,4 +28,7 @@ MonoBehaviour:
   willToPay:
   - type: 1
     amount: 200
+  bonusWillToPay:
+  - type: 1
+    amount: 50
   prefab: {fileID: 4570978340087042814, guid: 0d3a6f2b628ae49428f6fd5ca1c4d174, type: 3}
