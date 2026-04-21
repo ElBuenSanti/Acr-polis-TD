@@ -122,6 +122,15 @@ public class BuildingManager : MonoBehaviour
             }
         }
 
+        ConstructionGroup group = null;
+
+        if (tilesToBuild.Count > 1)
+        {
+            GameObject groupObj = new GameObject("ConstructionGroup");
+            group = groupObj.AddComponent<ConstructionGroup>();
+            group.tiles = tilesToBuild;
+        }
+
         foreach (Tile t in tilesToBuild)
         {
             if (t == null) continue;
@@ -135,6 +144,11 @@ public class BuildingManager : MonoBehaviour
 
             var baseConstruction = building.GetComponent<BaseConstruction>();
             var constructionController = building.GetComponent<ConstructionController>();
+
+            if (group != null)
+            {
+                constructionController.group = group;
+            }
 
             baseConstruction.SetTile(t);
 

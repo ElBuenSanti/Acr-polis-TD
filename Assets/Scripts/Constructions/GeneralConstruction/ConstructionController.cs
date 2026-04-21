@@ -5,6 +5,7 @@ public class ConstructionController : MonoBehaviour
 {
     public ConstructionDatabase database;
     private Pooling pooling;
+    public ConstructionGroup group; //
 
     private ConstructionType type;
     //private GodType god, selectedGod;
@@ -29,6 +30,11 @@ public class ConstructionController : MonoBehaviour
         level = data.level;
         parentTile = transform.parent;
         selectedGod = data.god;
+
+        if (group != null)
+        {
+            group.Add(this);
+        }
     }
 
     public void Upgrade()
@@ -55,34 +61,24 @@ public class ConstructionController : MonoBehaviour
             
         }
 
-        Vector3 position = transform.position;
-        Quaternion rotation = transform.rotation;
-
-
-        gameObject.SetActive(false);
-
-        Debug.Log("NewData: " + newData);
-        Debug.Log("Prefab: " + newData.prefab);
-        Debug.Log("ParentTile: " + parentTile);
-        GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile);
-
-        /*
-        newBuilding.transform.position = position;
-        newBuilding.transform.rotation = rotation;
-        */
-        newBuilding.transform.SetPositionAndRotation(position, rotation);
-
-        var newConstruction = newBuilding.GetComponent<BaseConstruction>(); //BaseConstruction
-        var newController = newBuilding.GetComponent<ConstructionController>(); //ConstructionController
-
-        newConstruction.Initialize(newData);
-        newController.Initialize(newData);
+        if (group != null && group.members.Count > 0)
+        {
+            foreach (var member in group.members)
+            {
+                if (member != null)
+                    member.UpgradeSingle(newData);
+            }
+        }
+        else
+        {
+            UpgradeSingle(newData);
+        }
 
     }
 
     void OnMouseDown()
     {
-        if (!WaveSpawner.Instance.IsWaveRunning())
+        if (!WaveSpawner.Instance.IsWaveRunning() || type == ConstructionType.Wall)
         {
             BuildingManager.Instance.Select(this);
         }
@@ -101,4 +97,55 @@ public class ConstructionController : MonoBehaviour
         selectedGod = god;
     }
 
+    void UpgradeSingle(ConstructionData newData)
+    {
+        Vector3 position = transform.position;
+        Quaternion rotation = transform.rotation;
+
+        gameObject.SetActive(false);
+
+        GameObject newBuilding = pooling.CreateObject(newData.prefab, null);
+
+        newBuilding.transform.SetPositionAndRotation(position, rotation);
+
+        var newConstruction = newBuilding.GetComponent<BaseConstruction>();
+        var newController = newBuilding.GetComponent<ConstructionController>();
+
+        if (group != null)
+        {
+            newController.group = group;
+        }
+         
+
+        newConstruction.Initialize(newData);
+        newController.Initialize(newData);
+    }
+
 }
+
+
+
+
+
+
+/*
+Vector3 position = transform.position;
+Quaternion rotation = transform.rotation;
+
+
+gameObject.SetActive(false);
+
+Debug.Log("NewData: " + newData);
+Debug.Log("Prefab: " + newData.prefab);
+Debug.Log("ParentTile: " + parentTile);
+GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile);
+
+
+newBuilding.transform.SetPositionAndRotation(position, rotation);
+
+var newConstruction = newBuilding.GetComponent<BaseConstruction>(); //BaseConstruction
+var newController = newBuilding.GetComponent<ConstructionController>(); //ConstructionController
+
+newConstruction.Initialize(newData);
+newController.Initialize(newData);
+*/

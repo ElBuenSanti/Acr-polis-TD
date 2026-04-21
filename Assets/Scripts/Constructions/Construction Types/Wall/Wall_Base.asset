@@ -18,7 +18,9 @@ MonoBehaviour:
   resistance: 1200
   aditamentResistance: 240
   attackDamage: 0
-  willObtaied: []
+  willObtaied:
+  - type: 1
+    amount: 360
   actionVelocity: 10
   movementSpeed: 0
   range: 0

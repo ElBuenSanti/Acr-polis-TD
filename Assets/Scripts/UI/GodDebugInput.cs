@@ -29,5 +29,15 @@ public class GodDebugInput : MonoBehaviour
         {
             selected.Upgrade();
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            var wall = selected.GetComponent<Wall>();
+
+            if (wall != null)
+            {
+                wall.RepairGroup();
+            }
+        }
     }
 }

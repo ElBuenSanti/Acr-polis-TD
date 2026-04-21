@@ -1,9 +1,11 @@
-using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
 
 public class Wall : BaseConstruction
 {
-    private float healAmount;
+
+    private bool canRepair = false;
+    private Coroutine repairLoop;
     protected override void Awake()
     {
         base.Awake();
@@ -18,24 +20,54 @@ public class Wall : BaseConstruction
     {
         base.Initialize(newData);
         timeToBeDestroyed = 2f;
-        healAmount = data.aditamentResistance;
 
-        StartWaveDependentSpawn(RecoverResistance);
+        if (repairLoop != null)
+            StopCoroutine(repairLoop);
+
+        repairLoop = StartCoroutine(RepairLoop());
     }
 
-    protected virtual void RecoverResistance()
+    public void RepairGroup()
     {
-        if (IsDestroyed)
-        {
+        var controller = GetComponent<ConstructionController>();
+
+        if (controller == null || controller.group == null)
             return;
+
+        foreach (var w in data.willObtaied)
+        {
+            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
+            {
+                Debug.Log("No te alcanza para reparar");
+                return;
+            }
+        }
+        foreach (var member in controller.group.members)
+        {
+            var wall = member.GetComponent<Wall>();
+
+            if (wall != null)
+                wall.HealToMax();
         }
 
-        if(data.resistance == resistance)
-        {
-            return;
-        }
-        resistance += healAmount;
+        Debug.Log("Muralla completamente reparada");
+    }
 
-        Debug.Log($"Muralla regeneró {healAmount} de vida");
+    void HealToMax()
+    {
+        resistance = data.resistance;
+    }
+
+    //coorutina
+    IEnumerator RepairLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(timeToSpawnAditaments);
+
+            canRepair = true;
+
+            Debug.Log("Muralla lista para repararse");
+        }
     }
 }
