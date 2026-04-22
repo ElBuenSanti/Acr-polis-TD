@@ -6,26 +6,20 @@ public class Arrow : Projectile
     public Defense defense;
     public ConstructionData defenseData;
 
-    //protected float attackDamage;
     private float resourceRate;
     private bool hasHit;
-    //protected float proyectileVelocity;
-
-    //protected Vector3 startPoint;
-    //protected Vector3 targetPoint;
-
-    //protected float time;
-    //protected float arcHeight = 5f;
 
     public void Initialize(ConstructionData data, Vector3 start, Vector3 target, Defense defense)
     {
         this.defense = defense;
         defenseData = data;
 
+        /*
         foreach (var w in data.willObtaied)
         {
             resourceRate = w.amount;
         }
+        */
 
         Setup(start, target, data.attackDamage, data.proyectileVelocity);
         SetTeam(Team.Ally);

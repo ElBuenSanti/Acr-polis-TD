@@ -23,12 +23,12 @@ public class ConstructionController : MonoBehaviour
         database = FindAnyObjectByType<ConstructionDatabase>();
     }
 
-    public void Initialize(ConstructionData data)
+    public void Initialize(ConstructionData data, Transform tileTransform)
     {
         type = data.type;
         //god = data.god;
         level = data.level;
-        parentTile = transform.parent;
+        parentTile = tileTransform;
         selectedGod = data.god;
 
         if (group != null)
@@ -82,8 +82,6 @@ public class ConstructionController : MonoBehaviour
         {
             BuildingManager.Instance.Select(this);
         }
-        //BuildingManager.Instance.Select(this);
-        //Upgrade();
     }
 
     public void SetSelectedGod(GodType god)
@@ -95,6 +93,14 @@ public class ConstructionController : MonoBehaviour
         }
 
         selectedGod = god;
+
+        /*
+        var temple = GetComponent<Temple>();
+        if (temple != null)
+        {
+            temple.NotifyGodSelected(selectedGod);
+        }
+        */
     }
 
     void UpgradeSingle(ConstructionData newData)
@@ -103,8 +109,11 @@ public class ConstructionController : MonoBehaviour
         Quaternion rotation = transform.rotation;
 
         gameObject.SetActive(false);
+        Debug.Log("NewData: " + newData);
+        Debug.Log("Prefab: " + newData.prefab);
+        Debug.Log("ParentTile: " + parentTile);
 
-        GameObject newBuilding = pooling.CreateObject(newData.prefab, null);
+        GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile); //antes null
 
         newBuilding.transform.SetPositionAndRotation(position, rotation);
 
@@ -118,7 +127,13 @@ public class ConstructionController : MonoBehaviour
          
 
         newConstruction.Initialize(newData);
-        newController.Initialize(newData);
+        newController.Initialize(newData, parentTile);
+
+        var temple = GetComponent<Temple>();
+        if (temple != null)
+        {
+            temple.NotifyGodSelected(selectedGod);
+        }
     }
 
 }
@@ -127,25 +142,3 @@ public class ConstructionController : MonoBehaviour
 
 
 
-
-/*
-Vector3 position = transform.position;
-Quaternion rotation = transform.rotation;
-
-
-gameObject.SetActive(false);
-
-Debug.Log("NewData: " + newData);
-Debug.Log("Prefab: " + newData.prefab);
-Debug.Log("ParentTile: " + parentTile);
-GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile);
-
-
-newBuilding.transform.SetPositionAndRotation(position, rotation);
-
-var newConstruction = newBuilding.GetComponent<BaseConstruction>(); //BaseConstruction
-var newController = newBuilding.GetComponent<ConstructionController>(); //ConstructionController
-
-newConstruction.Initialize(newData);
-newController.Initialize(newData);
-*/

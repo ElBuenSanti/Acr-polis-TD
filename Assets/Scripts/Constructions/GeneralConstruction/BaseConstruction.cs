@@ -34,6 +34,7 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         data = newData; //la guarda
         SetTeam(Team.Ally);
         timeToSpawnAditaments = data.actionVelocity;
+        StopAllCoroutines();
 
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);

@@ -18,6 +18,9 @@ MonoBehaviour:
   spawnFrequency: 1
   enemies: []
   possibleBosses:
-  - {fileID: 11400000, guid: 6f871fc97016d664285c0b6c6a4fd7e4, type: 2}
-  - {fileID: 11400000, guid: c0302c341ead9654cbda497080989e37, type: 2}
-  - {fileID: 11400000, guid: 2294a50b84317af44a3f301ac699359a, type: 2}
+  - god: 2
+    boss: {fileID: 11400000, guid: 6f871fc97016d664285c0b6c6a4fd7e4, type: 2}
+  - god: 1
+    boss: {fileID: 11400000, guid: c0302c341ead9654cbda497080989e37, type: 2}
+  - god: 3
+    boss: {fileID: 11400000, guid: 2294a50b84317af44a3f301ac699359a, type: 2}

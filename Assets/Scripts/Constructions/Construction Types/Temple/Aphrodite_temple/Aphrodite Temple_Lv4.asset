@@ -10,23 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 380dc6981712e094f87d5b0150ea9856, type: 3}
-  m_Name: Hephaestus Temple_Lv2
+  m_Name: Aphrodite Temple_Lv4
   m_EditorClassIdentifier: 
   type: 1
   god: 3
-  level: 2
-  resistance: 1200
+  level: 4
+  resistance: 5000
   aditamentResistance: 0
   attackDamage: 0
   willObtaied:
   - type: 0
-    amount: 25
-  actionVelocity: 5
+    amount: 75
+  - type: 0
+    amount: 100
+  actionVelocity: 3
   movementSpeed: 0
   range: 0
   proyectileVelocity: 0
   willToPay:
+  - type: 0
+    amount: 3500
+  - type: 2
+    amount: 750
   - type: 1
-    amount: 200
-  bonusWillToPay: []
-  prefab: {fileID: 5189163776860713878, guid: 2c0667e918785a648aaa646e11742280, type: 3}
+    amount: 800
+  prefab: {fileID: 5189163776860713878, guid: d8212e7a69515f344a460e21d035a75d, type: 3}

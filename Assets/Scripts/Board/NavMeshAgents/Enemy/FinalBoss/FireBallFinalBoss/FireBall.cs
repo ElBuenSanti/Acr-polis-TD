@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FireBall : Arrow
+public class FireBall : Projectile
 {
     private FinalBoss finalBoss;
     private EnemyData enemyData;

@@ -8,6 +8,7 @@ public class WaveSpawner : MonoBehaviour
 
     public WaveData[] waves;
     public Transform[] spawnPoints;
+    private GodType currentGod = GodType.Base;
 
     private Pooling pooling;
 
@@ -15,12 +16,25 @@ public class WaveSpawner : MonoBehaviour
     private bool waveRunning;
 
     public event Action OnWaveEnded;
+    public event Action OnWaveStarted;
 
     void Awake()
     {
         Instance = this;
         pooling = FindAnyObjectByType<Pooling>();
     }
+
+    void OnEnable()
+    {
+        Temple.OnGodSelected += SetGod;
+    }
+
+    void OnDisable()
+    {
+        Temple.OnGodSelected -= SetGod;
+    }
+
+
 
     public void StartWave()
     {
@@ -33,17 +47,23 @@ public class WaveSpawner : MonoBehaviour
             return;
         }
 
+        OnWaveStarted?.Invoke();
         if (waves[currentWaveIndex].waveType == Wave.FinalBattle)
         {
             SpawnFinalBoss(waves[currentWaveIndex]);
+            currentWaveIndex++;
         }
         else
         {
             StartCoroutine(RunWave(waves[currentWaveIndex]));
         }
 
+    }
 
-            
+    void SetGod(GodType god)
+    {
+        currentGod = god;
+        Debug.Log("Spawner recibió dios: " + god);
     }
 
 
@@ -83,7 +103,31 @@ public class WaveSpawner : MonoBehaviour
 
     void SpawnFinalBoss(WaveData wave)
     {
-        Debug.Log("Aqui boss Final");
+        Debug.Log("Aquí boss Final");
+
+        if (currentGod == GodType.Base)
+        {
+            Debug.LogError("No se ha seleccionado un dios");
+            return;
+        }
+
+        EnemyData bossData = wave.GetBossForGod(currentGod);
+
+        if (bossData == null)
+        {
+            Debug.LogError("No hay boss para el dios: " + currentGod);
+            return;
+        }
+
+        Transform spawnPoint = GetRandomSpawnPoint();
+
+        GameObject obj = pooling.CreateObject(bossData.enemyPrefab, spawnPoint);
+
+        Enemy enemy = obj.GetComponent<Enemy>();
+        enemy.Initialize(bossData);
+
+        Debug.Log("Boss spawneado: " + bossData.name + " para dios: " + currentGod);
+
     }
 
     Transform GetRandomSpawnPoint()

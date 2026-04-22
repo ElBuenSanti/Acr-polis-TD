@@ -6,6 +6,7 @@ public class Barracks : BaseConstruction
     public GameObject soldierPrefab;
     private float timeToSpwanInBetweenSoldiers = 1.5f;
     [SerializeField] private Transform spawnPoint;
+    private Coroutine spawnSequence;
 
     protected override void Awake()
     {
@@ -42,7 +43,9 @@ public class Barracks : BaseConstruction
 
     void SpawnSoldier()
     {
-        StartCoroutine(SpawnSoldiersWithDelay());
+        if (spawnSequence != null) return;
+
+        spawnSequence = StartCoroutine(SpawnSoldiersWithDelay());
     }
 
     IEnumerator SpawnSoldiersWithDelay()
@@ -50,7 +53,8 @@ public class Barracks : BaseConstruction
         for (int i = 0; i < 3; i++)
         {
             if (!WaveSpawner.Instance.IsWaveRunning())
-                yield break;
+                break; 
+
             GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
 
             Vector3 spawnPos = transform.position + Vector3.right * 2f;
@@ -60,6 +64,21 @@ public class Barracks : BaseConstruction
             {
                 soldier.Initialize(data, this);
             }
+
+            yield return new WaitForSeconds(timeToSpwanInBetweenSoldiers); 
+        }
+
+        spawnSequence = null; 
+    }
+
+    /*
+    IEnumerator SpawnSoldiersWithDelay()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (!WaveSpawner.Instance.IsWaveRunning())
+                yield break;
+           
 
             float timer = 0f;
             float wait = timeToSpwanInBetweenSoldiers;
@@ -74,6 +93,7 @@ public class Barracks : BaseConstruction
             }
         }
     }
+    */
 
     /*
     IEnumerator SpawnSoldiersWithDelay()

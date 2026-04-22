@@ -128,17 +128,6 @@ public class BuildingManager : MonoBehaviour
             }
         }
 
-        /*
-        foreach (var w in currentBuilding.willToPay) //si tiene dinero
-        {
-            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
-            {
-                Debug.Log("No te alcanza");
-                return;
-            }
-        }
-        */
-
         ConstructionGroup group = null;
 
         if (tilesToBuild.Count > 1)
@@ -170,7 +159,7 @@ public class BuildingManager : MonoBehaviour
             baseConstruction.SetTile(t);
 
             baseConstruction.Initialize(currentBuilding);
-            constructionController.Initialize(currentBuilding);
+            constructionController.Initialize(currentBuilding, t.transform);
         }
 
         return;

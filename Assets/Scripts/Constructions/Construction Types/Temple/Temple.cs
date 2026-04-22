@@ -1,10 +1,15 @@
+using System;
 using UnityEngine;
 
 public class Temple : Plaza
 {
+    public static Action<GodType> OnGodSelected;
+    private ConstructionController controller;
+
     protected override void Awake()
     {
         base.Awake();
+        controller = GetComponent<ConstructionController>();
     }
 
     protected override void OnDisable()
@@ -15,6 +20,14 @@ public class Temple : Plaza
     public override void Initialize(ConstructionData newData)
     {
         base.Initialize(newData);
+    }
+
+    //Funciones
+
+    public void NotifyGodSelected(GodType god)
+    {
+        Debug.Log("Templo anuncia dios: " + god);
+        OnGodSelected?.Invoke(god);
     }
 
     protected override void SpawnWill()

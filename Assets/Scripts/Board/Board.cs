@@ -131,5 +131,6 @@ public class Board : MonoBehaviour
             return;
         BuildingManager.Instance.currentBuilding = templeInitialConstruction;
         BuildingManager.Instance.PlaceBuilding(middleTile);
+        BuildingManager.Instance.currentBuilding = null;
     }
 }
