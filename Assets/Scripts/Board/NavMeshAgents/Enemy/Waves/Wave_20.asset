@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bdd6fcae068c3b4baceb38066bf381c, type: 3}
   m_Name: Wave_20
   m_EditorClassIdentifier: 
-  waveIndex: 0
+  waveIndex: 3
   waveType: 3
-  waveDuration: 0
-  spawnFrequency: 0
+  waveDuration: 60
+  spawnFrequency: 1
   enemies: []
   possibleBosses:
   - {fileID: 11400000, guid: 6f871fc97016d664285c0b6c6a4fd7e4, type: 2}

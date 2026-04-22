@@ -33,8 +33,19 @@ public class WaveSpawner : MonoBehaviour
             return;
         }
 
-        StartCoroutine(RunWave(waves[currentWaveIndex]));
+        if (waves[currentWaveIndex].waveType == Wave.FinalBattle)
+        {
+            SpawnFinalBoss(waves[currentWaveIndex]);
+        }
+        else
+        {
+            StartCoroutine(RunWave(waves[currentWaveIndex]));
+        }
+
+
+            
     }
+
 
     IEnumerator RunWave(WaveData wave)
     {
@@ -68,6 +79,11 @@ public class WaveSpawner : MonoBehaviour
 
         Enemy enemy = obj.GetComponent<Enemy>();
         enemy.Initialize(enemyType.enemy);
+    }
+
+    void SpawnFinalBoss(WaveData wave)
+    {
+        Debug.Log("Aqui boss Final");
     }
 
     Transform GetRandomSpawnPoint()
