@@ -22,6 +22,8 @@ public class Enemy : NavMeshAgentBehaviour
 
     [SerializeField] private float stunTime = 1f;
     [SerializeField] private float deathTime = 1.5f;
+    [SerializeField] private float winningTime = 2f;
+    [SerializeField] private float loosingTime = 2f;
 
     protected float lastAttackTime;
 
@@ -137,7 +139,7 @@ public class Enemy : NavMeshAgentBehaviour
         }
     }
 
-    public override void OnDamage()
+    protected override void OnDamage()
     {
         base.OnDamage();
         //animación de daño de soldado
@@ -145,7 +147,7 @@ public class Enemy : NavMeshAgentBehaviour
     }
 
 
-    public override void OnDeath()
+    protected override void OnDeath()
     {
         currentTarget = null;
         //animación de muerte de soldado
@@ -163,13 +165,32 @@ public class Enemy : NavMeshAgentBehaviour
         return deathTime;
     }
 
+    protected override float GetWinningTime()
+    {
+        return winningTime;
+    }
+
+    protected override float GetLoosingTime()
+    {
+        return loosingTime;
+    }
+
     protected override void HandleWaveEnd()
     {
         base.HandleWaveEnd();
-        //if (IsDead) return;
-
-        OnDeath();
+        //OnDeath();
+        //Ver si el templo murió, se hace la de victoria
+        //si perdieron, se hace la de derrota
+        OnLoosingWave();
     }
+
+    protected override void OnLoosingWave()
+    {
+        base.OnLoosingWave();
+        Debug.Log("Animación de derrota de oleada enemigo");
+    }
+
+
 
 
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 519eb8aed274b8b479f90b74b1180fa0, type: 3}
   m_Name: Boss_Aphrodite
   m_EditorClassIdentifier: 
-  resistance: 1000
+  resistance: 100
   attackDamage: 100
   actionVelocity: 3
   attackRange: 10

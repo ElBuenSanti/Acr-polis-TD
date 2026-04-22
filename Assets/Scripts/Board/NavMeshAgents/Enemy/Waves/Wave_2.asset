@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveIndex: 2
   waveType: 2
-  waveDuration: 60
+  waveDuration: 10
   spawnFrequency: 4
   enemies:
   - enemy: {fileID: 11400000, guid: e6389f5ad65b7e048977da14bccc750b, type: 2}
-    porcentageInWave: 0.9
+    percentageInWave: 0
   - enemy: {fileID: 11400000, guid: 9188f517ae7ffe94390086157dd43757, type: 2}
-    porcentageInWave: 0.1
+    percentageInWave: 0
+  possibleBosses: []

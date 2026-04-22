@@ -16,7 +16,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     public bool IsStunned { get; protected set; }
 
     protected Coroutine stunCoroutine;
-    protected Coroutine deathCoroutine;
+    protected Coroutine disappearRoutineCoroutine;
 
     public static List<NavMeshAgentBehaviour> AllUnits = new List<NavMeshAgentBehaviour>();
 
@@ -56,7 +56,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     }
 
     //Funciones
-    public virtual void MoveTo(Vector3 destination)
+    protected virtual void MoveTo(Vector3 destination)
     {
         if (agent == null || IsDead || IsStunned) //si no hay agente asignado, esta muerto o aturdido, no hace nada
             return;
@@ -83,7 +83,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         OnDamage();
     }
 
-    public virtual void OnDamage()
+    protected virtual void OnDamage()
     {
         if (IsDead)
             return;
@@ -100,24 +100,28 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     }
 
 
-    public virtual void Die()
+    protected virtual void Disappear()
     {
         gameObject.SetActive(false); //se desactiva
     }
 
-    public virtual void OnDeath()
+
+
+    protected virtual void OnDeath()
     {
+        /*
         if (agent != null)
             agent.isStopped = true;
 
         if (stunCoroutine != null)
             StopCoroutine(stunCoroutine);
 
-        if (deathCoroutine != null)
-            StopCoroutine(deathCoroutine);
+        if (disappearRoutineCoroutine != null)
+            StopCoroutine(disappearRoutineCoroutine);
+        */
+        PreparingAgentToDisappear();
 
-        deathCoroutine = StartCoroutine(DeathRoutine(GetDeathTime()));
-        //Die();
+        disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetDeathTime()));
     }
 
     protected virtual float GetStunTime()
@@ -130,11 +134,68 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         return 0;
     }
 
+    protected virtual float GetWinningTime()
+    {
+        return 0;
+    }
+
+    protected virtual float GetLoosingTime()
+    {
+        return 0;
+    }
+
     protected virtual void HandleWaveEnd()
     {
         if (IsDead) return;
     }
 
+    protected virtual void OnWinningWave()
+    {
+        /*
+        if (agent != null)
+            agent.isStopped = true;
+
+        if (stunCoroutine != null)
+            StopCoroutine(stunCoroutine);
+
+        if (disappearRoutineCoroutine != null)
+            StopCoroutine(disappearRoutineCoroutine);
+        */
+        PreparingAgentToDisappear();
+
+        disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetWinningTime()));
+    }
+
+    protected virtual void OnLoosingWave()
+    {
+        PreparingAgentToDisappear();
+        /*
+        if (agent != null)
+            agent.isStopped = true;
+
+        if (stunCoroutine != null)
+            StopCoroutine(stunCoroutine);
+
+        if (disappearRoutineCoroutine != null)
+            StopCoroutine(disappearRoutineCoroutine);
+        */
+
+        disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetLoosingTime()));
+
+    }
+    
+
+    protected virtual void PreparingAgentToDisappear()
+    {
+        if (agent != null)
+            agent.isStopped = true;
+
+        if (stunCoroutine != null)
+            StopCoroutine(stunCoroutine);
+
+        if (disappearRoutineCoroutine != null)
+            StopCoroutine(disappearRoutineCoroutine);
+    }
 
     //Coorutinas
 
@@ -150,13 +211,14 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         stunCoroutine = null;
     }
 
-    protected IEnumerator DeathRoutine(float deathTime)
+    protected IEnumerator DisappearRoutine(float time)
     {
-        yield return new WaitForSeconds(deathTime);
+        yield return new WaitForSeconds(time);
 
-        Die();
-        deathCoroutine = null;
+        Disappear();
+        disappearRoutineCoroutine = null;
     }
+
 }
 
 

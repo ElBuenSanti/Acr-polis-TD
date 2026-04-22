@@ -27,11 +27,13 @@ public class WaveSpawner : MonoBehaviour
     void OnEnable()
     {
         Temple.OnGodSelected += SetGod;
+        FinalBoss.OnFinalBossDeath += HandleFinalBossDeath;
     }
 
     void OnDisable()
     {
         Temple.OnGodSelected -= SetGod;
+        FinalBoss.OnFinalBossDeath -= HandleFinalBossDeath;
     }
 
 
@@ -47,9 +49,15 @@ public class WaveSpawner : MonoBehaviour
             return;
         }
 
-        OnWaveStarted?.Invoke();
+
         if (waves[currentWaveIndex].waveType == Wave.FinalBattle)
         {
+            if (currentGod == GodType.Base)
+            {
+                Debug.LogError("No se ha seleccionado un dios");
+                return;
+            }
+
             SpawnFinalBoss(waves[currentWaveIndex]);
             currentWaveIndex++;
         }
@@ -57,6 +65,9 @@ public class WaveSpawner : MonoBehaviour
         {
             StartCoroutine(RunWave(waves[currentWaveIndex]));
         }
+
+        OnWaveStarted?.Invoke();
+        waveRunning = true;
 
     }
 
@@ -105,12 +116,6 @@ public class WaveSpawner : MonoBehaviour
     {
         Debug.Log("Aquí boss Final");
 
-        if (currentGod == GodType.Base)
-        {
-            Debug.LogError("No se ha seleccionado un dios");
-            return;
-        }
-
         EnemyData bossData = wave.GetBossForGod(currentGod);
 
         if (bossData == null)
@@ -141,5 +146,14 @@ public class WaveSpawner : MonoBehaviour
     public bool IsWaveRunning()
     {
         return waveRunning;
+    }
+
+    void HandleFinalBossDeath()
+    {
+        waveRunning = false;
+
+        Debug.Log("¡Has ganado el juego!");
+
+        OnWaveEnded?.Invoke();
     }
 }

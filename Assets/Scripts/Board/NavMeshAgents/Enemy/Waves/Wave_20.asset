@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveIndex: 3
   waveType: 3
-  waveDuration: 60
+  waveDuration: 0
   spawnFrequency: 1
   enemies: []
   possibleBosses:

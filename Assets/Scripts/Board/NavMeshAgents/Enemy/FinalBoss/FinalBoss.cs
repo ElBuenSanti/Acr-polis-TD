@@ -1,10 +1,13 @@
 using UnityEngine;
+using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 public class FinalBoss : Enemy
 {
     private Pooling pooling;
     [SerializeField] private GameObject fireBallPrefab;
+    public static event Action OnFinalBossDeath;
     protected override void Awake()
     {
         base.Awake();
@@ -30,5 +33,13 @@ public class FinalBoss : Enemy
         {
             fireBall.Initialize(data, spawnPos, currentTarget.position, this);
         }
+    }
+
+    protected override void OnDeath()
+    {
+        base.OnDeath();
+        OnFinalBossDeath?.Invoke();
+        
+        
     }
 }

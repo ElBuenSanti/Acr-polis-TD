@@ -15,7 +15,8 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
     [SerializeField] private float stunTime = 3f;
     [SerializeField] private float deathTime = 1.5f;
-    [SerializeField] private float SurvivalTime = 5f;
+    [SerializeField] private float winningTime = 2f;
+    [SerializeField] private float loosingTime = 2f;
 
     private float lastAttackTime;
 
@@ -121,7 +122,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         }
     }
 
-    public override void OnDamage()
+    protected override void OnDamage()
     {
         base.OnDamage();
         //animación de daño de soldado
@@ -129,7 +130,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     }
 
 
-    public override void OnDeath()
+    protected override void OnDeath()
     {
         currentTarget = null;
         //animación de muerte de soldado
@@ -140,31 +141,17 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     protected override void HandleWaveEnd()
     {
         base.HandleWaveEnd();
-        OnSurvival();
+        //OnSurvival();
+        //Saber si mataron al templo o no
+        OnWinningWave();
     }
 
-    public void OnSurvival()
+    protected override void OnWinningWave()
     {
-        if (!gameObject.activeInHierarchy)
-            return;
-
-        currentTarget = null;
-
-        if (agent != null)
-        {
-            agent.isStopped = true;
-            agent.ResetPath();
-        }
-
-        StopAllCoroutines();
-
-        survivalCoroutine = StartCoroutine(SurvivalRoutine());
+        base.OnWinningWave();
+        Debug.Log("Animación de victoria soldado");
     }
 
-    void Survival()
-    {
-        Debug.Log("Animación de victoria");
-    }
 
     protected override float GetStunTime()
     {
@@ -174,6 +161,16 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     protected override float GetDeathTime()
     {
         return deathTime;
+    }
+
+    protected override float GetWinningTime()
+    {
+        return winningTime;
+    }
+
+    protected override float GetLoosingTime()
+    {
+        return loosingTime;
     }
 
     //Coorutinas
@@ -190,24 +187,5 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         }
     }
 
-    IEnumerator SurvivalRoutine()
-    {
-        Survival();
-
-        float timer = 0f;
-
-        while (timer < SurvivalTime)
-        {
-            if (!gameObject.activeInHierarchy)
-                yield break; // evita ejecución fantasma
-
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        gameObject.SetActive(false);
-
-        survivalCoroutine = null;
-    }
 }
 
