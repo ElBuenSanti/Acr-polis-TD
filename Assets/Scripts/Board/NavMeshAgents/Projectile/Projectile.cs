@@ -31,6 +31,7 @@ public class Projectile : TeamAssigner
     {
         time = 0f;
         isHitting = false;
+        hasHit = false;
     }
 
     protected virtual void Update()

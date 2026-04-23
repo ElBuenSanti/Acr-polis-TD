@@ -20,19 +20,38 @@ public class FireBall : Projectile
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log("COLISION CON: " + other.name);
+
         if (hasHit) return;
 
         var team = other.GetComponentInParent<TeamAssigner>();
 
-        if (team == null || team.GetTeam() == Team.Enemy) //no ataque a otros enemigos, solo cosas aliadas
-            return;
-
-        if (other.TryGetComponent<IDamageable>(out var target))
+        if (team == null)
         {
-            hasHit = true;
-            target.ReceiveDamage(attackDamage);
-            Debug.Log("Atacando con bola de fuego");
+            Debug.Log("NO tiene TeamAssigner");
+            return;
         }
+
+        Debug.Log("Team: " + team.GetTeam());
+
+        if (team.GetTeam() != Team.Ally)
+        {
+            Debug.Log("No es Ally");
+            return;
+        }
+
+        var target = other.GetComponentInParent<IDamageable>();
+
+        if (target == null)
+        {
+            Debug.Log("NO tiene IDamageable");
+            return;
+        }
+
+        Debug.Log("Bola de fuego haciendo daño");
+
+        hasHit = true;
+        target.ReceiveDamage(attackDamage);
 
         Hit();
     }

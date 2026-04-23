@@ -31,7 +31,7 @@ public class Arrow : Projectile
     protected override void OnEnable()
     {
         base.OnEnable();
-        hasHit = false;
+        //hasHit = false;
     }
 
     //Colisiones
