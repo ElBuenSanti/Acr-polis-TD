@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveIndex: 1
   waveType: 0
-  waveDuration: 10
+  waveDuration: 20
   spawnFrequency: 5
   enemies:
   - enemy: {fileID: 11400000, guid: e6389f5ad65b7e048977da14bccc750b, type: 2}

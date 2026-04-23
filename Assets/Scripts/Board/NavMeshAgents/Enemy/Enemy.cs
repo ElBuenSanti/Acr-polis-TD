@@ -13,8 +13,9 @@ public class Enemy : NavMeshAgentBehaviour
     private float combatDistance;
     private float distance;
     [SerializeField] private float combatRange = 5f;
-
     [SerializeField] private float searchInterval = 1.5f;
+
+    private Temple temple;
 
     protected float actionVelocity;
     protected float attackRange;
@@ -31,6 +32,7 @@ public class Enemy : NavMeshAgentBehaviour
     {
         base.Awake();
         SetTeam(Team.Enemy);
+
     }
 
     public virtual void Initialize(EnemyData newData)
@@ -53,11 +55,7 @@ public class Enemy : NavMeshAgentBehaviour
         base.OnEnable(); 
 
         currentTarget = null;
-
-        /*
-        if (WaveSpawner.Instance != null)
-            WaveSpawner.Instance.OnWaveEnded += HandleWaveEnd;
-        */
+        temple = GetTemple();
 
         StartCoroutine(SearchTargetRoutine()); 
     }
@@ -65,11 +63,6 @@ public class Enemy : NavMeshAgentBehaviour
     protected override void OnDisable()
     {
         base.OnDisable();
-
-        /*
-        if (WaveSpawner.Instance != null)
-            WaveSpawner.Instance.OnWaveEnded -= HandleWaveEnd;
-        */
     }
 
     void Update()
@@ -178,10 +171,15 @@ public class Enemy : NavMeshAgentBehaviour
     protected override void HandleWaveEnd()
     {
         base.HandleWaveEnd();
-        //OnDeath();
-        //Ver si el templo murió, se hace la de victoria
-        //si perdieron, se hace la de derrota
-        OnLoosingWave();
+
+        if (IsTempleAlive())
+        {
+            OnLoosingWave();   
+        }
+        else
+        {
+            OnWinningWave();  
+        }
     }
 
     protected override void OnLoosingWave()
@@ -189,6 +187,13 @@ public class Enemy : NavMeshAgentBehaviour
         base.OnLoosingWave();
         Debug.Log("Animación de derrota de oleada enemigo");
     }
+
+    protected override void OnWinningWave()
+    {
+        base.OnWinningWave();
+        Debug.Log("Animación victoria de enemigo");
+    }
+
 
 
 

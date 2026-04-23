@@ -18,6 +18,8 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected Coroutine stunCoroutine;
     protected Coroutine disappearRoutineCoroutine;
 
+    protected bool waveEnded; //
+
     public static List<NavMeshAgentBehaviour> AllUnits = new List<NavMeshAgentBehaviour>();
 
     protected virtual void Awake()
@@ -30,6 +32,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual void OnEnable()
     {
         AllUnits.Add(this);
+        waveEnded = false;
 
         if (WaveSpawner.Instance != null)
             WaveSpawner.Instance.OnWaveEnded += HandleWaveEnd;
@@ -147,41 +150,19 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     protected virtual void HandleWaveEnd()
     {
         if (IsDead) return;
+        waveEnded = true;
     }
 
     protected virtual void OnWinningWave()
     {
-        /*
-        if (agent != null)
-            agent.isStopped = true;
-
-        if (stunCoroutine != null)
-            StopCoroutine(stunCoroutine);
-
-        if (disappearRoutineCoroutine != null)
-            StopCoroutine(disappearRoutineCoroutine);
-        */
         PreparingAgentToDisappear();
-
         disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetWinningTime()));
     }
 
     protected virtual void OnLoosingWave()
     {
         PreparingAgentToDisappear();
-        /*
-        if (agent != null)
-            agent.isStopped = true;
-
-        if (stunCoroutine != null)
-            StopCoroutine(stunCoroutine);
-
-        if (disappearRoutineCoroutine != null)
-            StopCoroutine(disappearRoutineCoroutine);
-        */
-
         disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetLoosingTime()));
-
     }
     
 
@@ -195,6 +176,23 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 
         if (disappearRoutineCoroutine != null)
             StopCoroutine(disappearRoutineCoroutine);
+    }
+
+    protected Temple GetTemple()
+    {
+        foreach (var c in BaseConstruction.AllConstructions)
+        {
+            if (c is Temple temple)
+                return temple;
+        }
+
+        return null;
+    }
+
+    protected bool IsTempleAlive()
+    {
+        var temple = GetTemple();
+        return temple != null && !temple.IsDestroyed;
     }
 
     //Coorutinas

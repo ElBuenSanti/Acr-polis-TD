@@ -7,7 +7,7 @@ public class Arrow : Projectile
     public ConstructionData defenseData;
 
     private float resourceRate;
-    private bool hasHit;
+    //private bool hasHit;
 
     public void Initialize(ConstructionData data, Vector3 start, Vector3 target, Defense defense)
     {

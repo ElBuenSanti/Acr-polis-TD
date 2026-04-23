@@ -65,6 +65,9 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
     void Update()
     {
+        if (waveEnded)
+            return;
+
         if (IsDead)
             return; //si esta muerto no hace nada
 
@@ -141,9 +144,16 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     protected override void HandleWaveEnd()
     {
         base.HandleWaveEnd();
-        //OnSurvival();
-        //Saber si mataron al templo o no
-        OnWinningWave();
+        currentTarget = null;
+
+        if (IsTempleAlive())
+        {
+            OnWinningWave();
+        }
+        else
+        {
+            OnLoosingWave();
+        }
     }
 
     protected override void OnWinningWave()
@@ -176,7 +186,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     //Coorutinas
     IEnumerator SearchTargetRoutine()
     {
-        while (isActiveAndEnabled && !IsDead) //mientras esté activo y no muerto
+        while (isActiveAndEnabled && !IsDead && !waveEnded) //mientras esté activo y no muerto y la oleada este activa
         {
             if (!IsStunned && currentTarget == null) //si no esta aturdido y su target es nulo
             {

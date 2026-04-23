@@ -38,7 +38,7 @@ public class FinalBoss : Enemy
     protected override void OnDeath()
     {
         base.OnDeath();
-        OnFinalBossDeath?.Invoke();
+        OnFinalBossDeath?.Invoke(); //cuando el boss muere invoca esto...
         
         
     }

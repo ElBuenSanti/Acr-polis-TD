@@ -152,8 +152,8 @@ public class WaveSpawner : MonoBehaviour
     {
         waveRunning = false;
 
-        Debug.Log("¡Has ganado el juego!");
+        Debug.Log("¡Has ganado el juego!"); //derrotaste al enemigo
 
-        OnWaveEnded?.Invoke();
+        OnWaveEnded?.Invoke(); //finaliza la oleada
     }
 }

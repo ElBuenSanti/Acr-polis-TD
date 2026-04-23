@@ -13,6 +13,7 @@ public class Projectile : TeamAssigner
     protected float arcHeight = 5f;
 
     protected bool isHitting;
+    protected bool hasHit;
 
     protected virtual void Setup(Vector3 start, Vector3 target, float damage, float velocity)
     {
