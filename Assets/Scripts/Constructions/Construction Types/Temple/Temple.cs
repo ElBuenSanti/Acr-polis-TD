@@ -6,6 +6,8 @@ public class Temple : Plaza
     public static Action<GodType> OnGodSelected;
     private ConstructionController controller;
 
+    public static event Action OnTempleDestruction;
+
     protected override void Awake()
     {
         base.Awake();
@@ -34,6 +36,13 @@ public class Temple : Plaza
     {
         base.SpawnWill();
         Debug.Log("Pero de templo");
+    }
+
+    public override void OnDestruction()
+    {
+        base.OnDestruction();
+        Debug.Log("Has perdido");
+        OnTempleDestruction?.Invoke();
     }
 }
 

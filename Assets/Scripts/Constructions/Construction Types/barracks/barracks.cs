@@ -50,14 +50,14 @@ public class Barracks : BaseConstruction
 
     IEnumerator SpawnSoldiersWithDelay()
     {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 1; i++)
         {
             if (!WaveSpawner.Instance.IsWaveRunning())
                 break; 
 
             GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
 
-            Vector3 spawnPos = transform.position + Vector3.right * 2f;
+            Vector3 spawnPos = transform.position + transform.right * 2f; //Vector3.right * 2f
             newSoldier.transform.position = spawnPos;
 
             if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))

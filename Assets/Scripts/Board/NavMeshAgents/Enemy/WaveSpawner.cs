@@ -27,13 +27,15 @@ public class WaveSpawner : MonoBehaviour
     void OnEnable()
     {
         Temple.OnGodSelected += SetGod;
-        FinalBoss.OnFinalBossDeath += HandleFinalBossDeath;
+        FinalBoss.OnFinalBossDeath += HandleEndingConditions;
+        Temple.OnTempleDestruction += HandleEndingConditions;
     }
 
     void OnDisable()
     {
         Temple.OnGodSelected -= SetGod;
-        FinalBoss.OnFinalBossDeath -= HandleFinalBossDeath;
+        FinalBoss.OnFinalBossDeath -= HandleEndingConditions;
+        Temple.OnTempleDestruction -= HandleEndingConditions;
     }
 
 
@@ -148,12 +150,17 @@ public class WaveSpawner : MonoBehaviour
         return waveRunning;
     }
 
+    /*
     void HandleFinalBossDeath()
     {
         waveRunning = false;
-
-        Debug.Log("¡Has ganado el juego!"); //derrotaste al enemigo
-
         OnWaveEnded?.Invoke(); //finaliza la oleada
+    }
+    */
+
+    void HandleEndingConditions()
+    {
+        waveRunning = false;
+        OnWaveEnded?.Invoke();
     }
 }

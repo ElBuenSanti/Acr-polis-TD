@@ -980,6 +980,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
+  - {fileID: 11400000, guid: 473184d76a459764585da2bab69e4380, type: 2}
+  - {fileID: 11400000, guid: 1b3990fe54056d3439dc5e4de769b50c, type: 2}
   - {fileID: 11400000, guid: 39fbdb063565182478497ab0ecaa5fd4, type: 2}
   spawnPoints:
   - {fileID: 302953984}
