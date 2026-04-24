@@ -86,7 +86,7 @@ public class WaveSpawner : MonoBehaviour
 
         float timer = 0f;
 
-        while (timer < wave.waveDuration)
+        while (timer < wave.waveDuration && waveRunning)
         {
             SpawnEnemy(wave);
 
