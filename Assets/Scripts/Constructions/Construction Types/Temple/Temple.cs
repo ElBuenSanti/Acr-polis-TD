@@ -42,7 +42,7 @@ public class Temple : Plaza
     {
         base.OnDestruction();
         Debug.Log("Has perdido");
-        OnTempleDestruction?.Invoke();
+        OnTempleDestruction?.Invoke(); //perdio el jugador
     }
 }
 

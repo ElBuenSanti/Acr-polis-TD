@@ -40,7 +40,6 @@ public class FinalBoss : Enemy
         base.OnDeath();
         Debug.Log("¡Has ganado el juego!"); //derrotaste al enemigo
         OnFinalBossDeath?.Invoke(); //cuando el boss muere invoca esto...
-        
-        
+         
     }
 }

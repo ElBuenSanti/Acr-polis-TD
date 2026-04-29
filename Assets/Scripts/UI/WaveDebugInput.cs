@@ -6,7 +6,7 @@ public class WaveDebugInput : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.S))
         {
-            WaveSpawner.Instance.StartWave();
+            WaveSpawner.Instance.StartWave(); //COPUIAR Y PEGAR INICIO DE OLEDA
             Debug.Log("Inicio Oleada");
         }
     }

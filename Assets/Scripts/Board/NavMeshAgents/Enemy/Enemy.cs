@@ -147,7 +147,7 @@ public class Enemy : NavMeshAgentBehaviour
     protected override void OnDeath()
     {
         currentTarget = null;
-        //animación de muerte de soldado
+        //animación de muerte de ENEMIGO
         Debug.Log("enemigo Murió");
         base.OnDeath();
     }

@@ -26,9 +26,9 @@ public class WaveSpawner : MonoBehaviour
 
     void OnEnable()
     {
-        Temple.OnGodSelected += SetGod;
-        FinalBoss.OnFinalBossDeath += HandleEndingConditions;
-        Temple.OnTempleDestruction += HandleEndingConditions;
+        Temple.OnGodSelected += SetGod; //ESCUCHAR QUE DIOS SE ELIGIO
+        FinalBoss.OnFinalBossDeath += HandleEndingConditions; //Escucha si boss muere
+        Temple.OnTempleDestruction += HandleEndingConditions; //escucha si el templo murio
     }
 
     void OnDisable()
@@ -80,11 +80,11 @@ public class WaveSpawner : MonoBehaviour
     }
 
 
-    IEnumerator RunWave(WaveData wave)
+    IEnumerator RunWave(WaveData wave)//PARA BARRA DE OLEADA
     {
         waveRunning = true;
 
-        float timer = 0f;
+        float timer = 0f; //GETTER DE TIEMPO
 
         while (timer < wave.waveDuration && waveRunning)
         {

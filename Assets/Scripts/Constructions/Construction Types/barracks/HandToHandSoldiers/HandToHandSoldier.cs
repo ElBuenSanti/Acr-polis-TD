@@ -162,6 +162,8 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         Debug.Log("Animación de victoria soldado");
     }
 
+    //ON LOSSING WAVE SOLDADO
+
 
     protected override float GetStunTime()
     {

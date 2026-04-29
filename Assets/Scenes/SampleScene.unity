@@ -811,6 +811,7 @@ MonoBehaviour:
   selectedConstruction: {fileID: 0}
   tempVariable: 2
   constructionPooling: {fileID: 0}
+  constructionToMove: {fileID: 0}
 --- !u!4 &1275694190
 Transform:
   m_ObjectHideFlags: 0
@@ -933,7 +934,7 @@ MonoBehaviour:
   tilePrefab: {fileID: 6220893090412885349, guid: 552e771205df4d747bfe6a8717d3fd25, type: 3}
   templeInitialConstruction: {fileID: 11400000, guid: f9b8b0c82e95c9c4b9756cc23f843de7, type: 2}
   rows: 20
-  columns: 7
+  columns: 6
   navSurface: {fileID: 0}
 --- !u!4 &1998598049
 Transform:
@@ -980,8 +981,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
-  - {fileID: 11400000, guid: 473184d76a459764585da2bab69e4380, type: 2}
-  - {fileID: 11400000, guid: 1b3990fe54056d3439dc5e4de769b50c, type: 2}
   - {fileID: 11400000, guid: 39fbdb063565182478497ab0ecaa5fd4, type: 2}
   spawnPoints:
   - {fileID: 302953984}

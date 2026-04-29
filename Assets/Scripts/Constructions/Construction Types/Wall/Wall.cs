@@ -27,7 +27,7 @@ public class Wall : BaseConstruction
         repairLoop = StartCoroutine(RepairLoop());
     }
 
-    public void RepairGroup()
+    public void RepairGroup() //para reparar  muro
     {
         var controller = GetComponent<ConstructionController>();
 

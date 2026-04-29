@@ -4,13 +4,13 @@ public class GodDebugInput : MonoBehaviour
 {
     void Update()
     {
-        var selected = BuildingManager.Instance.selectedConstruction;
+        var selected = BuildingManager.Instance.selectedConstruction; 
 
         if (selected == null)
             return;
 
 
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A)) //ELEGIR DIOS
         {
             selected.SetSelectedGod(GodType.Ares);
         }
@@ -27,10 +27,10 @@ public class GodDebugInput : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            selected.Upgrade();
+            selected.Upgrade(); //&COBNFIRMAR EVOLUCION
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R)) //REPARAR MURALLA
         {
             var wall = selected.GetComponent<Wall>();
 

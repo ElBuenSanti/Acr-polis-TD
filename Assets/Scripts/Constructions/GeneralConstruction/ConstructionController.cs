@@ -93,14 +93,6 @@ public class ConstructionController : MonoBehaviour
         }
 
         selectedGod = god;
-
-        /*
-        var temple = GetComponent<Temple>();
-        if (temple != null)
-        {
-            temple.NotifyGodSelected(selectedGod);
-        }
-        */
     }
 
     void UpgradeSingle(ConstructionData newData)

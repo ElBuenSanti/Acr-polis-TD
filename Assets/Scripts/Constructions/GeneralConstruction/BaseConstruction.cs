@@ -199,6 +199,7 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         return parentTile;
     }
 
+    /*
     protected void StopWaveDependentSpawn()
     {
         if (waveRoutine != null)
@@ -213,5 +214,6 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
             spawnCoroutine = null;
         }
     }
+    */
 
 }

@@ -23,7 +23,7 @@ public class WillManager : MonoBehaviour
         {
             if (w == Will.Agape)
             {
-                money[w] = 1000;
+                money[w] = 400;
             }
             else
             {

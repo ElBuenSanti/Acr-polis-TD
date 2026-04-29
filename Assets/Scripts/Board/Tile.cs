@@ -27,20 +27,19 @@ public class Tile : MonoBehaviour
         originalTileColor = color;
     }
 
-    void OnMouseEnter()
+    void OnMouseEnter() //HOOVER
     {
         if (!WaveSpawner.Instance.IsWaveRunning())
         {
             BuildingManager.Instance.SetHoveredTile(this);
         }
-        //BuildingManager.Instance.SetHoveredTile(this);
     }
 
-    void OnMouseExit()
+    void OnMouseExit() //salir del hoover
     {
         if (!WaveSpawner.Instance.IsWaveRunning())
         {
-            BuildingManager.Instance.ClearHover();
+            BuildingManager.Instance.ClearHover(); 
         }
         //BuildingManager.Instance.ClearHover();
     }
