@@ -5,12 +5,16 @@ public class Barracks : BaseConstruction
 {
     public GameObject soldierPrefab;
     private float timeToSpwanInBetweenSoldiers = 1.5f;
-    [SerializeField] private Transform spawnPoint;
+    private bool waveSpawnStarted;
+
     private Coroutine spawnSequence;
+
+    private TargetFinder targetFinder; //
 
     protected override void Awake()
     {
         base.Awake();
+        targetFinder = FindAnyObjectByType<TargetFinder>(); //
     }
 
     protected override void OnDisable()
@@ -22,13 +26,6 @@ public class Barracks : BaseConstruction
     {
         base.Initialize(newData);
         timeToBeDestroyed = 2f;
-
-        /*
-        if (spawnCoroutine != null)
-            StopCoroutine(spawnCoroutine);
-
-        spawnCoroutine = StartCoroutine(SpawnLoop(SpawnSoldier));
-        */
 
         StartWaveDependentSpawn(SpawnSoldier);
         
@@ -45,19 +42,28 @@ public class Barracks : BaseConstruction
     {
         if (spawnSequence != null) return;
 
+        
+        Transform nearestEnemy = FindNearestEnemy();
+
+        if (nearestEnemy == null)
+            return;
+
+        if (WallBetweenBarracksAndEnemy(nearestEnemy))
+            return;
+       
         spawnSequence = StartCoroutine(SpawnSoldiersWithDelay());
     }
 
     IEnumerator SpawnSoldiersWithDelay()
     {
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 3; i++)
         {
             if (!WaveSpawner.Instance.IsWaveRunning())
                 break; 
 
             GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
 
-            Vector3 spawnPos = transform.position + transform.right * 2f; //Vector3.right * 2f
+            Vector3 spawnPos = transform.position + transform.right * 2f; 
             newSoldier.transform.position = spawnPos;
 
             if (newSoldier.TryGetComponent<HandToHandSoldier>(out var soldier))
@@ -69,6 +75,34 @@ public class Barracks : BaseConstruction
         }
 
         spawnSequence = null; 
+    }
+
+    Transform FindNearestEnemy()
+    {
+        return targetFinder.FindTarget<Enemy>(transform, 100f);
+    }
+
+    bool WallBetweenBarracksAndEnemy(Transform enemy)
+    {
+        float enemyDistance = Vector3.Distance(transform.position, enemy.position);
+
+        foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
+        {
+            if (construction == null)
+                continue;
+
+            if (construction.Data.type != ConstructionType.Wall)
+                continue;
+
+            float wallDistance = Vector3.Distance(transform.position, construction.transform.position);
+
+            if (wallDistance < enemyDistance)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /*

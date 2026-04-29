@@ -55,7 +55,11 @@ public class Enemy : NavMeshAgentBehaviour
         base.OnEnable(); 
 
         currentTarget = null;
+        mainTarget = null;
+        combatTarget = null;
         temple = GetTemple();
+
+
 
         StartCoroutine(SearchTargetRoutine()); 
     }

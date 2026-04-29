@@ -108,6 +108,47 @@ public class ConstructionController : MonoBehaviour
         Vector3 position = transform.position;
         Quaternion rotation = transform.rotation;
 
+        Tile currentTile = GetComponent<BaseConstruction>().GetTile();
+
+        gameObject.SetActive(false);
+
+        GameObject newBuilding = pooling.CreateObject(newData.prefab, currentTile.transform);
+
+        newBuilding.transform.SetPositionAndRotation(position, rotation);
+
+        var newConstruction = newBuilding.GetComponent<BaseConstruction>();
+
+        var newController = newBuilding.GetComponent<ConstructionController>();
+
+        if (group != null)
+        {
+            group.members.Remove(this);
+
+            newController.group = group;
+
+            group.Add(newController);
+        }
+
+        newConstruction.SetTile(currentTile);
+
+        newConstruction.Initialize(newData);
+
+        newController.Initialize(newData, currentTile.transform);
+
+        var temple = GetComponent<Temple>();
+
+        if (temple != null)
+        {
+            temple.NotifyGodSelected(selectedGod);
+        }
+    }
+
+    /*
+    void UpgradeSingle(ConstructionData newData)
+    {
+        Vector3 position = transform.position;
+        Quaternion rotation = transform.rotation;
+
         gameObject.SetActive(false);
         Debug.Log("NewData: " + newData);
         Debug.Log("Prefab: " + newData.prefab);
@@ -122,7 +163,7 @@ public class ConstructionController : MonoBehaviour
 
         if (group != null)
         {
-            newController.group = group;
+            //newController.group = group;
         }
          
 
@@ -134,6 +175,12 @@ public class ConstructionController : MonoBehaviour
         {
             temple.NotifyGodSelected(selectedGod);
         }
+    }
+    */
+
+    public void SetTileTransform(Transform newTile)
+    {
+        parentTile = newTile;
     }
 
 }

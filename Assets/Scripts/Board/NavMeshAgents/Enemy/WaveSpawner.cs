@@ -108,7 +108,11 @@ public class WaveSpawner : MonoBehaviour
 
         Transform spawnPoint = GetRandomSpawnPoint();
 
+        //GameObject obj = pooling.CreateObject(enemyType.enemy.enemyPrefab, spawnPoint);
+
         GameObject obj = pooling.CreateObject(enemyType.enemy.enemyPrefab, spawnPoint);
+        obj.transform.position = spawnPoint.position;
+        obj.transform.rotation = spawnPoint.rotation;
 
         Enemy enemy = obj.GetComponent<Enemy>();
         enemy.Initialize(enemyType.enemy);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DebugBuildingSelector : MonoBehaviour
 {
@@ -20,5 +21,10 @@ public class DebugBuildingSelector : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
             BuildingManager.Instance.SetConstructionIndex(3);
+
+        if (Keyboard.current.mKey.wasPressedThisFrame)
+        {
+            BuildingManager.Instance.TryEnterMoveMode();
+        }
     }
 }

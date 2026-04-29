@@ -194,4 +194,24 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         obstacle.center = Vector3.zero; // puedes ajustarlo si está desalineado
     }
 
+    public Tile GetTile()
+    {
+        return parentTile;
+    }
+
+    protected void StopWaveDependentSpawn()
+    {
+        if (waveRoutine != null)
+        {
+            StopCoroutine(waveRoutine);
+            waveRoutine = null;
+        }
+
+        if (spawnCoroutine != null)
+        {
+            StopCoroutine(spawnCoroutine);
+            spawnCoroutine = null;
+        }
+    }
+
 }
