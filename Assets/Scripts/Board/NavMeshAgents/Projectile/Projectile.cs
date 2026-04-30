@@ -15,6 +15,8 @@ public class Projectile : TeamAssigner
     protected bool isHitting;
     protected bool hasHit;
 
+
+    //Assining proyectile info
     protected virtual void Setup(Vector3 start, Vector3 target, float damage, float velocity)
     {
         startPoint = start;
@@ -46,14 +48,16 @@ public class Projectile : TeamAssigner
             return;
         }
 
-        Vector3 pos = Vector3.Lerp(startPoint, targetPoint, t);
+        Vector3 position = Vector3.Lerp(startPoint, targetPoint, t); //antes pos
 
-        pos.y += arcHeight * (t * (1 - t)) * 4;
+        position.y += arcHeight * (t * (1 - t)) * 4;
 
-        transform.position = pos;
+        transform.position = position;
     }
 
-    //Fnciones
+    //Functions
+
+    //When hitting something...
     protected virtual void Hit()
     {
         if (isHitting) return;
@@ -67,8 +71,7 @@ public class Projectile : TeamAssigner
     }
 
 
-    //Coorutinas
-
+    //Cooroutines
     IEnumerator HitRoutine()
     {
         OnHit();

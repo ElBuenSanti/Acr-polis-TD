@@ -5,23 +5,25 @@ using UnityEngine.AI;
 
 public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 {
-
     protected NavMeshAgent agent;
     protected TargetFinder targetFinder;
-
-    protected float resistance;
-    protected float attackDamage;
-    protected float movementSpeed;
-    public bool IsDead { get; protected set; }
-    public bool IsStunned { get; protected set; }
 
     protected Coroutine stunCoroutine;
     protected Coroutine disappearRoutineCoroutine;
 
-    protected bool waveEnded; //
-
     public static List<NavMeshAgentBehaviour> AllUnits = new List<NavMeshAgentBehaviour>();
 
+    protected float resistance;
+    protected float attackDamage;
+    protected float movementSpeed;
+
+    protected bool waveEnded;
+
+    public bool IsDead { get; protected set; }
+    public bool IsStunned { get; protected set; }
+
+
+    //Nav Mesh Agents Creation
     protected virtual void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -37,12 +39,12 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         if (WaveSpawner.Instance != null)
             WaveSpawner.Instance.OnWaveEnded += HandleWaveEnd;
 
-        IsDead = false; //ambos empiezan vivos
-        IsStunned = false; //ambos empiezan sin estar aturdidos
+        IsDead = false; 
+        IsStunned = false; 
 
         if (agent != null)
         {
-            agent.isStopped = false; //no está detenido
+            agent.isStopped = false; 
             agent.ResetPath();
         }
 
@@ -58,30 +60,33 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         StopAllCoroutines();
     }
 
-    //Funciones
+    //Functions
+
+    //Movement
     protected virtual void MoveTo(Vector3 destination)
     {
-        if (agent == null || IsDead || IsStunned) //si no hay agente asignado, esta muerto o aturdido, no hace nada
+        if (agent == null || IsDead || IsStunned) 
             return;
 
-        agent.SetDestination(destination); //se mueve hacia él
+        agent.SetDestination(destination);
     }
             
    
+    //Damage and deactivation
     public virtual void ReceiveDamage(float damage)
     {
         if (IsDead)
         {
-            return; //si esta muerto, ya no tiene sentido que reciva daño
+            return; 
         }
 
-        resistance -= damage; //se le quita vida
+        resistance -= damage; 
 
-        if (resistance <= 0) //si llega a 0
+        if (resistance <= 0) 
         {
-            IsDead = true; //ya esta muerto
+            IsDead = true; 
             OnDeath();
-            return; //evitar que se actuive ondamage
+            return; 
         }
         OnDamage();
     }
@@ -102,17 +107,15 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         stunCoroutine = StartCoroutine(StunnedRoutine(GetStunTime()));
     }
 
-
-    protected virtual void Disappear()
-    {
-        gameObject.SetActive(false); //se desactiva
-    }
-
-
-
     protected virtual void OnDeath()
     {
-        /*
+        PreparingAgentToDisappear();
+
+        disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetDeathTime()));
+    }
+
+    protected virtual void PreparingAgentToDisappear()
+    {
         if (agent != null)
             agent.isStopped = true;
 
@@ -121,11 +124,14 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 
         if (disappearRoutineCoroutine != null)
             StopCoroutine(disappearRoutineCoroutine);
-        */
-        PreparingAgentToDisappear();
-
-        disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetDeathTime()));
     }
+
+    protected virtual void Disappear()
+    {
+        gameObject.SetActive(false); 
+    }
+
+    //Get Time of...
 
     protected virtual float GetStunTime()
     {
@@ -147,6 +153,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         return 0;
     }
 
+    //When wave ends, do...
     protected virtual void HandleWaveEnd()
     {
         if (IsDead) return;
@@ -165,19 +172,6 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         disappearRoutineCoroutine = StartCoroutine(DisappearRoutine(GetLoosingTime()));
     }
     
-
-    protected virtual void PreparingAgentToDisappear()
-    {
-        if (agent != null)
-            agent.isStopped = true;
-
-        if (stunCoroutine != null)
-            StopCoroutine(stunCoroutine);
-
-        if (disappearRoutineCoroutine != null)
-            StopCoroutine(disappearRoutineCoroutine);
-    }
-
     protected Temple GetTemple()
     {
         foreach (var c in BaseConstruction.AllConstructions)
@@ -195,7 +189,9 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
         return temple != null && !temple.IsDestroyed;
     }
 
-    //Coorutinas
+
+
+    //Cooroutines
 
     protected IEnumerator StunnedRoutine(float stunTime)
     {
@@ -218,48 +214,5 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-public Transform FindTarget<Type>() where Type : Component //Type debe ser componente de unity o sea un script
-{
-    Type[] allTargets = Object.FindObjectsByType<Type>(FindObjectsInactive.Exclude, FindObjectsSortMode.None); //que busque todos los que tienen ese componente, que estén activos, y sin importar un orden específico
-
-    if (allTargets.Length == 0)
-    {
-        return null; //no hay nada que buscar
-    }
-
-    Transform nearestTarget = null;
-    float minDistance = Mathf.Infinity; //para que al comparar, cualquiera sea más cercano
-    Vector3 currentPosition = transform.position; //la llamada es desde la clase hija, es la posición del agente navegable
-
-    foreach (Type target in allTargets)
-    {
-        float distance = Vector3.Distance(currentPosition, target.transform.position); 
-        if (distance < minDistance)
-        {
-            minDistance = distance;
-            nearestTarget = target.transform;
-        }
-    }
-
-    return nearestTarget;
-}
-*/
 
 

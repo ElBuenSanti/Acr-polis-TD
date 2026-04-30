@@ -6,27 +6,25 @@ public class BuildingManager : MonoBehaviour
 {
     public static BuildingManager Instance;
 
-    [SerializeField]
-    private List<ConstructionData> buildingDataList;
-    [SerializeField]
-    public ConstructionData currentBuilding;
-    [SerializeField]
-    public ConstructionController selectedConstruction;
-
-    BaseConstruction baseConstruction;
-    ConstructionController constructionController;
-
-    public int tempVariable = 0;
-
     public Pooling constructionPooling;
-
-    private float hightOffset = 1.5f;
     private Tile hoveredTile;
 
-    //moveConstruction
+    [SerializeField] private List<ConstructionData> buildingDataList;
+    [SerializeField] public ConstructionData currentBuilding;
+    [SerializeField] public ConstructionController selectedConstruction;
+    [SerializeField] private ConstructionController constructionToMove;
+
+    //BaseConstruction baseConstruction;
+    //ConstructionController constructionController;
+
+    public int tempVariable = 0;
     private bool moveMode;
-    [SerializeField]
-    public ConstructionController constructionToMove;
+    private float hightOffset = 1.5f;
+    
+
+    //moveConstruction
+    //private bool moveMode;
+    //[SerializeField] private ConstructionController constructionToMove;
     //
 
     void Awake()
@@ -41,8 +39,9 @@ public class BuildingManager : MonoBehaviour
     }
 
 
-    //Funciones
+    //Functions
 
+    //When selecting the type of construction to do...
     public void SetConstructionIndex(int index)
     {
         if (index < 0 || index >= buildingDataList.Count)
@@ -55,8 +54,7 @@ public class BuildingManager : MonoBehaviour
         UpdatePreview();
     }
 
-
-
+    //Tiles hoover depending on construction type
     public void SetHoveredTile(Tile tile)
     {
         hoveredTile = tile;
@@ -95,15 +93,24 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
+
+    //Selecting a construction
+    public void Select(ConstructionController construction)
+    {
+        selectedConstruction = construction;
+        Debug.Log("Seleccionado: " + construction.name);
+    }
+
+
+    //Positioning base type buildings
     public void PlaceBuilding(Tile tile)
     {
-        //move
         if (moveMode)
         {
             MoveConstruction(tile);
             return;
         }
-        //
+
         if (currentBuilding == null)
             return;
 
@@ -131,9 +138,8 @@ public class BuildingManager : MonoBehaviour
 
         bool hasSameType = ExistsConstructionOfType(currentBuilding.type);
 
-        var costList = hasSameType
-            ? currentBuilding.bonusWillToPay
-            : currentBuilding.willToPay;
+        var costList = hasSameType ? currentBuilding.bonusWillToPay : currentBuilding.willToPay;
+
 
         foreach (var w in costList)
         {
@@ -175,16 +181,10 @@ public class BuildingManager : MonoBehaviour
             baseConstruction.SetTile(t);
 
             baseConstruction.Initialize(currentBuilding);
-            constructionController.Initialize(currentBuilding, t.transform);
+            constructionController.Initialize(currentBuilding); //, t.transform
         }
 
         return;
-    }
-
-    public void Select(ConstructionController construction)
-    {
-        selectedConstruction = construction;
-        Debug.Log("Seleccionado: " + construction.name);
     }
 
     bool ExistsConstructionOfType(ConstructionType type)
@@ -202,6 +202,8 @@ public class BuildingManager : MonoBehaviour
         return false;
     }
 
+
+    //Move Constructions from tile
     public void TryEnterMoveMode()
     {
         if (selectedConstruction == null)
@@ -232,7 +234,7 @@ public class BuildingManager : MonoBehaviour
 
         List<Tile> newTiles = new List<Tile>();
 
-        if (constructionToMove.group == null) //construcción básica
+        if (constructionToMove.group == null) 
         {
             constructionsToMove.Add(constructionToMove);
 
@@ -273,10 +275,8 @@ public class BuildingManager : MonoBehaviour
         for (int i = 0; i < constructionsToMove.Count; i++)
         {
             ConstructionController construction = constructionsToMove[i];
-
-            Tile targetTile = newTiles[i];
-
             BaseConstruction baseConstruction = construction.GetComponent<BaseConstruction>();
+            Tile targetTile = newTiles[i];
 
             targetTile.SetOccupied(true);
 
@@ -295,41 +295,7 @@ public class BuildingManager : MonoBehaviour
         moveMode = false;
         constructionToMove = null;
 
-        Debug.Log("Construcción movida");
+        Debug.Log("Construcción movida con éxito");
     }
-
-    /*
-    void MoveConstruction(Tile newTile)
-    {
-        if (constructionToMove == null)
-            return;
-
-        BaseConstruction baseConstruction = constructionToMove.GetComponent<BaseConstruction>();
-
-        Tile oldTile = baseConstruction.GetTile();
-
-        if (newTile.IsOccupied)
-        {
-            Debug.Log("Tile ocupada");
-            return;
-        }
-
-        oldTile.SetOccupied(false);
-
-        newTile.SetOccupied(true);
-
-        constructionToMove.transform.position = newTile.transform.position + Vector3.up * hightOffset;
-        constructionToMove.transform.rotation = Quaternion.identity;
-
-        baseConstruction.SetTile(newTile);
-
-        constructionToMove.SetTileTransform(newTile.transform);
-
-        moveMode = false;
-        constructionToMove = null;
-
-        Debug.Log("Construcción movida");
-    }
-    */
 
 }

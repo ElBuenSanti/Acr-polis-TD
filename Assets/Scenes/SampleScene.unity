@@ -802,6 +802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0959b63ef36244e41897a46897264139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  constructionPooling: {fileID: 0}
   buildingDataList:
   - {fileID: 11400000, guid: f04d6955ffbd7f4468ab922de7ab96e6, type: 2}
   - {fileID: 11400000, guid: 3e4c6199cdc2d2f4ba607d4a0888a12b, type: 2}
@@ -809,9 +810,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1222b33cd99a3e542b37d7c3db60c909, type: 2}
   currentBuilding: {fileID: 0}
   selectedConstruction: {fileID: 0}
-  tempVariable: 2
-  constructionPooling: {fileID: 0}
   constructionToMove: {fileID: 0}
+  tempVariable: 2
 --- !u!4 &1275694190
 Transform:
   m_ObjectHideFlags: 0
@@ -981,6 +981,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waves:
+  - {fileID: 11400000, guid: 473184d76a459764585da2bab69e4380, type: 2}
+  - {fileID: 11400000, guid: 1b3990fe54056d3439dc5e4de769b50c, type: 2}
+  - {fileID: 11400000, guid: 9778fe69c8d5b8740b6cce3ad3b24721, type: 2}
   - {fileID: 11400000, guid: 39fbdb063565182478497ab0ecaa5fd4, type: 2}
   spawnPoints:
   - {fileID: 302953984}

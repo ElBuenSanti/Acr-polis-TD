@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Plaza : BaseConstruction
 {
+
+    //Plaza Initialization
     protected override void Awake()
     {
         base.Awake();
@@ -20,6 +22,8 @@ public class Plaza : BaseConstruction
         StartWaveDependentSpawn(SpawnWill);
     }
 
+
+    //Resource Generation
     protected virtual void SpawnWill()
     {
         foreach (var w in data.willObtaied)

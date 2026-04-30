@@ -4,14 +4,13 @@ using static UnityEngine.GraphicsBuffer;
 public class Defense : BaseConstruction
 {
     public GameObject arrowPrefab;
-
     private TargetFinder targetFinder;
     private Transform currentTarget;
 
-    private float distanceToShoot;
-
     private float range;
 
+
+    //Defense Initialization
     protected override void Awake()
     {
         base.Awake();
@@ -27,14 +26,14 @@ public class Defense : BaseConstruction
     }
 
 
-    //Funciones
+    //Functions
     protected override void ApplyStats()
     {
         base.ApplyStats();
         range = data.range;
     }
 
-
+    //Arrow Generation
     void SpawnArrows()
     {
         currentTarget = targetFinder.FindTarget<Enemy>(transform, range);
@@ -54,16 +53,6 @@ public class Defense : BaseConstruction
         {
             arrow.Initialize(data, spawnPos, currentTarget.position, this);
         }
-
-        //distanceToShoot = Vector3.Distance(transform.position, currentTarget.position);
-        /*
-        GameObject newArrow = pooling.CreateObject(arrowPrefab, transform);
-
-        if (newArrow.TryGetComponent<Arrow>(out var arrow))
-        {
-            arrow.Initialize(data, transform.position, currentTarget.position, this);
-        }
-        */
     }
 
 }

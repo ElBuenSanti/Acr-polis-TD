@@ -5,7 +5,10 @@ public class Wall : BaseConstruction
 {
 
     private bool canRepair = false;
-    private Coroutine repairLoop;
+    private Coroutine repairCooldown;
+
+
+    //Initialization of Wall
     protected override void Awake()
     {
         base.Awake();
@@ -14,6 +17,9 @@ public class Wall : BaseConstruction
     protected override void OnDisable()
     {
         base.OnDisable();
+
+        if (repairCooldown != null)
+            StopCoroutine(repairCooldown);
     }
 
     public override void Initialize(ConstructionData newData)
@@ -21,14 +27,21 @@ public class Wall : BaseConstruction
         base.Initialize(newData);
         timeToBeDestroyed = 2f;
 
-        if (repairLoop != null)
-            StopCoroutine(repairLoop);
+        canRepair = true;
 
-        repairLoop = StartCoroutine(RepairLoop());
     }
 
-    public void RepairGroup() //para reparar  muro
+
+    //Functions
+
+    //Repair Wall
+    public void RepairGroup() 
     {
+        if (!canRepair)
+        {
+            Debug.Log("Aún no se puede reparar");
+            return;
+        }
         var controller = GetComponent<ConstructionController>();
 
         if (controller == null || controller.group == null)
@@ -51,6 +64,12 @@ public class Wall : BaseConstruction
         }
 
         Debug.Log("Muralla completamente reparada");
+        canRepair = false;
+
+        if (repairCooldown != null)
+            StopCoroutine(repairCooldown);
+
+        repairCooldown = StartCoroutine(RepairCooldown());
     }
 
     void HealToMax()
@@ -58,16 +77,19 @@ public class Wall : BaseConstruction
         resistance = data.resistance;
     }
 
-    //coorutina
-    IEnumerator RepairLoop()
+
+
+
+    //Cooroutines
+    IEnumerator RepairCooldown()
     {
-        while (true)
-        {
-            yield return new WaitForSeconds(timeToSpawnAditaments);
+        Debug.Log("Reparación en cooldown");
 
-            canRepair = true;
+        yield return new WaitForSeconds(timeToSpawnAditaments);
 
-            Debug.Log("Muralla lista para repararse");
-        }
+        canRepair = true;
+        repairCooldown = null;
+
+        Debug.Log("Muralla lista para repararse");
     }
 }

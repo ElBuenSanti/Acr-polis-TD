@@ -11,7 +11,6 @@ public class Tile : MonoBehaviour
 
     public List<Tile> sameRowNeighbors = new List<Tile>();
     public List<Tile> upperRowNeighbors = new List<Tile>();
-
     public static List<Tile> AllTiles = new List<Tile>();
 
     void Awake()
@@ -21,46 +20,11 @@ public class Tile : MonoBehaviour
         AllTiles.Add(this);
     }
 
+    //Visual Change
     public void SetColor(Color color)
     {
         tileColor.material.color = color;
         originalTileColor = color;
-    }
-
-    void OnMouseEnter() //HOOVER
-    {
-        if (!WaveSpawner.Instance.IsWaveRunning())
-        {
-            BuildingManager.Instance.SetHoveredTile(this);
-        }
-    }
-
-    void OnMouseExit() //salir del hoover
-    {
-        if (!WaveSpawner.Instance.IsWaveRunning())
-        {
-            BuildingManager.Instance.ClearHover(); 
-        }
-        //BuildingManager.Instance.ClearHover();
-    }
-
-    void OnMouseDown()
-    {
-        if (WaveSpawner.Instance.IsWaveRunning())
-        {
-            return;
-        }
-
-        if (isOccupied)
-            return;
-
-        //bool success = 
-        BuildingManager.Instance.PlaceBuilding(this);
-
-        //if (!success)
-            //return;
-
-        //SetOccupied(true); 
     }
 
     public void SetTempColor(Color color)
@@ -79,6 +43,37 @@ public class Tile : MonoBehaviour
         tileColor.material.color = originalTileColor;
     }
 
+    //Hover
+    void OnMouseEnter() //HOOVER
+    {
+        if (!WaveSpawner.Instance.IsWaveRunning())
+        {
+            BuildingManager.Instance.SetHoveredTile(this);
+        }
+    }
+
+    void OnMouseExit() //salir del hoover
+    {
+        if (!WaveSpawner.Instance.IsWaveRunning())
+        {
+            BuildingManager.Instance.ClearHover(); 
+        }
+    }
+
+    void OnMouseDown()
+    {
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            return;
+        }
+
+        if (isOccupied)
+            return;
+
+        BuildingManager.Instance.PlaceBuilding(this);
+    }
+
+    //Tile Status
     public void SetOccupied(bool value)
     {
         isOccupied = value;

@@ -5,30 +5,26 @@ public class ConstructionController : MonoBehaviour
 {
     public ConstructionDatabase database;
     private Pooling pooling;
-    public ConstructionGroup group; //
+    public ConstructionGroup group; 
 
     private ConstructionType type;
-    //private GodType god, selectedGod;
-    private int level;
-
-    private GodType currentGod;
     private GodType selectedGod = GodType.Base;
+    private int level;
+    private int nextLevel;
 
-    private Transform parentTile;
 
 
+    //Initialize new construction with upgrade
     void Awake()
     {
         pooling = FindAnyObjectByType<Pooling>();
         database = FindAnyObjectByType<ConstructionDatabase>();
     }
 
-    public void Initialize(ConstructionData data, Transform tileTransform)
+    public void Initialize(ConstructionData data) //, Transform tileTransform
     {
         type = data.type;
-        //god = data.god;
         level = data.level;
-        parentTile = tileTransform;
         selectedGod = data.god;
 
         if (group != null)
@@ -37,17 +33,45 @@ public class ConstructionController : MonoBehaviour
         }
     }
 
+    //Select a construction to upgrade JUST in between waves or it is a wall
+    void OnMouseDown()
+    {
+        if (!WaveSpawner.Instance.IsWaveRunning() || type == ConstructionType.Wall)
+        {
+            BuildingManager.Instance.Select(this);
+        }
+    }
+
+    //Upgrade construction by selecting a God.
+    public void SetSelectedGod(GodType god)
+    {
+        if (level > 1)
+        {
+            Debug.Log("Ya estas recorriendo el camino divino del Dios " + selectedGod);
+            return;
+        }
+
+        selectedGod = god;
+    }
+
+
     public void Upgrade()
     {
-        int nextLevel = level + 1;
+        if(selectedGod == GodType.Base)
+        {
+            Debug.Log("No se ha eleigo un camino divino");
+            return;
+        }
 
-        Debug.Log("UPGRADE con dios: " + selectedGod);
+        nextLevel = level + 1; //int antes
 
-        ConstructionData newData = database.GetData(type, selectedGod, nextLevel); //god
+        Debug.Log("Se ha evolucionado por el Dios: " + selectedGod);
+
+        ConstructionData newData = database.GetData(type, selectedGod, nextLevel); 
 
         if (newData == null)
         {
-            Debug.Log("No hay más niveles");
+            Debug.Log("No hay más evoluciones con el Dios " + selectedGod);
             return;
         }
 
@@ -55,7 +79,7 @@ public class ConstructionController : MonoBehaviour
         {
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
-                Debug.Log("No te alcanza");
+                Debug.Log("No te alcanza para evolucionar " + type + "del Dios " + selectedGod);
                 return;
             }
             
@@ -74,25 +98,6 @@ public class ConstructionController : MonoBehaviour
             UpgradeSingle(newData);
         }
 
-    }
-
-    void OnMouseDown()
-    {
-        if (!WaveSpawner.Instance.IsWaveRunning() || type == ConstructionType.Wall)
-        {
-            BuildingManager.Instance.Select(this);
-        }
-    }
-
-    public void SetSelectedGod(GodType god)
-    {
-        if (level > 1)
-        {
-            Debug.Log("El dios ya está fijado");
-            return;
-        }
-
-        selectedGod = god;
     }
 
     void UpgradeSingle(ConstructionData newData)
@@ -125,7 +130,7 @@ public class ConstructionController : MonoBehaviour
 
         newConstruction.Initialize(newData);
 
-        newController.Initialize(newData, currentTile.transform);
+        newController.Initialize(newData); //, currentTile.transform
 
         var temple = GetComponent<Temple>();
 
@@ -133,46 +138,6 @@ public class ConstructionController : MonoBehaviour
         {
             temple.NotifyGodSelected(selectedGod);
         }
-    }
-
-    /*
-    void UpgradeSingle(ConstructionData newData)
-    {
-        Vector3 position = transform.position;
-        Quaternion rotation = transform.rotation;
-
-        gameObject.SetActive(false);
-        Debug.Log("NewData: " + newData);
-        Debug.Log("Prefab: " + newData.prefab);
-        Debug.Log("ParentTile: " + parentTile);
-
-        GameObject newBuilding = pooling.CreateObject(newData.prefab, parentTile); //antes null
-
-        newBuilding.transform.SetPositionAndRotation(position, rotation);
-
-        var newConstruction = newBuilding.GetComponent<BaseConstruction>();
-        var newController = newBuilding.GetComponent<ConstructionController>();
-
-        if (group != null)
-        {
-            //newController.group = group;
-        }
-         
-
-        newConstruction.Initialize(newData);
-        newController.Initialize(newData, parentTile);
-
-        var temple = GetComponent<Temple>();
-        if (temple != null)
-        {
-            temple.NotifyGodSelected(selectedGod);
-        }
-    }
-    */
-
-    public void SetTileTransform(Transform newTile)
-    {
-        parentTile = newTile;
     }
 
 }

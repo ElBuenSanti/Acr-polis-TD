@@ -4,6 +4,7 @@ public class ConstructionDatabase : MonoBehaviour
 {
     public ConstructionData[] allData;
 
+    //Searches and returns the requested upgrade
     public ConstructionData GetData(ConstructionType type, GodType god, int level) //te regresa la construcción que necesitas
     {
         foreach (var data in allData)

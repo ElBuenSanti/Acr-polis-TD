@@ -16,7 +16,7 @@ MonoBehaviour:
   god: 0
   level: 0
   resistance: 1200
-  aditamentResistance: 240
+  aditamentResistance: 500
   attackDamage: 0
   willObtaied:
   - type: 1

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//Atributes EVERY enemy has
 [CreateAssetMenu(menuName = "Enemy/Data")]
 public class EnemyData : ScriptableObject
 {

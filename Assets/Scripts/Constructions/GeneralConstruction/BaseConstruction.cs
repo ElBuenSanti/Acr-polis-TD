@@ -7,16 +7,15 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
 {
     protected ConstructionData data;
     public ConstructionData Data => data;
+
     private NavMeshObstacle obstacle;
 
     protected Tile parentTile;
+    protected Pooling pooling;
 
     protected float resistance;
-    //protected float resourceRate;
-    protected float actionVelocity;
+    //protected float actionVelocity;
     protected float cost; 
-
-    protected Pooling pooling;
     protected float timeToSpawnAditaments;
     
     protected Coroutine spawnCoroutine;
@@ -29,11 +28,14 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
 
     public static List<BaseConstruction> AllConstructions = new List<BaseConstruction>();
 
-    public virtual void Initialize(ConstructionData newData) //recibe la información de la construcción
+
+
+    //Construction Creation
+    public virtual void Initialize(ConstructionData newData) 
     {
-        data = newData; //la guarda
+        data = newData; 
         SetTeam(Team.Ally);
-        timeToSpawnAditaments = data.actionVelocity;
+        //timeToSpawnAditaments = data.actionVelocity;
         StopAllCoroutines();
 
         if (spawnCoroutine != null)
@@ -67,14 +69,17 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
             obstacle.enabled = false;
     }
 
-    //Funciones
+
+
+
+    //Functions
 
     protected virtual void ApplyStats()
     {
         resistance = data.resistance;
-        actionVelocity = data.actionVelocity;
-
-        Debug.Log($"Initialized {data.type} Lv{data.level} ({data.god})");
+        timeToSpawnAditaments = data.actionVelocity;
+        //actionVelocity = data.actionVelocity;
+        Debug.Log($"Construcción Inicializada: {data.type} Lv{data.level} ({data.god})");
     }
 
     public virtual void ResetConstruction()
@@ -88,23 +93,23 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         }
     }
 
+    //Damage and Death
     public void ReceiveDamage(float damage)
     {
         if (IsDestroyed)
         {
-            return; //si ya esta destruida, ya no aplicarle daño
+            return; 
         }
 
-        resistance -= damage; //se le quita vida
+        resistance -= damage; 
 
-        if (resistance <= 0) //si llega a 0
+        if (resistance <= 0) 
         {
-            IsDestroyed = true; //ya esta muerto
+            IsDestroyed = true; 
             OnDestruction();
-            return; //evitar que se actuive ondamage
+            return; 
         }
     }
-
 
     public virtual void OnDestruction()
     {
@@ -115,8 +120,65 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         Die();
     }
 
-    //Corrutinas
 
+    public virtual void Die()
+    {
+        if (parentTile != null)
+        {
+            parentTile.SetOccupied(false);
+        }
+
+        gameObject.SetActive(false);
+    }
+
+    //Wave Routine
+    protected void StartWaveDependentSpawn(System.Action spawnAction)
+    {
+        if (waveRoutine != null)
+            StopCoroutine(waveRoutine);
+
+        waveRoutine = StartCoroutine(RunWhileWave(spawnAction));
+    }
+
+    //Getter and Setter Functions
+    public void SetTile(Tile tile)
+    {
+        parentTile = tile;
+    }
+
+    public Tile GetTile()
+    {
+        return parentTile;
+    }
+
+    //Dinamic Nav Mesh
+
+    void SetupNavObstacle()
+    {
+        if (!TryGetComponent(out obstacle))
+            obstacle = gameObject.AddComponent<NavMeshObstacle>();
+
+        obstacle.shape = NavMeshObstacleShape.Box;
+        obstacle.carving = true;
+        obstacle.carveOnlyStationary = true;
+
+        obstacle.size = new Vector3(1.5f, 1.5f, 1.5f); // ancho, alto, profundidad
+        obstacle.center = Vector3.zero; 
+    }
+
+    //For walls
+    public virtual float GetResistance()
+    {
+        return resistance;
+    }
+
+    public virtual float GetMaxHealth()
+    {
+        return data.resistance;
+    }
+
+
+    //Corrutinas
     protected IEnumerator SpawnLoop(System.Action spawnAction)
     {
         while (isActiveAndEnabled)
@@ -138,18 +200,14 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     {
         while (true)
         {
-            // esperar inicio de wave
             while (!WaveSpawner.Instance.IsWaveRunning())
                 yield return null;
 
-            // empezar spawn
             spawnCoroutine = StartCoroutine(SpawnLoop(spawnAction));
 
-            // esperar fin de wave
             while (WaveSpawner.Instance.IsWaveRunning())
                 yield return null;
 
-            // detener spawn
             if (spawnCoroutine != null)
             {
                 StopCoroutine(spawnCoroutine);
@@ -157,63 +215,4 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
             }
         }
     }
-
-    protected void StartWaveDependentSpawn(System.Action spawnAction)
-    {
-        if (waveRoutine != null)
-            StopCoroutine(waveRoutine);
-
-        waveRoutine = StartCoroutine(RunWhileWave(spawnAction));
-    }
-
-    public virtual void Die()
-    {
-        if (parentTile != null)
-        {
-            parentTile.SetOccupied(false);
-        }
-
-        gameObject.SetActive(false); 
-    }
-
-    public void SetTile(Tile tile)
-    {
-        parentTile = tile;
-    }
-
-    void SetupNavObstacle()
-    {
-        if (!TryGetComponent(out obstacle))
-            obstacle = gameObject.AddComponent<NavMeshObstacle>();
-
-        obstacle.shape = NavMeshObstacleShape.Box;
-        obstacle.carving = true;
-        obstacle.carveOnlyStationary = true;
-
-        obstacle.size = new Vector3(1.5f, 1.5f, 1.5f); // ancho, alto, profundidad
-        obstacle.center = Vector3.zero; // puedes ajustarlo si está desalineado
-    }
-
-    public Tile GetTile()
-    {
-        return parentTile;
-    }
-
-    /*
-    protected void StopWaveDependentSpawn()
-    {
-        if (waveRoutine != null)
-        {
-            StopCoroutine(waveRoutine);
-            waveRoutine = null;
-        }
-
-        if (spawnCoroutine != null)
-        {
-            StopCoroutine(spawnCoroutine);
-            spawnCoroutine = null;
-        }
-    }
-    */
-
 }

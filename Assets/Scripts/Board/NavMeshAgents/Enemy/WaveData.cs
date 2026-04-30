@@ -23,6 +23,8 @@ public class BossEntry
     public EnemyData boss;
 }
 
+
+//All atributes that EVERY wave has
 [CreateAssetMenu(menuName = "Wave/Data")]
 public class WaveData : ScriptableObject
 {
@@ -33,6 +35,8 @@ public class WaveData : ScriptableObject
     public List<EnemyWaveEntry> enemies;
     public List<BossEntry> possibleBosses;
 
+
+    //Extracts boss depending on the selected god for the temple
     public EnemyData GetBossForGod(GodType god)
     {
         foreach (var entry in possibleBosses)

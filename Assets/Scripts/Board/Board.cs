@@ -30,7 +30,7 @@ public class Board : MonoBehaviour
 
         GenerateBoard();
         SpawnTempleInCenter(); //para poisicionar el templo al inicio
-        AssignRowNeighbors();//
+        AssignRowNeighbors();
         navSurface.BuildNavMesh(); 
     }
     void GenerateBoard()

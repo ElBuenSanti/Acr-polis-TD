@@ -6,35 +6,28 @@ public class Arrow : Projectile
     public Defense defense;
     public ConstructionData defenseData;
 
-    private float resourceRate;
-    //private bool hasHit;
 
+    //Extracting Arrow values
     public void Initialize(ConstructionData data, Vector3 start, Vector3 target, Defense defense)
     {
         this.defense = defense;
+
         defenseData = data;
 
-        /*
-        foreach (var w in data.willObtaied)
-        {
-            resourceRate = w.amount;
-        }
-        */
-
-        Setup(start, target, data.attackDamage, data.proyectileVelocity);
+        Setup(start, target, defenseData.attackDamage, defenseData.proyectileVelocity); //ANTES data.attack... en lugar de defenseData
         SetTeam(Team.Ally);
 
-        Debug.Log("Flecha creada");
-        Debug.Log($"Mis datos son: attackDamage: {attackDamage} velocity: ({proyectileVelocity})");
+        Debug.Log($"Flecha inicializada: attackDamage: {attackDamage} velocity: ({proyectileVelocity})");
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
-        //hasHit = false;
     }
 
-    //Colisiones
+    //Functions
+
+    //When colliding with something...
     void OnTriggerEnter(Collider other)
     {
         if (hasHit) return;
@@ -44,7 +37,7 @@ public class Arrow : Projectile
             {
                 hasHit = true;
                 target.ReceiveDamage(attackDamage);
-                SpawnWill(); //por golpe se spawnea la voluntad
+                SpawnWill(); 
                 Debug.Log("Atacando a enemigo");
             }
 
@@ -52,11 +45,9 @@ public class Arrow : Projectile
         }
     }
 
-    //Fnciones
-
     void SpawnWill()
     {
-        foreach (var w in defenseData.willObtaied) //puede ser más de una voluntad generada
+        foreach (var w in defenseData.willObtaied) 
         {
             WillManager.Instance.AddMoney(w.type, w.amount);
         }
@@ -65,7 +56,7 @@ public class Arrow : Projectile
     protected override void OnHit()
     {
         Debug.Log("Golpeo flecha y se reproduce animación de destrucción de flecha");
-        //aqui animación
+        //AQUÍ ANIMACIÓN DE FLECHA COLISIONANDO
     }
 
 }

@@ -18,5 +18,5 @@ MonoBehaviour:
   spawnFrequency: 5
   enemies:
   - enemy: {fileID: 11400000, guid: e6389f5ad65b7e048977da14bccc750b, type: 2}
-    percentageInWave: 0
+    percentageInWave: 100
   possibleBosses: []

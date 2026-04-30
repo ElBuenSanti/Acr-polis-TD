@@ -6,17 +6,19 @@ public class WaveSpawner : MonoBehaviour
 {
     public static WaveSpawner Instance;
 
+    public event Action OnWaveEnded;
+    public event Action OnWaveStarted;
+
     public WaveData[] waves;
     public Transform[] spawnPoints;
-    private GodType currentGod = GodType.Base;
-
     private Pooling pooling;
+
+    private GodType currentGod = GodType.Base;
 
     private int currentWaveIndex;
     private bool waveRunning;
 
-    public event Action OnWaveEnded;
-    public event Action OnWaveStarted;
+
 
     void Awake()
     {
@@ -26,9 +28,9 @@ public class WaveSpawner : MonoBehaviour
 
     void OnEnable()
     {
-        Temple.OnGodSelected += SetGod; //ESCUCHAR QUE DIOS SE ELIGIO
-        FinalBoss.OnFinalBossDeath += HandleEndingConditions; //Escucha si boss muere
-        Temple.OnTempleDestruction += HandleEndingConditions; //escucha si el templo murio
+        Temple.OnGodSelected += SetGod; //Listens to the selected god of the temple
+        FinalBoss.OnFinalBossDeath += HandleEndingConditions; //Listens when the final boss died
+        Temple.OnTempleDestruction += HandleEndingConditions; //Listens when the temple is destroyed
     }
 
     void OnDisable()
@@ -38,8 +40,15 @@ public class WaveSpawner : MonoBehaviour
         Temple.OnTempleDestruction -= HandleEndingConditions;
     }
 
+    //Functions
 
+    void SetGod(GodType god)
+    {
+        currentGod = god;
+        Debug.Log("Spawner recibió dios: " + god);
+    }
 
+    //Wave manager
     public void StartWave()
     {
         if (waveRunning)
@@ -47,7 +56,7 @@ public class WaveSpawner : MonoBehaviour
 
         if (currentWaveIndex >= waves.Length)
         {
-            Debug.Log("No hay más oleadas");
+            Debug.Log("No hay más oleadas disponibles");
             return;
         }
 
@@ -56,7 +65,7 @@ public class WaveSpawner : MonoBehaviour
         {
             if (currentGod == GodType.Base)
             {
-                Debug.LogError("No se ha seleccionado un dios");
+                Debug.LogError("No se ha seleccionado un camino divino, si desea pasar a la oleada final, debe mejorar el templo");
                 return;
             }
 
@@ -73,42 +82,26 @@ public class WaveSpawner : MonoBehaviour
 
     }
 
-    void SetGod(GodType god)
+    public bool IsWaveRunning()
     {
-        currentGod = god;
-        Debug.Log("Spawner recibió dios: " + god);
+        return waveRunning;
     }
 
-
-    IEnumerator RunWave(WaveData wave)//PARA BARRA DE OLEADA
+    void HandleEndingConditions()
     {
-        waveRunning = true;
-
-        float timer = 0f; //GETTER DE TIEMPO
-
-        while (timer < wave.waveDuration && waveRunning)
-        {
-            SpawnEnemy(wave);
-
-            yield return new WaitForSeconds(wave.spawnFrequency);
-
-            timer += wave.spawnFrequency;
-        }
-        currentWaveIndex++;
         waveRunning = false;
-
-        Debug.Log("Fin de la oleada");
-
         OnWaveEnded?.Invoke();
     }
 
+
+
+    //Enemy / Final Boss generator
     void SpawnEnemy(WaveData wave)
     {
-        var enemyType = wave.enemies[UnityEngine.Random.Range(0, wave.enemies.Count)];
+        //var enemyType = wave.enemies[UnityEngine.Random.Range(0, wave.enemies.Count)];
+        var enemyType = GetRandomEnemyByPercentage(wave);
 
         Transform spawnPoint = GetRandomSpawnPoint();
-
-        //GameObject obj = pooling.CreateObject(enemyType.enemy.enemyPrefab, spawnPoint);
 
         GameObject obj = pooling.CreateObject(enemyType.enemy.enemyPrefab, spawnPoint);
         obj.transform.position = spawnPoint.position;
@@ -149,22 +142,46 @@ public class WaveSpawner : MonoBehaviour
         return spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
     }
 
-    public bool IsWaveRunning()
-    {
-        return waveRunning;
-    }
 
-    /*
-    void HandleFinalBossDeath()
+    //Cooroutine 
+    IEnumerator RunWave(WaveData wave)//PARA BARRA DE OLEADA
     {
-        waveRunning = false;
-        OnWaveEnded?.Invoke(); //finaliza la oleada
-    }
-    */
+        waveRunning = true;
 
-    void HandleEndingConditions()
-    {
+        float timer = 0f; 
+
+        while (timer < wave.waveDuration && waveRunning)
+        {
+            SpawnEnemy(wave);
+
+            yield return new WaitForSeconds(wave.spawnFrequency);
+
+            timer += wave.spawnFrequency;
+        }
+        currentWaveIndex++;
         waveRunning = false;
+
+        Debug.Log("Fin de la oleada");
+
         OnWaveEnded?.Invoke();
+    }
+
+    EnemyWaveEntry GetRandomEnemyByPercentage(WaveData wave)
+    {
+        float randomValue = UnityEngine.Random.Range(0f, 100f);
+
+        float currentPercentage = 0f;
+
+        foreach (var enemyEntry in wave.enemies)
+        {
+            currentPercentage += enemyEntry.percentageInWave;
+
+            if (randomValue <= currentPercentage)
+            {
+                return enemyEntry;
+            }
+        }
+
+        return wave.enemies[0];
     }
 }

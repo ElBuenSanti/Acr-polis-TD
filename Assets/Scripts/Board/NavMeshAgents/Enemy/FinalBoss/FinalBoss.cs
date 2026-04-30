@@ -5,14 +5,20 @@ using System.Runtime.CompilerServices;
 
 public class FinalBoss : Enemy
 {
-    private Pooling pooling;
-    [SerializeField] private GameObject fireBallPrefab;
     public static event Action OnFinalBossDeath;
+
+    [SerializeField] private GameObject fireBallPrefab;
+    private Pooling pooling;
+
+    //Final Boss creation
     protected override void Awake()
     {
         base.Awake();
         pooling = FindAnyObjectByType<Pooling>();
     }
+
+
+    //Attack and FireBall Generation
     protected override void Attack(Transform currentTarget)
     {
         if (Time.time < lastAttackTime + actionVelocity) 
@@ -35,11 +41,11 @@ public class FinalBoss : Enemy
         }
     }
 
+    //When defeating the final boss...
     protected override void OnDeath()
     {
         base.OnDeath();
-        Debug.Log("¡Has ganado el juego!"); //derrotaste al enemigo
-        OnFinalBossDeath?.Invoke(); //cuando el boss muere invoca esto...
-         
+        Debug.Log("¡Has ganado el juego!"); 
+        OnFinalBossDeath?.Invoke(); 
     }
 }

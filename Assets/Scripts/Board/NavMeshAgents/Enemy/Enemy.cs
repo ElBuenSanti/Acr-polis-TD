@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : NavMeshAgentBehaviour
@@ -8,26 +9,27 @@ public class Enemy : NavMeshAgentBehaviour
     [SerializeField] protected EnemyData data;
 
     public Transform currentTarget;
-    public Transform mainTarget;   // estructura
-    public Transform combatTarget; // soldado cercano
+    public Transform mainTarget;   
+    public Transform combatTarget;
+    private Temple temple;
+
     private float combatDistance;
     private float distance;
-    [SerializeField] private float combatRange = 5f;
-    [SerializeField] private float searchInterval = 1.5f;
-
-    private Temple temple;
 
     protected float actionVelocity;
     protected float attackRange;
     protected float searchRange = 20f;
 
+    [SerializeField] private float combatRange = 5f;
+    [SerializeField] private float searchInterval = 1.5f;
     [SerializeField] private float stunTime = 1f;
     [SerializeField] private float deathTime = 1.5f;
     [SerializeField] private float winningTime = 2f;
     [SerializeField] private float loosingTime = 2f;
-
     protected float lastAttackTime;
 
+
+    //Enemy Creation
     protected override void Awake()
     {
         base.Awake();
@@ -44,7 +46,7 @@ public class Enemy : NavMeshAgentBehaviour
         actionVelocity = data.actionVelocity;
         attackRange = data.attackRange;
 
-        Debug.Log($"Enemigo vida: {data.resistance} danio: {data.attackDamage}");
+        Debug.Log($"Enemigo Inicializado: Resistencia: {data.resistance}, danio: {data.attackDamage}");
 
         if (agent != null)
             agent.speed = movementSpeed;
@@ -58,8 +60,6 @@ public class Enemy : NavMeshAgentBehaviour
         mainTarget = null;
         combatTarget = null;
         temple = GetTemple();
-
-
 
         StartCoroutine(SearchTargetRoutine()); 
     }
@@ -77,7 +77,6 @@ public class Enemy : NavMeshAgentBehaviour
         if (combatTarget != null)
         {
             combatDistance = CalculateDistance(combatTarget);
-                //Vector3.Distance(transform.position, combatTarget.position);
 
             if (combatDistance > combatRange * combatRange)
                 combatTarget = null;
@@ -97,7 +96,6 @@ public class Enemy : NavMeshAgentBehaviour
         }
 
         distance = CalculateDistance(currentTarget);
-            //Vector3.Distance(transform.position, currentTarget.position);
 
         if (distance <= attackRange * attackRange)
         {
@@ -111,47 +109,51 @@ public class Enemy : NavMeshAgentBehaviour
         }
     }
 
-    //Funciones
+    //Functions 
+
+    //Define target and attack
     float CalculateDistance(Transform target)
     {
         return (transform.position - target.position).sqrMagnitude;
-        //Vector3.Distance(transform.position, target.position);
     }
 
     protected virtual void Attack(Transform currentTarget)
     {
-        if (Time.time < lastAttackTime + actionVelocity) //si aun no pasa el tiempo para atacar, no hace nada
+        if (Time.time < lastAttackTime + actionVelocity) 
             return;
 
         lastAttackTime = Time.time;
 
-        if (currentTarget == null) //si se vuelve null, sale de atacar
+        if (currentTarget == null) 
             return;
 
         if (currentTarget.TryGetComponent<IDamageable>(out var damagable))
         {
-            damagable.ReceiveDamage(attackDamage); //ataca al enemigo
-            Debug.Log("Atacando al soldado");
+            damagable.ReceiveDamage(attackDamage); 
+            //Debug.Log("Atacando al targt del enemigo");
 
         }
     }
 
+    //Damage and deactivation
     protected override void OnDamage()
     {
         base.OnDamage();
-        //animación de daño de soldado
-        Debug.Log("enemigo recibió danio");
+        // AQUÍ ANIMACIÓN DE DANIO DE ENEMIG
+        //Debug.Log("El enemigo recibió danio");
     }
 
 
     protected override void OnDeath()
     {
         currentTarget = null;
-        //animación de muerte de ENEMIGO
+        //AQUÍ ANIMACIÓN DE MUERTE DE ENEMIGO
         Debug.Log("enemigo Murió");
         base.OnDeath();
     }
 
+
+    //Get time of...
     protected override float GetStunTime()
     {
         return stunTime;
@@ -172,6 +174,8 @@ public class Enemy : NavMeshAgentBehaviour
         return loosingTime;
     }
 
+
+    //How does enemy handle the ending of the wave?
     protected override void HandleWaveEnd()
     {
         base.HandleWaveEnd();
@@ -189,22 +193,18 @@ public class Enemy : NavMeshAgentBehaviour
     protected override void OnLoosingWave()
     {
         base.OnLoosingWave();
-        Debug.Log("Animación de derrota de oleada enemigo");
+        //AQUÍ AIMACIÓN DE DERROTA DE ENEMIGO
     }
 
     protected override void OnWinningWave()
     {
         base.OnWinningWave();
-        Debug.Log("Animación victoria de enemigo");
+        //AQUÍ AIMACIÓN DE VICTORIA DE ENEMIGO
     }
 
 
 
-
-
-
-    //Coorutinas
-
+    //Cooroutine
     IEnumerator SearchTargetRoutine()
     {
         while (isActiveAndEnabled && !IsDead)
