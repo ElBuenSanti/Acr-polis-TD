@@ -6,6 +6,7 @@ public class GamepadInputController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GridSelector selector;
     [SerializeField] private RadialMenuUI radialMenu;
+    [SerializeField] private ShopUI shopUI;
 
     private void Awake()
     {
@@ -14,8 +15,14 @@ public class GamepadInputController : MonoBehaviour
 
         if (radialMenu == null)
             radialMenu = FindAnyObjectByType<RadialMenuUI>();
+
+        if (shopUI == null)
+            shopUI = FindAnyObjectByType<ShopUI>();
     }
 
+    // ---------------------------
+    // MOVEMENT
+    // ---------------------------
     public void OnMove(InputValue value)
     {
         Vector2 input = value.Get<Vector2>();
@@ -34,6 +41,9 @@ public class GamepadInputController : MonoBehaviour
         }
     }
 
+    // ---------------------------
+    // CONFIRM (A)
+    // ---------------------------
     public void OnConfirm(InputValue value)
     {
         if (!value.isPressed)
@@ -41,18 +51,28 @@ public class GamepadInputController : MonoBehaviour
 
         GameState state = GameStateController.Instance.currentState;
 
+        // RADIAL
         if (state == GameState.RadialOpen)
         {
             radialMenu.Confirm();
             return;
         }
 
+        // SHOP
+        if (state == GameState.ShopOpen)
+        {
+            shopUI.ConfirmSelection();
+            return;
+        }
+
+        // MAP IDLE
         if (state == GameState.MapIdle)
         {
             TrySelectTower();
             return;
         }
 
+        // PLACING
         if (state == GameState.PlacingTower)
         {
             BuildingManager.Instance.PlaceBuilding(selector.currentTile);
@@ -60,6 +80,7 @@ public class GamepadInputController : MonoBehaviour
             return;
         }
 
+        // MOVING
         if (state == GameState.MovingTower)
         {
             BuildingManager.Instance.PlaceBuilding(selector.currentTile);
@@ -68,6 +89,9 @@ public class GamepadInputController : MonoBehaviour
         }
     }
 
+    // ---------------------------
+    // CANCEL (B)
+    // ---------------------------
     public void OnCancel(InputValue value)
     {
         if (!value.isPressed)
@@ -82,13 +106,13 @@ public class GamepadInputController : MonoBehaviour
             return;
         }
 
-        if (state == GameState.PlacingTower || state == GameState.MovingTower)
+        if (state == GameState.ShopOpen)
         {
-            GameStateController.Instance.SetState(GameState.MapIdle);
+            shopUI.Close();
             return;
         }
 
-        if (state == GameState.ShopOpen)
+        if (state == GameState.PlacingTower || state == GameState.MovingTower)
         {
             GameStateController.Instance.SetState(GameState.MapIdle);
             return;
@@ -101,6 +125,9 @@ public class GamepadInputController : MonoBehaviour
         }
     }
 
+    // ---------------------------
+    // MOVE TOWER (X)
+    // ---------------------------
     public void OnMoveTower(InputValue value)
     {
         if (!value.isPressed)
@@ -119,6 +146,9 @@ public class GamepadInputController : MonoBehaviour
         GameStateController.Instance.SetState(GameState.MovingTower);
     }
 
+    // ---------------------------
+    // START WAVE (Y)
+    // ---------------------------
     public void OnStartWave(InputValue value)
     {
         if (!value.isPressed)
@@ -133,6 +163,9 @@ public class GamepadInputController : MonoBehaviour
         WaveSpawner.Instance.StartWave();
     }
 
+    // ---------------------------
+    // PAUSE (START)
+    // ---------------------------
     public void OnPause(InputValue value)
     {
         if (!value.isPressed)
@@ -148,6 +181,53 @@ public class GamepadInputController : MonoBehaviour
         }
     }
 
+    // ---------------------------
+    // SHOP (LT / RT)
+    // ---------------------------
+    public void OnOpenShopLeft(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        if (WaveSpawner.Instance.IsWaveRunning())
+            return;
+
+        shopUI.Toggle();
+    }
+
+    public void OnOpenShopRight(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        if (WaveSpawner.Instance.IsWaveRunning())
+            return;
+
+        shopUI.Toggle();
+    }
+
+    // ---------------------------
+    // SHOP NAVIGATION (LB / RB)
+    // ---------------------------
+    public void OnShopLeft(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        shopUI.MoveLeft();
+    }
+
+    public void OnShopRight(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        shopUI.MoveRight();
+    }
+
+    // ---------------------------
+    // SELECT TOWER
+    // ---------------------------
     private void TrySelectTower()
     {
         if (WaveSpawner.Instance.IsWaveRunning())
