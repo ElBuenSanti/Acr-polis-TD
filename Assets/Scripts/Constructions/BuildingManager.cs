@@ -118,21 +118,21 @@ public class BuildingManager : MonoBehaviour
 
         tilesToBuild.Add(tile);
 
-        if (currentBuilding.type == ConstructionType.Wall) //si es muralla ver si se puede poner ahí
+        if (currentBuilding.type == ConstructionType.Wall)
         {
             tilesToBuild.AddRange(tile.sameRowNeighbors);
             tilesToBuild.AddRange(tile.upperRowNeighbors);
+        }
 
-            foreach (Tile t in tilesToBuild)
+        foreach (Tile t in tilesToBuild)
+        {
+            if (t == null)
+                return;
+
+            if (t.IsOccupied)
             {
-                if (t == null)
-                    return;
-
-                if (t.IsOccupied)
-                {
-                    Debug.Log("Espacio ocupado");
-                    return;
-                }
+                Debug.Log("Espacio ocupado");
+                return;
             }
         }
 

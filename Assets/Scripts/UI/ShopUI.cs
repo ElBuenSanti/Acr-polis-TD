@@ -28,6 +28,10 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private float normalScale = 1f;
     [SerializeField] private float scaleSpeed = 10f;
 
+    [Header("Detail")]
+    [SerializeField] private GameObject cardsArea;
+    [SerializeField] private GameObject detailsArea;
+
     private void Awake()
     {
         if (shopCanvasGroup == null)
@@ -176,5 +180,18 @@ public class ShopUI : MonoBehaviour
                 Time.deltaTime * scaleSpeed
             );
         }
+    }
+
+
+    public void ShowCardsMode()
+    {
+        if (cardsArea != null) cardsArea.SetActive(true);
+        if (detailsArea != null) detailsArea.SetActive(false);
+    }
+
+    public void ShowDetailsMode()
+    {
+        if (cardsArea != null) cardsArea.SetActive(false);
+        if (detailsArea != null) detailsArea.SetActive(true);
     }
 }

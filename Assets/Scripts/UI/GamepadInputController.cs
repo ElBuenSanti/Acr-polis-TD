@@ -239,12 +239,18 @@ public class GamepadInputController : MonoBehaviour
             return;
 
         if (!tile.IsOccupied)
+        {
+            Debug.Log("Tile is empty");
             return;
+        }
 
-        ConstructionController construction = tile.GetComponentInChildren<ConstructionController>();
+        ConstructionController construction = FindConstructionOnTile(tile);
 
         if (construction == null)
+        {
+            Debug.Log("No construction found on this tile");
             return;
+        }
 
         BuildingManager.Instance.Select(construction);
 
@@ -254,5 +260,21 @@ public class GamepadInputController : MonoBehaviour
         }
 
         GameStateController.Instance.SetState(GameState.RadialOpen);
+    }
+
+    private ConstructionController FindConstructionOnTile(Tile tile)
+    {
+        foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
+        {
+            if (construction == null)
+                continue;
+
+            if (construction.GetTile() == tile)
+            {
+                return construction.GetComponent<ConstructionController>();
+            }
+        }
+
+        return null;
     }
 }
