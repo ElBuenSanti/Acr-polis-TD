@@ -32,6 +32,8 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private GameObject cardsArea;
     [SerializeField] private GameObject detailsArea;
 
+    [Header("Confirm Icons")]
+    [SerializeField] private GameObject[] confirmIcons;
     private void Awake()
     {
         if (shopCanvasGroup == null)
@@ -134,6 +136,9 @@ public class ShopUI : MonoBehaviour
 
             if (cardHighlights[i] != null)
                 cardHighlights[i].enabled = isSelected;
+
+            if (i < confirmIcons.Length && confirmIcons[i] != null)
+                confirmIcons[i].SetActive(isSelected);
 
             if (i < shopConstructions.Length && shopConstructions[i] != null)
             {

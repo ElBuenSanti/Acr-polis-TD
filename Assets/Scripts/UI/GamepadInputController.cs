@@ -7,6 +7,9 @@ public class GamepadInputController : MonoBehaviour
     [SerializeField] private GridSelector selector;
     [SerializeField] private RadialMenuUI radialMenu;
     [SerializeField] private ShopUI shopUI;
+    [SerializeField] private PauseMenuUI pauseMenuUI;
+
+    [SerializeField] private GameSpeedUI gameSpeedUI;
 
     private void Awake()
     {
@@ -18,6 +21,12 @@ public class GamepadInputController : MonoBehaviour
 
         if (shopUI == null)
             shopUI = FindAnyObjectByType<ShopUI>();
+
+        if (gameSpeedUI == null)
+            gameSpeedUI = FindAnyObjectByType<GameSpeedUI>();
+
+        if (pauseMenuUI == null)
+            pauseMenuUI = FindAnyObjectByType<PauseMenuUI>();
     }
 
     // ---------------------------
@@ -129,6 +138,15 @@ public class GamepadInputController : MonoBehaviour
             GameStateController.Instance.SetState(GameState.MapIdle);
             return;
         }
+
+        // PAUSE (B para cerrar pausa)
+        if (state == GameState.Paused)
+        {
+            if (pauseMenuUI != null)
+                pauseMenuUI.Close();
+
+            return;
+        }
     }
 
     // ---------------------------
@@ -163,10 +181,10 @@ public class GamepadInputController : MonoBehaviour
         if (GameStateController.Instance.currentState != GameState.MapIdle)
             return;
 
-        if (WaveSpawner.Instance.IsWaveRunning())
-            return;
-
-        WaveSpawner.Instance.StartWave();
+        if (gameSpeedUI != null)
+        {
+            gameSpeedUI.ToggleSpeed();
+        }
     }
 
     // ---------------------------
@@ -177,15 +195,14 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
-        if (GameStateController.Instance.currentState == GameState.Paused)
+        if (pauseMenuUI != null)
         {
-            GameStateController.Instance.SetState(GameState.MapIdle);
-        }
-        else
-        {
-            GameStateController.Instance.SetState(GameState.Paused);
+            pauseMenuUI.Toggle();
         }
     }
+
+
+
 
     // ---------------------------
     // SHOP (LT / RT)

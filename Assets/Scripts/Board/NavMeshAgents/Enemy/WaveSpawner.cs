@@ -8,6 +8,8 @@ public class WaveSpawner : MonoBehaviour
 
     public event Action OnWaveEnded;
     public event Action OnWaveStarted;
+    public event Action<float> OnWaveProgressChanged;
+    public event Action<int, int> OnWaveIndexChanged;
 
     public WaveData[] waves;
     public Transform[] spawnPoints;
@@ -79,8 +81,11 @@ public class WaveSpawner : MonoBehaviour
             StartCoroutine(RunWave(waves[currentWaveIndex]));
         }
 
-        OnWaveStarted?.Invoke();
         waveRunning = true;
+
+        OnWaveIndexChanged?.Invoke(GetCurrentWaveNumber(), GetTotalWaves());
+        OnWaveStarted?.Invoke();
+        ShowStatus("Oleada iniciada");
 
     }
 
@@ -160,9 +165,12 @@ public class WaveSpawner : MonoBehaviour
             yield return new WaitForSeconds(wave.spawnFrequency);
 
             timer += wave.spawnFrequency;
+            OnWaveProgressChanged?.Invoke(timer / wave.waveDuration);
         }
         currentWaveIndex++;
         waveRunning = false;
+
+        OnWaveProgressChanged?.Invoke(1f);
 
         ShowStatus("Fin de la Oleada");
 
@@ -195,5 +203,15 @@ public class WaveSpawner : MonoBehaviour
             StatusMessageUI.Instance.ShowMessage(message);
 
         Debug.Log(message);
+    }
+
+    public int GetCurrentWaveNumber()
+    {
+        return currentWaveIndex + 1;
+    }
+
+    public int GetTotalWaves()
+    {
+        return waves.Length;
     }
 }

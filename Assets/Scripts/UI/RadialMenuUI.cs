@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -19,10 +20,10 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private ConstructionDatabase database;
 
     [Header("Highlights")]
-    [SerializeField] private Image aphroditeHighlight;
-    [SerializeField] private Image aresHighlight;
-    [SerializeField] private Image hephaestusHighlight;
-    [SerializeField] private Image sellHighlight;
+    [SerializeField] private RadialOptionVisual aphroditeHighlight;
+    [SerializeField] private RadialOptionVisual aresHighlight;
+    [SerializeField] private RadialOptionVisual hephaestusHighlight;
+    [SerializeField] private RadialOptionVisual sellHighlight;
 
     [Header("Cost Texts")]
     [SerializeField] private TextMeshProUGUI aphroditeCostText;
@@ -39,10 +40,19 @@ public class RadialMenuUI : MonoBehaviour
     [Header("Sell Hold")]
     [SerializeField] private float sellHoldTime = 3f;
     [SerializeField] private float refundPercent = 0.75f;
+    [SerializeField] private GameObject sellHoldFillObject;
     [SerializeField] private Image sellHoldFillImage;
 
     [Header("Selection")]
     [SerializeField] private RadialOption selectedOption = RadialOption.None;
+
+    [Header("Radial Animation")]
+    [SerializeField] private CanvasGroup radialCanvasGroup;
+    [SerializeField] private float openAnimationTime = 0.15f;
+    [SerializeField] private float startScale = 0.85f;
+    [SerializeField] private float endScale = 1f;
+
+    private Coroutine radialAnimationRoutine;
 
     private ConstructionController selectedConstruction;
     private float sellTimer;
@@ -105,6 +115,7 @@ public class RadialMenuUI : MonoBehaviour
 
         if (radialCanvas != null)
             radialCanvas.enabled = true;
+            PlayOpenAnimation();
 
         if (shopUI != null)
             shopUI.ShowDetailsMode();
@@ -340,10 +351,13 @@ public class RadialMenuUI : MonoBehaviour
 
     private void UpdateSellHoldVisual()
     {
-        if (sellHoldFillImage == null)
-            return;
+        bool isSelling = selectedOption == RadialOption.Sell && sellTimer > 0f;
 
-        sellHoldFillImage.fillAmount = Mathf.Clamp01(sellTimer / sellHoldTime);
+        if (sellHoldFillObject != null)
+            sellHoldFillObject.SetActive(isSelling);
+
+        if (sellHoldFillImage != null)
+            sellHoldFillImage.fillAmount = Mathf.Clamp01(sellTimer / sellHoldTime);
     }
 
     private bool IsOptionLocked(RadialOption option)
@@ -475,10 +489,10 @@ public class RadialMenuUI : MonoBehaviour
         return data.willToPay[0].amount.ToString("0");
     }
 
-    private void SetHighlight(Image image, bool active)
+    private void SetHighlight(RadialOptionVisual highlight, bool active)
     {
-        if (image != null)
-            image.enabled = active;
+        if (highlight != null)
+            highlight.SetActiveVisual(active);
     }
 
 
@@ -488,5 +502,46 @@ public class RadialMenuUI : MonoBehaviour
             StatusMessageUI.Instance.ShowMessage(message);
 
         Debug.Log(message);
+    }
+
+    private void PlayOpenAnimation()
+    {
+        if (radialAnimationRoutine != null)
+            StopCoroutine(radialAnimationRoutine);
+
+        radialAnimationRoutine = StartCoroutine(OpenAnimationRoutine());
+    }
+
+    private IEnumerator OpenAnimationRoutine()
+    {
+        float timer = 0f;
+
+        radialPanel.localScale = Vector3.one * startScale;
+
+        if (radialCanvasGroup != null)
+            radialCanvasGroup.alpha = 0f;
+
+        while (timer < openAnimationTime)
+        {
+            timer += Time.deltaTime;
+            float t = timer / openAnimationTime;
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            radialPanel.localScale = Vector3.Lerp(
+                Vector3.one * startScale,
+                Vector3.one * endScale,
+                t
+            );
+
+            if (radialCanvasGroup != null)
+                radialCanvasGroup.alpha = t;
+
+            yield return null;
+        }
+
+        radialPanel.localScale = Vector3.one * endScale;
+
+        if (radialCanvasGroup != null)
+            radialCanvasGroup.alpha = 1f;
     }
 }
