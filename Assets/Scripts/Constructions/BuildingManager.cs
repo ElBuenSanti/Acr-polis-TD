@@ -50,6 +50,7 @@ public class BuildingManager : MonoBehaviour
         tempVariable = index;
 
         currentBuilding = buildingDataList[tempVariable];
+        ShowStatus("Seleccionaste: " + currentBuilding.type);
 
         UpdatePreview();
     }
@@ -105,6 +106,13 @@ public class BuildingManager : MonoBehaviour
     //Positioning base type buildings
     public void PlaceBuilding(Tile tile)
     {
+
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            ShowStatus("No puedes construir durante la oleada");
+            return;
+        }
+
         if (moveMode)
         {
             MoveConstruction(tile);
@@ -112,7 +120,10 @@ public class BuildingManager : MonoBehaviour
         }
 
         if (currentBuilding == null)
+        {
+            ShowStatus("Primero selecciona una construcción");
             return;
+        }
 
         List<Tile> tilesToBuild = new List<Tile>();
 
@@ -131,7 +142,7 @@ public class BuildingManager : MonoBehaviour
 
             if (t.IsOccupied)
             {
-                Debug.Log("Espacio ocupado");
+                ShowStatus("Espacio ocupado");
                 return;
             }
         }
@@ -145,7 +156,7 @@ public class BuildingManager : MonoBehaviour
         {
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
-                Debug.Log("No te alcanza");
+                ShowStatus("No tienes suficientes recursos");
                 return;
             }
         }
@@ -184,6 +195,8 @@ public class BuildingManager : MonoBehaviour
             constructionController.Initialize(currentBuilding); //, t.transform
         }
 
+        ShowStatus("Construcción colocada");
+
         return;
     }
 
@@ -206,6 +219,13 @@ public class BuildingManager : MonoBehaviour
     //Move Constructions from tile
     public void TryEnterMoveMode()
     {
+
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            ShowStatus("No puedes mover estructuras durante la oleada");
+            return;
+        }
+
         if (selectedConstruction == null)
             return;
 
@@ -213,14 +233,14 @@ public class BuildingManager : MonoBehaviour
 
         if (baseConstruction.Data.type == ConstructionType.Temple)
         {
-            Debug.Log("El templo no se puede mover");
+            ShowStatus("El templo no se puede mover");
             return;
         }
 
         moveMode = true;
         constructionToMove = selectedConstruction;
 
-        Debug.Log("Modo mover activado");
+        ShowStatus("Modo Mover activado");
     }
 
     void MoveConstruction(Tile newTile)
@@ -256,13 +276,13 @@ public class BuildingManager : MonoBehaviour
         {
             if (tile == null)
             {
-                Debug.Log("Espacio inválido");
+                ShowStatus("Espacio Inválido");
                 return;
             }
 
             if (tile.IsOccupied && !oldTiles.Contains(tile))
             {
-                Debug.Log("Espacio ocupado");
+                ShowStatus("Espacio ocupado");
                 return;
             }
         }
@@ -295,7 +315,18 @@ public class BuildingManager : MonoBehaviour
         moveMode = false;
         constructionToMove = null;
 
-        Debug.Log("Construcción movida con éxito");
+        ShowStatus("Construcción movida con éxito");
+    }
+
+
+    private void ShowStatus(string message)
+    {
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage(message);
+
+        Debug.Log(message);
     }
 
 }
+
+

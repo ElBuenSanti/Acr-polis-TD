@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -35,30 +36,23 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hephaestusLevelText;
     [SerializeField] private TextMeshProUGUI sellLevelText;
 
+    [Header("Sell Hold")]
+    [SerializeField] private float sellHoldTime = 3f;
+    [SerializeField] private float refundPercent = 0.75f;
+    [SerializeField] private Image sellHoldFillImage;
+
     [Header("Selection")]
     [SerializeField] private RadialOption selectedOption = RadialOption.None;
 
-    [Header("Resources God Icon")]
-    [SerializeField] private Image aphroditeCostIcon;
-    [SerializeField] private Image aresCostIcon;
-    [SerializeField] private Image hephaestusCostIcon;
-    [SerializeField] private Image sellCostIcon;
-
     private ConstructionController selectedConstruction;
+    private float sellTimer;
 
     private void Awake()
     {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
-        if (shopUI == null)
-            shopUI = FindAnyObjectByType<ShopUI>();
-
-        if (detailsUI == null)
-            detailsUI = FindAnyObjectByType<ConstructionDetailsUI>();
-
-        if (database == null)
-            database = FindAnyObjectByType<ConstructionDatabase>();
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (shopUI == null) shopUI = FindAnyObjectByType<ShopUI>();
+        if (detailsUI == null) detailsUI = FindAnyObjectByType<ConstructionDetailsUI>();
+        if (database == null) database = FindAnyObjectByType<ConstructionDatabase>();
     }
 
     private void Start()
@@ -66,10 +60,46 @@ public class RadialMenuUI : MonoBehaviour
         Close();
     }
 
+    private void Update()
+    {
+        if (radialCanvas == null || !radialCanvas.enabled)
+            return;
+
+        if (selectedOption != RadialOption.Sell)
+        {
+            sellTimer = 0f;
+            UpdateSellHoldVisual();
+            return;
+        }
+
+        if (selectedConstruction == null || IsTempleSelected())
+        {
+            ShowStatus("El templo no se puede vender");
+            return;
+        }
+        
+        sellTimer += Time.deltaTime;
+        UpdateSellHoldVisual();
+
+        if (sellTimer >= sellHoldTime)
+        {
+            SellSelectedConstruction();
+            Close();
+            GameStateController.Instance.SetState(GameState.MapIdle);
+        }
+    }
+
     public void Open(ConstructionController construction)
     {
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            ShowStatus("No puedes mejorar durante la oleada");
+            return;
+        }
+
         selectedConstruction = construction;
         selectedOption = RadialOption.None;
+        sellTimer = 0f;
 
         MoveRadialToConstruction();
 
@@ -80,16 +110,18 @@ public class RadialMenuUI : MonoBehaviour
             shopUI.ShowDetailsMode();
 
         if (detailsUI != null)
-            detailsUI.Clear();
+            detailsUI.ShowBaseDetails(selectedConstruction);
 
         RefreshLevelTexts();
         RefreshVisuals();
+        UpdateSellHoldVisual();
     }
 
     public void Close()
     {
         selectedConstruction = null;
         selectedOption = RadialOption.None;
+        sellTimer = 0f;
 
         if (radialCanvas != null)
             radialCanvas.enabled = false;
@@ -101,6 +133,7 @@ public class RadialMenuUI : MonoBehaviour
             detailsUI.Clear();
 
         RefreshVisuals();
+        UpdateSellHoldVisual();
     }
 
     public void ReadStick(Vector2 input)
@@ -109,7 +142,21 @@ public class RadialMenuUI : MonoBehaviour
             return;
 
         if (input.magnitude < 0.55f)
+        {
+            if (selectedOption != RadialOption.None)
+            {
+                selectedOption = RadialOption.None;
+                sellTimer = 0f;
+
+                if (detailsUI != null)
+                    detailsUI.ShowBaseDetails(selectedConstruction);
+
+                RefreshVisuals();
+                UpdateSellHoldVisual();
+            }
+
             return;
+        }
 
         RadialOption newOption;
 
@@ -126,24 +173,30 @@ public class RadialMenuUI : MonoBehaviour
             return;
 
         selectedOption = newOption;
+        sellTimer = 0f;
 
         if (detailsUI != null)
             detailsUI.ShowDetails(selectedConstruction, selectedOption);
 
         RefreshVisuals();
+        UpdateSellHoldVisual();
     }
 
     public void Confirm()
     {
-        if (selectedConstruction == null)
-            return;
 
-        if (selectedOption == RadialOption.None)
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            ShowStatus("No puedes hacer esto durante la oleada");
+            return;
+        }
+
+        if (selectedConstruction == null || selectedOption == RadialOption.None)
             return;
 
         if (IsOptionLocked(selectedOption))
         {
-            Debug.Log("This upgrade path is locked.");
+            ShowStatus("Este camino de mejora está bloqueado");
             return;
         }
 
@@ -165,8 +218,8 @@ public class RadialMenuUI : MonoBehaviour
                 break;
 
             case RadialOption.Sell:
-                Debug.Log("Sell is not implemented yet.");
-                break;
+                ShowStatus("Holdea stick para vender");
+                return;
         }
 
         Close();
@@ -179,7 +232,14 @@ public class RadialMenuUI : MonoBehaviour
             return;
 
         Vector3 screenPosition = mainCamera.WorldToScreenPoint(selectedConstruction.transform.position);
-        radialPanel.position = screenPosition + (Vector3)screenOffset;
+        Vector3 targetPosition = screenPosition + (Vector3)screenOffset;
+
+        float padding = 170f;
+
+        targetPosition.x = Mathf.Clamp(targetPosition.x, padding, Screen.width - padding);
+        targetPosition.y = Mathf.Clamp(targetPosition.y, padding, Screen.height - padding);
+
+        radialPanel.position = targetPosition;
     }
 
     private void RefreshVisuals()
@@ -193,11 +253,6 @@ public class RadialMenuUI : MonoBehaviour
         UpdateCostText(aresCostText, RadialOption.Ares);
         UpdateCostText(hephaestusCostText, RadialOption.Hephaestus);
         UpdateCostText(sellCostText, RadialOption.Sell);
-
-        SetCostIconVisible(aphroditeCostIcon, selectedOption == RadialOption.Aphrodite);
-        SetCostIconVisible(aresCostIcon, selectedOption == RadialOption.Ares);
-        SetCostIconVisible(hephaestusCostIcon, selectedOption == RadialOption.Hephaestus);
-        SetCostIconVisible(sellCostIcon, selectedOption == RadialOption.Sell);
     }
 
     private void RefreshLevelTexts()
@@ -207,13 +262,12 @@ public class RadialMenuUI : MonoBehaviour
         UpdateLevelText(hephaestusLevelText, RadialOption.Hephaestus);
 
         if (sellLevelText != null)
-            sellLevelText.text = "Sell";
+            sellLevelText.text = IsTempleSelected() ? "No Sell" : "Sell";
     }
 
     private void UpdateLevelText(TextMeshProUGUI text, RadialOption option)
     {
-        if (text == null)
-            return;
+        if (text == null) return;
 
         if (IsOptionLocked(option))
         {
@@ -222,7 +276,6 @@ public class RadialMenuUI : MonoBehaviour
         }
 
         ConstructionData currentData = GetCurrentData();
-
         if (currentData == null)
         {
             text.text = "";
@@ -233,30 +286,35 @@ public class RadialMenuUI : MonoBehaviour
         int nextLevel = currentData.level + 1;
 
         ConstructionData nextData = database.GetData(currentData.type, god, nextLevel);
-
-        if (nextData == null)
-        {
-            text.text = "MAX";
-            return;
-        }
-
-        text.text = "Level " + nextLevel;
+        text.text = nextData == null ? "MAX" : "Level " + nextLevel;
     }
 
     private void UpdateCostText(TextMeshProUGUI text, RadialOption option)
     {
-        if (text == null)
-            return;
+        if (text == null) return;
 
         bool shouldShow = selectedOption == option;
         text.gameObject.SetActive(shouldShow);
 
-        if (!shouldShow)
-            return;
+        if (!shouldShow) return;
 
         if (option == RadialOption.Sell)
         {
-            text.text = "$";
+            ConstructionData currentData = GetCurrentData();
+
+            if (currentData == null)
+            {
+                text.text = "";
+                return;
+            }
+
+            if (currentData.type == ConstructionType.Temple)
+            {
+                text.text = "No";
+                return;
+            }
+
+            text.text = GetTotalRefund(currentData).ToString("0");
             return;
         }
 
@@ -266,79 +324,146 @@ public class RadialMenuUI : MonoBehaviour
             return;
         }
 
-        ConstructionData currentData = GetCurrentData();
-
-        if (currentData == null)
+        ConstructionData data = GetCurrentData();
+        if (data == null)
         {
             text.text = "";
             return;
         }
 
         GodType god = GetGodFromOption(option);
-        int nextLevel = currentData.level + 1;
+        int nextLevel = data.level + 1;
+        ConstructionData nextData = database.GetData(data.type, god, nextLevel);
 
-        ConstructionData nextData = database.GetData(currentData.type, god, nextLevel);
-
-        if (nextData == null)
-        {
-            text.text = "MAX";
-            return;
-        }
-
-        text.text = GetCostText(nextData);
+        text.text = nextData == null ? "MAX" : GetCostText(nextData);
     }
 
-    private void SetCostIconVisible(Image image, bool active)
+    private void UpdateSellHoldVisual()
     {
-        if (image != null)
-            image.gameObject.SetActive(active);
+        if (sellHoldFillImage == null)
+            return;
+
+        sellHoldFillImage.fillAmount = Mathf.Clamp01(sellTimer / sellHoldTime);
     }
+
     private bool IsOptionLocked(RadialOption option)
     {
-        if (option == RadialOption.Sell)
-            return false;
+        if (option == RadialOption.Sell) return false;
 
         ConstructionData currentData = GetCurrentData();
-
-        if (currentData == null)
+        if (currentData == null || currentData.god == GodType.Base)
             return false;
 
-        if (currentData.god == GodType.Base)
-            return false;
+        return currentData.god != GetGodFromOption(option);
+    }
 
-        GodType optionGod = GetGodFromOption(option);
+    private bool IsTempleSelected()
+    {
+        ConstructionData data = GetCurrentData();
+        return data != null && data.type == ConstructionType.Temple;
+    }
 
-        return currentData.god != optionGod;
+    private void SellSelectedConstruction()
+    {
+        if (selectedConstruction == null || IsTempleSelected())
+            return;
+
+        RefundConstruction(selectedConstruction);
+
+        BaseConstruction baseConstruction = selectedConstruction.GetComponent<BaseConstruction>();
+        if (baseConstruction == null) return;
+
+        if (selectedConstruction.group != null && selectedConstruction.group.members.Count > 0)
+        {
+            List<ConstructionController> membersCopy = new List<ConstructionController>(selectedConstruction.group.members);
+
+            foreach (ConstructionController member in membersCopy)
+            {
+                if (member == null) continue;
+
+                BaseConstruction memberConstruction = member.GetComponent<BaseConstruction>();
+                if (memberConstruction != null)
+                    memberConstruction.Die();
+            }
+
+            Destroy(selectedConstruction.group.gameObject);
+        }
+        else
+        {
+            baseConstruction.Die();
+        }
+
+        BuildingManager.Instance.selectedConstruction = null;
+        ShowStatus("Construcción vendida");
+    }
+
+    private void RefundConstruction(ConstructionController construction)
+    {
+        BaseConstruction baseConstruction = construction.GetComponent<BaseConstruction>();
+        if (baseConstruction == null || baseConstruction.Data == null) return;
+
+        foreach (WillProduction refund in GetRefundList(baseConstruction.Data))
+        {
+            WillManager.Instance.AddMoney(refund.type, refund.amount * refundPercent);
+        }
+    }
+
+    private float GetTotalRefund(ConstructionData currentData)
+    {
+        float total = 0f;
+
+        foreach (WillProduction refund in GetRefundList(currentData))
+            total += refund.amount * refundPercent;
+
+        return total;
+    }
+
+    private List<WillProduction> GetRefundList(ConstructionData currentData)
+    {
+        List<WillProduction> refunds = new List<WillProduction>();
+
+        AddCosts(refunds, currentData);
+
+        if (currentData.god != GodType.Base)
+        {
+            for (int level = 2; level <= currentData.level; level++)
+                AddCosts(refunds, database.GetData(currentData.type, currentData.god, level));
+        }
+
+        return refunds;
+    }
+
+    private void AddCosts(List<WillProduction> refunds, ConstructionData data)
+    {
+        if (data == null || data.willToPay == null) return;
+
+        foreach (WillProduction cost in data.willToPay)
+        {
+            WillProduction existing = refunds.Find(x => x.type == cost.type);
+
+            if (existing != null)
+                existing.amount += cost.amount;
+            else
+                refunds.Add(new WillProduction { type = cost.type, amount = cost.amount });
+        }
     }
 
     private ConstructionData GetCurrentData()
     {
-        if (selectedConstruction == null)
-            return null;
+        if (selectedConstruction == null) return null;
 
         BaseConstruction baseConstruction = selectedConstruction.GetComponent<BaseConstruction>();
-
-        if (baseConstruction == null)
-            return null;
-
-        return baseConstruction.Data;
+        return baseConstruction != null ? baseConstruction.Data : null;
     }
 
     private GodType GetGodFromOption(RadialOption option)
     {
         switch (option)
         {
-            case RadialOption.Aphrodite:
-                return GodType.Aphrodite;
-
-            case RadialOption.Ares:
-                return GodType.Ares;
-
-            case RadialOption.Hephaestus:
-                return GodType.Hephaestus;
-
-            default:
-                return GodType.Base;
+            case RadialOption.Aphrodite: return GodType.Aphrodite;
+            case RadialOption.Ares: return GodType.Ares;
+            case RadialOption.Hephaestus: return GodType.Hephaestus;
+            default: return GodType.Base;
         }
     }
 
@@ -347,13 +472,21 @@ public class RadialMenuUI : MonoBehaviour
         if (data.willToPay == null || data.willToPay.Count == 0)
             return "0";
 
-        WillProduction cost = data.willToPay[0];
-        return cost.amount.ToString("0");
+        return data.willToPay[0].amount.ToString("0");
     }
 
     private void SetHighlight(Image image, bool active)
     {
         if (image != null)
             image.enabled = active;
+    }
+
+
+    private void ShowStatus(string message)
+    {
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage(message);
+
+        Debug.Log(message);
     }
 }

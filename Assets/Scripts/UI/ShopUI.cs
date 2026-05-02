@@ -54,6 +54,14 @@ public class ShopUI : MonoBehaviour
 
     public void Open()
     {
+
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            if (StatusMessageUI.Instance != null)
+                StatusMessageUI.Instance.ShowMessage("No puedes abrir la tienda durante la oleada");
+
+            return;
+        }
         GameStateController.Instance.SetState(GameState.ShopOpen);
         RefreshCards();
     }
@@ -100,6 +108,15 @@ public class ShopUI : MonoBehaviour
 
     public void ConfirmSelection()
     {
+
+        if (WaveSpawner.Instance.IsWaveRunning())
+        {
+            if (StatusMessageUI.Instance != null)
+                StatusMessageUI.Instance.ShowMessage("No puedes construir durante la oleada");
+
+            return;
+        }
+
         if (GameStateController.Instance.currentState != GameState.ShopOpen)
             return;
 

@@ -45,7 +45,7 @@ public class WaveSpawner : MonoBehaviour
     void SetGod(GodType god)
     {
         currentGod = god;
-        Debug.Log("Spawner recibió dios: " + god);
+        ShowStatus("Spawner recibió dios: " + god);
     }
 
     //Wave manager
@@ -66,6 +66,8 @@ public class WaveSpawner : MonoBehaviour
             if (currentGod == GodType.Base)
             {
                 Debug.LogError("No se ha seleccionado un camino divino, si desea pasar a la oleada final, debe mejorar el templo");
+                ShowStatus("No se ha seleccionado un camino divino, si desea pasar a la oleada final, debe mejorar el templo");
+
                 return;
             }
 
@@ -113,13 +115,14 @@ public class WaveSpawner : MonoBehaviour
 
     void SpawnFinalBoss(WaveData wave)
     {
-        Debug.Log("Aquí boss Final");
+        ShowStatus("Boss Final");
 
         EnemyData bossData = wave.GetBossForGod(currentGod);
 
         if (bossData == null)
         {
             Debug.LogError("No hay boss para el dios: " + currentGod);
+            ShowStatus("No hay boss para el dios: " + currentGod);
             return;
         }
 
@@ -130,7 +133,7 @@ public class WaveSpawner : MonoBehaviour
         Enemy enemy = obj.GetComponent<Enemy>();
         enemy.Initialize(bossData);
 
-        Debug.Log("Boss spawneado: " + bossData.name + " para dios: " + currentGod);
+        ShowStatus("Boss spawneado: " + bossData.name + " para dios: " + currentGod);
 
     }
 
@@ -161,7 +164,7 @@ public class WaveSpawner : MonoBehaviour
         currentWaveIndex++;
         waveRunning = false;
 
-        Debug.Log("Fin de la oleada");
+        ShowStatus("Fin de la Oleada");
 
         OnWaveEnded?.Invoke();
     }
@@ -183,5 +186,14 @@ public class WaveSpawner : MonoBehaviour
         }
 
         return wave.enemies[0];
+    }
+
+
+    private void ShowStatus(string message)
+    {
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage(message);
+
+        Debug.Log(message);
     }
 }

@@ -10,9 +10,9 @@ public class StatBarUI : MonoBehaviour
     [SerializeField] private Image changeBar;
 
     [Header("Colors")]
+    [SerializeField] private Color baseColor = Color.gray;
     [SerializeField] private Color upgradeColor = Color.green;
     [SerializeField] private Color downgradeColor = Color.red;
-    [SerializeField] private Color sameColor = Color.yellow;
 
     public void SetStat(string statName, float currentValue, float newValue, float maxValue)
     {
@@ -25,19 +25,21 @@ public class StatBarUI : MonoBehaviour
         float currentFill = Mathf.Clamp01(currentValue / maxValue);
         float newFill = Mathf.Clamp01(newValue / maxValue);
 
-        if (baseBar != null)
-            baseBar.fillAmount = currentFill;
+        SetBarRange(baseBar, 0f, currentFill, baseColor);
 
-        if (changeBar != null)
+        if (Mathf.Approximately(currentFill, newFill))
         {
-            changeBar.fillAmount = newFill;
+            SetBarRange(changeBar, 0f, 0f, upgradeColor);
+            return;
+        }
 
-            if (newValue > currentValue)
-                changeBar.color = upgradeColor;
-            else if (newValue < currentValue)
-                changeBar.color = downgradeColor;
-            else
-                changeBar.color = sameColor;
+        if (newFill > currentFill)
+        {
+            SetBarRange(changeBar, currentFill - 0.01f, newFill, upgradeColor);
+        }
+        else
+        {
+            SetBarRange(changeBar, newFill, currentFill + 0.01f, downgradeColor);
         }
     }
 
@@ -46,10 +48,22 @@ public class StatBarUI : MonoBehaviour
         if (statNameText != null)
             statNameText.text = "";
 
-        if (baseBar != null)
-            baseBar.fillAmount = 0;
+        SetBarRange(baseBar, 0f, 0f, baseColor);
+        SetBarRange(changeBar, 0f, 0f, upgradeColor);
+    }
 
-        if (changeBar != null)
-            changeBar.fillAmount = 0;
+    private void SetBarRange(Image image, float minFill, float maxFill, Color color)
+    {
+        if (image == null)
+            return;
+
+        RectTransform rect = image.rectTransform;
+
+        rect.anchorMin = new Vector2(0f, minFill);
+        rect.anchorMax = new Vector2(1f, maxFill);
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        image.color = color;
     }
 }

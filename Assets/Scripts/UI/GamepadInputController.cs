@@ -87,6 +87,12 @@ public class GamepadInputController : MonoBehaviour
             GameStateController.Instance.SetState(GameState.MapIdle);
             return;
         }
+
+        if (state == GameState.PlacingTower || state == GameState.MovingTower || state == GameState.RadialOpen)
+        {
+            if (IsWaveBlockingAction())
+                return;
+        }
     }
 
     // ---------------------------
@@ -133,7 +139,7 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
-        if (WaveSpawner.Instance.IsWaveRunning())
+        if (IsWaveBlockingAction())
             return;
 
         if (GameStateController.Instance.currentState != GameState.MapIdle)
@@ -189,7 +195,7 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
-        if (WaveSpawner.Instance.IsWaveRunning())
+        if (IsWaveBlockingAction())
             return;
 
         shopUI.Toggle();
@@ -200,7 +206,7 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
-        if (WaveSpawner.Instance.IsWaveRunning())
+        if (IsWaveBlockingAction())
             return;
 
         shopUI.Toggle();
@@ -276,5 +282,17 @@ public class GamepadInputController : MonoBehaviour
         }
 
         return null;
+    }
+
+
+    private bool IsWaveBlockingAction()
+    {
+        if (!WaveSpawner.Instance.IsWaveRunning())
+            return false;
+
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage("No puedes hacer esto durante la oleada");
+
+        return true;
     }
 }
