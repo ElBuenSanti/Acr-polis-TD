@@ -51,15 +51,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "MoveTower",
-                    "type": "Button",
-                    "id": "75bcaf2f-d508-4f1d-b2d2-a9ad21ac349a",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "StartWave",
                     "type": "Button",
                     "id": "13975a12-e5f7-422a-bca0-40c384f8e7ea",
@@ -158,17 +149,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "OpenShopRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "fb1d5317-4dee-4dc6-964c-aab17d2bc606",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "MoveTower",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

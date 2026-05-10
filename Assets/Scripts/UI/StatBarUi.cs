@@ -1,6 +1,6 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class StatBarUI : MonoBehaviour
 {
@@ -13,33 +13,41 @@ public class StatBarUI : MonoBehaviour
     [SerializeField] private Color baseColor = Color.gray;
     [SerializeField] private Color upgradeColor = Color.green;
     [SerializeField] private Color downgradeColor = Color.red;
+    [SerializeField] private Color sameColor = Color.clear;
 
-    public void SetStat(string statName, float currentValue, float newValue, float maxValue)
+    public void SetStat(string statName, float currentValue, float nextValue, float maxValue)
     {
         if (statNameText != null)
             statNameText.text = statName;
 
-        if (maxValue <= 0)
-            maxValue = 1;
+        float currentFill = maxValue <= 0 ? 0 : Mathf.Clamp01(currentValue / maxValue);
+        float nextFill = maxValue <= 0 ? 0 : Mathf.Clamp01(nextValue / maxValue);
 
-        float currentFill = Mathf.Clamp01(currentValue / maxValue);
-        float newFill = Mathf.Clamp01(newValue / maxValue);
-
-        SetBarRange(baseBar, 0f, currentFill, baseColor);
-
-        if (Mathf.Approximately(currentFill, newFill))
+        if (baseBar != null)
         {
-            SetBarRange(changeBar, 0f, 0f, upgradeColor);
+            baseBar.color = baseColor;
+            baseBar.fillAmount = currentFill;
+        }
+
+        if (changeBar == null)
+            return;
+
+        if (Mathf.Approximately(currentFill, nextFill))
+        {
+            changeBar.color = sameColor;
+            changeBar.fillAmount = 0f;
             return;
         }
 
-        if (newFill > currentFill)
+        if (nextFill > currentFill)
         {
-            SetBarRange(changeBar, currentFill - 0.01f, newFill, upgradeColor);
+            changeBar.color = upgradeColor;
+            changeBar.fillAmount = nextFill;
         }
         else
         {
-            SetBarRange(changeBar, newFill, currentFill + 0.01f, downgradeColor);
+            changeBar.color = downgradeColor;
+            changeBar.fillAmount = currentFill;
         }
     }
 
@@ -48,22 +56,10 @@ public class StatBarUI : MonoBehaviour
         if (statNameText != null)
             statNameText.text = "";
 
-        SetBarRange(baseBar, 0f, 0f, baseColor);
-        SetBarRange(changeBar, 0f, 0f, upgradeColor);
-    }
+        if (baseBar != null)
+            baseBar.fillAmount = 0f;
 
-    private void SetBarRange(Image image, float minFill, float maxFill, Color color)
-    {
-        if (image == null)
-            return;
-
-        RectTransform rect = image.rectTransform;
-
-        rect.anchorMin = new Vector2(0f, minFill);
-        rect.anchorMax = new Vector2(1f, maxFill);
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        image.color = color;
+        if (changeBar != null)
+            changeBar.fillAmount = 0f;
     }
 }

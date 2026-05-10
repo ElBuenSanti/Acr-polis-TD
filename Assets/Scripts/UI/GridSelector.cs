@@ -211,4 +211,13 @@ public class GridSelector : MonoBehaviour
             BuildingManager.Instance.ClearHover();
         }
     }
+
+    public void SetCurrentTile(Tile tile)
+    {
+        if (tile == null)
+            return;
+
+        currentTile = tile;
+        UpdateHover();
+    }
 }

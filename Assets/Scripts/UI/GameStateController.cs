@@ -8,7 +8,12 @@ public enum GameState
     RadialOpen,
     MovingTower,
     TownHallMenu,
-    Paused
+    Paused,
+    BlessingSelection,
+    Settings,
+    Controls,
+    EndGame,
+    MainMenu
 }
 
 public class GameStateController : MonoBehaviour

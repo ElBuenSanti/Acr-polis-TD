@@ -8,8 +8,22 @@ public class GamepadInputController : MonoBehaviour
     [SerializeField] private RadialMenuUI radialMenu;
     [SerializeField] private ShopUI shopUI;
     [SerializeField] private PauseMenuUI pauseMenuUI;
-
     [SerializeField] private GameSpeedUI gameSpeedUI;
+
+    [Header("D-Pad")]
+    [SerializeField] private int wallConstructionIndex = 3;
+    private bool dpadInUse;
+    [SerializeField] private DPadActionPanelUI dpadPanelUI;
+
+
+    [Header("Blessing Selection")]
+    [SerializeField] private BlessingChoiceUI blessingChoiceUI;
+
+    [Header("Settings")]
+    [SerializeField] private SettingsPanelUI settingsPanelUI;
+
+    [Header("Controls")]
+    [SerializeField] private ControlsPanelUI controlsPanelUI;
 
     private void Awake()
     {
@@ -27,6 +41,18 @@ public class GamepadInputController : MonoBehaviour
 
         if (pauseMenuUI == null)
             pauseMenuUI = FindAnyObjectByType<PauseMenuUI>();
+
+        if (dpadPanelUI == null)
+            dpadPanelUI = FindAnyObjectByType<DPadActionPanelUI>();
+
+        if (blessingChoiceUI == null)
+            blessingChoiceUI = FindAnyObjectByType<BlessingChoiceUI>();
+
+        if (settingsPanelUI == null)
+            settingsPanelUI = FindAnyObjectByType<SettingsPanelUI>();
+
+        if (controlsPanelUI == null)
+            controlsPanelUI = FindAnyObjectByType<ControlsPanelUI>();
     }
 
     // ---------------------------
@@ -35,6 +61,14 @@ public class GamepadInputController : MonoBehaviour
     public void OnMove(InputValue value)
     {
         Vector2 input = value.Get<Vector2>();
+
+        if (GameStateController.Instance.currentState == GameState.BlessingSelection)
+        {
+            if (blessingChoiceUI != null)
+                blessingChoiceUI.Move(input);
+
+            return;
+        }
 
         if (GameStateController.Instance.currentState == GameState.RadialOpen)
         {
@@ -55,10 +89,19 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     public void OnConfirm(InputValue value)
     {
+        
         if (!value.isPressed)
             return;
 
         GameState state = GameStateController.Instance.currentState;
+
+        if (state == GameState.BlessingSelection)
+        {
+            if (blessingChoiceUI != null)
+                blessingChoiceUI.Confirm();
+
+            return;
+        }
 
         // RADIAL
         if (state == GameState.RadialOpen)
@@ -139,11 +182,35 @@ public class GamepadInputController : MonoBehaviour
             return;
         }
 
+        if (state == GameState.Settings)
+        {
+            if (settingsPanelUI != null)
+                settingsPanelUI.CloseToPause();
+
+            return;
+        }
+
+        if (state == GameState.Controls)
+        {
+            if (controlsPanelUI != null)
+                controlsPanelUI.CloseToPause();
+
+            return;
+        }
+
         // PAUSE (B para cerrar pausa)
         if (state == GameState.Paused)
         {
             if (pauseMenuUI != null)
                 pauseMenuUI.Close();
+
+            return;
+        }
+
+        if (state == GameState.BlessingSelection)
+        {
+            if (blessingChoiceUI != null)
+                blessingChoiceUI.Close();
 
             return;
         }
@@ -277,6 +344,22 @@ public class GamepadInputController : MonoBehaviour
 
         BuildingManager.Instance.Select(construction);
 
+
+        BaseConstruction baseConstruction = construction.GetComponent<BaseConstruction>();
+
+        if (baseConstruction != null &&
+            baseConstruction.Data != null &&
+            baseConstruction.Data.type == ConstructionType.Temple &&
+            baseConstruction.Data.god == GodType.Base)
+        {
+            BuildingManager.Instance.Select(construction);
+
+            if (blessingChoiceUI != null)
+                blessingChoiceUI.Open(construction);
+
+            return;
+        }
+
         if (radialMenu != null)
         {
             radialMenu.Open(construction);
@@ -301,6 +384,56 @@ public class GamepadInputController : MonoBehaviour
         return null;
     }
 
+    public void OnDpad(InputValue value)
+    {
+        Vector2 input = value.Get<Vector2>();
+
+        if (input.magnitude < 0.4f)
+        {
+            dpadInUse = false;
+            return;
+        }
+
+        if (dpadInUse)
+            return;
+
+        dpadInUse = true;
+
+        if (GameStateController.Instance.currentState != GameState.MapIdle)
+            return;
+
+        if (IsWaveBlockingAction())
+            return;
+
+        if (input.y > 0.5f)
+        {
+            if (dpadPanelUI != null)
+                dpadPanelUI.FlashUp();
+
+            RepairWallShortcut();
+        }
+        else if (input.y < -0.5f)
+        {
+            if (dpadPanelUI != null)
+                dpadPanelUI.FlashDown();
+
+            BuildWallShortcut();
+        }
+        else if (input.x < -0.5f)
+        {
+            if (dpadPanelUI != null)
+                dpadPanelUI.FlashLeft();
+
+            MoveSelectedStructureShortcut();
+        }
+        else if (input.x > 0.5f)
+        {
+            if (dpadPanelUI != null)
+                dpadPanelUI.FlashRight();
+
+            FocusTempleShortcut();
+        }
+    }
 
     private bool IsWaveBlockingAction()
     {
@@ -311,5 +444,116 @@ public class GamepadInputController : MonoBehaviour
             StatusMessageUI.Instance.ShowMessage("No puedes hacer esto durante la oleada");
 
         return true;
+    }
+
+    private void BuildWallShortcut()
+    {
+        BuildingManager.Instance.SetConstructionIndex(wallConstructionIndex);
+        GameStateController.Instance.SetState(GameState.PlacingTower);
+
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage("Construir muro");
+    }
+
+    private void RepairWallShortcut()
+    {
+        Wall wall = FindAnyObjectByType<Wall>();
+
+        if (wall == null)
+        {
+            StatusMessageUI.Instance.ShowMessage("No hay muro para reparar");
+            return;
+        }
+
+        wall.RepairGroup();
+        StatusMessageUI.Instance.ShowMessage("Reparando muro");
+    }
+
+    private void MoveSelectedStructureShortcut()
+    {
+        Tile tile = selector.currentTile;
+
+        if (tile == null || !tile.IsOccupied)
+        {
+            StatusMessageUI.Instance.ShowMessage("Colócate sobre una estructura para moverla");
+            return;
+        }
+
+        ConstructionController construction = FindConstructionOnTile(tile);
+
+        if (construction == null)
+        {
+            StatusMessageUI.Instance.ShowMessage("No hay estructura para mover");
+            return;
+        }
+
+        BuildingManager.Instance.Select(construction);
+
+        if (radialMenu != null)
+            radialMenu.Close();
+
+        BuildingManager.Instance.TryEnterMoveMode();
+        GameStateController.Instance.SetState(GameState.MovingTower);
+
+        StatusMessageUI.Instance.ShowMessage("Mover estructura");
+    }
+
+    private void FocusTempleShortcut()
+    {
+        ConstructionController temple = FindTempleController();
+
+        if (temple == null)
+        {
+            StatusMessageUI.Instance.ShowMessage("No se encontró el templo");
+            Debug.LogWarning("No temple found.");
+            return;
+        }
+
+        BaseConstruction baseConstruction = temple.GetComponent<BaseConstruction>();
+
+        if (baseConstruction == null || baseConstruction.Data == null)
+        {
+            StatusMessageUI.Instance.ShowMessage("El templo no tiene datos");
+            return;
+        }
+
+        BuildingManager.Instance.Select(temple);
+
+        if (baseConstruction.Data.god == GodType.Base)
+        {
+            if (blessingChoiceUI == null)
+            {
+                StatusMessageUI.Instance.ShowMessage("Blessing UI no está conectada");
+                Debug.LogWarning("BlessingChoiceUI reference is missing.");
+                return;
+            }
+
+            blessingChoiceUI.Open(temple);
+            return;
+        }
+
+        if (radialMenu != null)
+            radialMenu.Open(temple);
+
+        GameStateController.Instance.SetState(GameState.RadialOpen);
+    }
+
+    private ConstructionController FindTempleController()
+    {
+        foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
+        {
+            if (construction == null)
+                continue;
+
+            Temple templeComponent = construction.GetComponent<Temple>();
+
+            if (templeComponent != null)
+                return construction.GetComponent<ConstructionController>();
+
+            if (construction.Data != null && construction.Data.type == ConstructionType.Temple)
+                return construction.GetComponent<ConstructionController>();
+        }
+
+        return null;
     }
 }
