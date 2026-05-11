@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class PauseMenuUI : MonoBehaviour
 {
     [SerializeField] private Canvas pauseCanvas;
     [SerializeField] private Button firstSelectedButton;
+
 
     private void Start()
     {
@@ -42,5 +44,20 @@ public class PauseMenuUI : MonoBehaviour
             Close();
         else
             Open();
+    }
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().buildIndex
+        );
+    }
+
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
     }
 }

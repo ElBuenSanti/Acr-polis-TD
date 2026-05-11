@@ -13,7 +13,7 @@ public class SettingsPanelUI : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private Toggle fullscreenToggle;
-    [SerializeField] private Button firstSelectedButton;
+    [SerializeField] private GameObject firstSelectedObject;
     [SerializeField] private Button pauseFirstSelectedButton;
 
     [Header("Animation")]
@@ -54,9 +54,9 @@ public class SettingsPanelUI : MonoBehaviour
         if (settingsGroup != null)
         {
             settingsGroup.alpha = Mathf.Lerp(
-                settingsGroup.alpha,
-                targetAlpha,
-                Time.unscaledDeltaTime * fadeSpeed
+                 settingsGroup.alpha,
+                 targetAlpha,
+                 Time.unscaledDeltaTime * fadeSpeed
             );
         }
     }
@@ -70,8 +70,8 @@ public class SettingsPanelUI : MonoBehaviour
         SetGroup(pauseGroup, false);
         SetGroup(settingsGroup, true);
 
-        if (firstSelectedButton != null)
-            EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
+        if (firstSelectedObject != null)
+            EventSystem.current.SetSelectedGameObject(firstSelectedObject);
     }
 
     public void CloseToPause()

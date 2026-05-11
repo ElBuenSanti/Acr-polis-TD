@@ -41,7 +41,6 @@ public class WaveHUDUI : MonoBehaviour
         if (isSubscribed)
             return;
 
-        WaveSpawner.Instance.OnWaveProgressChanged += UpdateProgress;
         WaveSpawner.Instance.OnWaveIndexChanged += UpdateWaveIndex;
         WaveSpawner.Instance.OnWaveStarted += OnWaveStarted;
         WaveSpawner.Instance.OnWaveEnded += OnWaveEnded;
@@ -54,7 +53,6 @@ public class WaveHUDUI : MonoBehaviour
         if (!isSubscribed || WaveSpawner.Instance == null)
             return;
 
-        WaveSpawner.Instance.OnWaveProgressChanged -= UpdateProgress;
         WaveSpawner.Instance.OnWaveIndexChanged -= UpdateWaveIndex;
         WaveSpawner.Instance.OnWaveStarted -= OnWaveStarted;
         WaveSpawner.Instance.OnWaveEnded -= OnWaveEnded;
@@ -62,10 +60,13 @@ public class WaveHUDUI : MonoBehaviour
         isSubscribed = false;
     }
 
-    private void UpdateProgress(float value)
+    private void UpdateCampaignProgress()
     {
-        if (waveFillImage != null)
-            waveFillImage.fillAmount = Mathf.Clamp01(value);
+        if (waveFillImage == null || totalWaves <= 0)
+            return;
+
+        float progress = (float)currentWave / totalWaves;
+        waveFillImage.fillAmount = Mathf.Clamp01(progress);
     }
 
     private void UpdateWaveIndex(int wave, int total)
@@ -74,22 +75,25 @@ public class WaveHUDUI : MonoBehaviour
         totalWaves = total;
 
         if (waveText != null)
-            waveText.text = "Oleada " + currentWave + " / " + totalWaves;
+            waveText.text = GetWaveTitle(currentWave);
 
+        UpdateCampaignProgress();
         UpdateMilestoneVisual();
     }
 
     private void OnWaveStarted()
     {
-        UpdateProgress(0f);
+        currentWave = WaveSpawner.Instance.GetCurrentWaveNumber();
+        totalWaves = WaveSpawner.Instance.GetTotalWaves();
 
         if (waveText != null)
+        {
             waveText.gameObject.SetActive(true);
+            waveText.text = GetWaveTitle(currentWave);
+        }
 
-        UpdateWaveIndex(
-            WaveSpawner.Instance.GetCurrentWaveNumber(),
-            WaveSpawner.Instance.GetTotalWaves()
-        );
+        UpdateCampaignProgress();
+        UpdateMilestoneVisual();
     }
 
     private void OnWaveEnded()
@@ -99,7 +103,7 @@ public class WaveHUDUI : MonoBehaviour
 
     private void SetConstructionPhase()
     {
-        UpdateProgress(0f);
+        UpdateCampaignProgress();
 
         if (waveText != null)
             waveText.gameObject.SetActive(false);
@@ -107,7 +111,7 @@ public class WaveHUDUI : MonoBehaviour
         if (milestoneText != null)
             milestoneText.text = "Fase de construcción";
 
-        if (waveFillImage != null)
+        if (waveFillImage != null && currentWave != totalWaves)
             waveFillImage.color = normalColor;
     }
 
@@ -119,17 +123,44 @@ public class WaveHUDUI : MonoBehaviour
         if (currentWave == totalWaves)
         {
             waveFillImage.color = finalWaveColor;
-            milestoneText.text = "Batalla final";
+            milestoneText.text = "BATALLA FINAL";
         }
-        else if (currentWave == 5 || currentWave == 10 || currentWave == 15)
+        else if (currentWave == 15)
         {
             waveFillImage.color = milestoneColor;
-            milestoneText.text = "Oleada especial";
+            milestoneText.text = "Presagio final";
+        }
+        else if (currentWave == 10)
+        {
+            waveFillImage.color = milestoneColor;
+            milestoneText.text = "Ira divina";
+        }
+        else if (currentWave == 5)
+        {
+            waveFillImage.color = milestoneColor;
+            milestoneText.text = "Primer asalto";
         }
         else
         {
             waveFillImage.color = normalColor;
             milestoneText.text = "Defiende la Acrópolis";
         }
+    }
+
+    private string GetWaveTitle(int wave)
+    {
+        if (wave == totalWaves)
+            return "OLEADA FINAL";
+
+        if (wave == 15)
+            return "OLEADA XV · PRESAGIO FINAL";
+
+        if (wave == 10)
+            return "OLEADA X · IRA DIVINA";
+
+        if (wave == 5)
+            return "OLEADA V · PRIMER ASALTO";
+
+        return "OLEADA " + wave;
     }
 }

@@ -35,9 +35,9 @@ public class ControlsPanelUI : MonoBehaviour
         if (controlsGroup != null)
         {
             controlsGroup.alpha = Mathf.Lerp(
-                controlsGroup.alpha,
-                targetAlpha,
-                Time.unscaledDeltaTime * fadeSpeed
+                 controlsGroup.alpha,
+                 targetAlpha,
+                 Time.unscaledDeltaTime * fadeSpeed
             );
         }
     }
