@@ -1,0 +1,212 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &284998708405585269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3435780514866779997}
+  - component: {fileID: 2135294268894717567}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3435780514866779997
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 284998708405585269}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2143907417415444082}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2135294268894717567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 284998708405585269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51052d3ef31a1cf44b82dec16fc4211f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 2dcca5c4620fd3b4984a016762c4e2ec, type: 2}
+  musicSource: {fileID: 0}
+  ambienceSource: {fileID: 0}
+  uiSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  musicFadeTime: 0.6
+  ambienceFadeTime: 0.6
+--- !u!1 &3208878300299824175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2143907417415444082}
+  m_Layer: 0
+  m_Name: AudioSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2143907417415444082
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3208878300299824175}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 346, y: 216, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3435780514866779997}
+  - {fileID: 5811676885571611488}
+  - {fileID: 5543095928382616246}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6473908967528380607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5811676885571611488}
+  - component: {fileID: 2298706584831102326}
+  m_Layer: 0
+  m_Name: GameplaySoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5811676885571611488
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6473908967528380607}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2143907417415444082}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2298706584831102326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6473908967528380607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74f64219f02627f44ad34441c0fc372e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildStructureClip: {fileID: 8300000, guid: a588d6eb221a1b44fb9d86526cb5af62, type: 3}
+  buildWallClip: {fileID: 8300000, guid: 0d9a33d47532a2a4aa7a9d8204a06a41, type: 3}
+  invalidPlacementClip: {fileID: 8300000, guid: 01bba7819f8fecb47925354eca4d2b3a, type: 3}
+  sellClip: {fileID: 8300000, guid: de51d6adabc3bd443a97044d8ab12970, type: 3}
+  wallRepairClip: {fileID: 8300000, guid: b14694c5f56c80c489bdca9e97b1d449, type: 3}
+  wallDestroyedClip: {fileID: 8300000, guid: d3173c3aa5f819847afc5aa30792b507, type: 3}
+  upgradeClip: {fileID: 8300000, guid: 01d7809a122234345a0a57e4050af282, type: 3}
+  blessingOpenClip: {fileID: 8300000, guid: 0a01ec391a367bf4094294b543b31c35, type: 3}
+  aphroditeBlessingClip: {fileID: 8300000, guid: e5b143b866ae2c34a803ebe0a8fa3c6f, type: 3}
+  aresBlessingClip: {fileID: 8300000, guid: 0134a7e8f956a90469aea46adb560e75, type: 3}
+  hephaestusBlessingClip: {fileID: 8300000, guid: e6da5d8471e6b024bb2e9e57d06efc4a, type: 3}
+  waveStartClip: {fileID: 8300000, guid: 2b72692e9bbaf3745b2bcfada05d6b3d, type: 3}
+  milestoneWaveClip: {fileID: 8300000, guid: 0ad5b123c375ec24d8d716972b19e724, type: 3}
+  finalWaveClip: {fileID: 8300000, guid: 2af05ae02da73a64fbc11729c2f4fe61, type: 3}
+  victoryClip: {fileID: 8300000, guid: b076cada855a2ec45a5c6449236af232, type: 3}
+  defeatClip: {fileID: 8300000, guid: 71ed2dc185fa4304a830cd34098e122c, type: 3}
+  arrowShotClip: {fileID: 8300000, guid: 9bf0ad397bca67b4aa8a00f9ee99a0a9, type: 3}
+  arrowHitClip: {fileID: 8300000, guid: 0a6484d057e357741a2ab6fb4902562f, type: 3}
+  ballistaShotClip: {fileID: 8300000, guid: 19fac29f735fa9941a6976e4215c38eb, type: 3}
+  ballistaHitClip: {fileID: 8300000, guid: 32a1442e37054174db98f5ace2386109, type: 3}
+  soldierSpawnClip: {fileID: 8300000, guid: 22325b31173b68645a7163e7b52212c1, type: 3}
+  soldierAttackClip: {fileID: 8300000, guid: 7c08b8f6d719ce44cbcb88d26d90a3ee, type: 3}
+  soldierDeathClip: {fileID: 8300000, guid: 7ac749c6eb4101546bbbf9bf9cf326a6, type: 3}
+  enemyHitClip: {fileID: 8300000, guid: b3d089b291e89e0499478c7e4d30d52c, type: 3}
+  enemyDeathClip: {fileID: 8300000, guid: 29832aa90d1f72b428e9cf5d05a69daa, type: 3}
+  templeHitClip: {fileID: 8300000, guid: 5df627ac08d31fa46bc27e240fbf061d, type: 3}
+  willGeneratedClip: {fileID: 8300000, guid: 5359568b99c329f43990ee0b4569eb3f, type: 3}
+  fireBallClip: {fileID: 8300000, guid: 1546dec44f0162647947ece20f23b357, type: 3}
+  bossDeathClip: {fileID: 8300000, guid: eca99e47bccd25342bb6833a77e1c3ca, type: 3}
+--- !u!1 &6787319656899855561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5543095928382616246}
+  - component: {fileID: 213538696696857675}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5543095928382616246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6787319656899855561}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2143907417415444082}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &213538696696857675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6787319656899855561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6dca0c9854d5d4a802dc7c7cfd7be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainMenuMusic: {fileID: 8300000, guid: 65d62efd6e9b3d745a14197e53b83caf, type: 3}
+  constructionMusic: {fileID: 8300000, guid: 88a3ed77f432d994980e2baaed9a5de5, type: 3}
+  combatMusic: {fileID: 8300000, guid: 53359f6c78784f048a2df5550220afd7, type: 3}
+  milestoneMusic: {fileID: 8300000, guid: 2379226f9c42cbc4299618543fa1c6b3, type: 3}
+  finalWaveMusic: {fileID: 8300000, guid: 52500c7b3ad63e34bb2e7a0435273905, type: 3}
+  cityAmbience: {fileID: 8300000, guid: 4d53ae32402c09d40933f249d3d58831, type: 3}
+  combatAmbience: {fileID: 8300000, guid: 7b7be95911ab8c74fb8f7c6fcc509206, type: 3}
+  finalWaveAmbience: {fileID: 8300000, guid: 88e2b025f96cd08439381a2d5b138e06, type: 3}

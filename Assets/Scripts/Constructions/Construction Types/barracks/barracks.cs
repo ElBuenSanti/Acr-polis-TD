@@ -125,6 +125,9 @@ public class Barracks : BaseConstruction
 
             GameObject newSoldier = pooling.CreateObject(soldierPrefab, transform);
 
+            if (GameplaySoundPlayer.Instance != null)
+                GameplaySoundPlayer.Instance.PlaySoldierSpawn();
+
             Vector3 spawnPos = transform.position + transform.right * 2f; 
             newSoldier.transform.position = spawnPos;
 
@@ -135,6 +138,8 @@ public class Barracks : BaseConstruction
 
             yield return new WaitForSeconds(timeToSpwanInBetweenSoldiers); 
         }
+
+
 
         spawnSequence = null; 
     }

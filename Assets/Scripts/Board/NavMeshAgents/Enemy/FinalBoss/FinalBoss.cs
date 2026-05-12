@@ -33,6 +33,9 @@ public class FinalBoss : Enemy
 
         GameObject newFireBall = pooling.CreateObject(fireBallPrefab, transform);
 
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayFire();
+
         newFireBall.transform.position = spawnPos;
 
         if (newFireBall.TryGetComponent<FireBall>(out var fireBall))
@@ -45,6 +48,8 @@ public class FinalBoss : Enemy
     protected override void OnDeath()
     {
         base.OnDeath();
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayBossDeath();
         Debug.Log("¡Has ganado el juego!"); 
         OnFinalBossDeath?.Invoke(); 
     }

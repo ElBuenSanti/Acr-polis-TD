@@ -107,7 +107,9 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
         if (currentTarget.TryGetComponent<IDamageable>(out var target))
         {
-            target.ReceiveDamage(attackDamage); 
+            target.ReceiveDamage(attackDamage);
+            if (GameplaySoundPlayer.Instance != null)
+                GameplaySoundPlayer.Instance.PlaySoldierAttack();
             SpawnWill(); 
             Debug.Log("Atacando a enemigo");
 
@@ -135,6 +137,8 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     {
         currentTarget = null;
         //AQUÍ ANIMACIÓN DE MUERTE DEL SOLDADO
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlaySoldierDeath();
         Debug.Log("El soldado ha muerto");
         base.OnDeath();
     }

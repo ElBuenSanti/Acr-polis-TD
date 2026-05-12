@@ -142,6 +142,7 @@ public class BuildingManager : MonoBehaviour
 
             if (t.IsOccupied)
             {
+                GameplaySoundPlayer.Instance.PlayInvalidPlacement();
                 ShowStatus("Espacio ocupado");
                 return;
             }
@@ -156,6 +157,7 @@ public class BuildingManager : MonoBehaviour
         {
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
+                GameplaySoundPlayer.Instance.PlayInvalidPlacement();
                 ShowStatus("No tienes suficientes recursos");
                 return;
             }
@@ -194,6 +196,12 @@ public class BuildingManager : MonoBehaviour
             baseConstruction.Initialize(currentBuilding);
             constructionController.Initialize(currentBuilding); //, t.transform
         }
+
+
+        if (currentBuilding.type == ConstructionType.Wall)
+            GameplaySoundPlayer.Instance.PlayBuildWall();
+        else
+            GameplaySoundPlayer.Instance.PlayBuildStructure();
 
         ShowStatus("Construcción colocada");
 

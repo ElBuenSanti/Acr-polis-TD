@@ -30,5 +30,7 @@ public class Plaza : BaseConstruction
         {
             WillManager.Instance.AddMoney(w.type, w.amount);
         }
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayWillGenerated();
     }
 }

@@ -116,6 +116,8 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayWallDestroyed();
         destructionRoutine = StartCoroutine(DestructionRoutine(timeToBeDestroyed));
         Die();
     }

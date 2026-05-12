@@ -129,7 +129,10 @@ public class Enemy : NavMeshAgentBehaviour
 
         if (currentTarget.TryGetComponent<IDamageable>(out var damagable))
         {
-            damagable.ReceiveDamage(attackDamage); 
+            damagable.ReceiveDamage(attackDamage);
+
+            if (GameplaySoundPlayer.Instance != null)
+                GameplaySoundPlayer.Instance.PlayEnemyHit();
             //Debug.Log("Atacando al targt del enemigo");
 
         }
@@ -141,6 +144,8 @@ public class Enemy : NavMeshAgentBehaviour
         base.OnDamage();
         // AQUÍ ANIMACIÓN DE DANIO DE ENEMIG
         //Debug.Log("El enemigo recibió danio");
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayEnemyHit();
     }
 
 
@@ -148,6 +153,8 @@ public class Enemy : NavMeshAgentBehaviour
     {
         currentTarget = null;
         //AQUÍ ANIMACIÓN DE MUERTE DE ENEMIGO
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayEnemyDeath();
         Debug.Log("enemigo Murió");
         base.OnDeath();
     }

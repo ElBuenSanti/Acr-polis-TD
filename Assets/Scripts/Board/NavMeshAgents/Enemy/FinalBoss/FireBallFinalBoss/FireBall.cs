@@ -12,6 +12,9 @@ public class FireBall : Projectile
         Setup(start, target, data.attackDamage, data.proyectileVelocity);
         SetTeam(Team.Enemy);
 
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayBallistaShot();
+
         Debug.Log($"Bola de fuego inicializada: attackDamage: {attackDamage} velocity: ({proyectileVelocity})");
     }
 
@@ -57,6 +60,8 @@ public class FireBall : Projectile
 
     protected override void OnHit()
     {
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayBallistaHit();
         Debug.Log("La bola de fuego ha impactado");
         //AQUÍ ANIMACIÓN DE BOLA DE FUEGO COLISIONANDO
     }

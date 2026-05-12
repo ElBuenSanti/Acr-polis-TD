@@ -63,6 +63,8 @@ public class Wall : BaseConstruction
                 wall.HealToMax();
         }
 
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayWallRepair();
         Debug.Log("Muralla completamente reparada");
         canRepair = false;
 

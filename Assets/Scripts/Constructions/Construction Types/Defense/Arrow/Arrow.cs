@@ -17,6 +17,9 @@ public class Arrow : Projectile
         Setup(start, target, defenseData.attackDamage, defenseData.proyectileVelocity); //ANTES data.attack... en lugar de defenseData
         SetTeam(Team.Ally);
 
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayArrowShot();
+
         Debug.Log($"Flecha inicializada: attackDamage: {attackDamage} velocity: ({proyectileVelocity})");
     }
 
@@ -55,6 +58,9 @@ public class Arrow : Projectile
 
     protected override void OnHit()
     {
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayArrowHit();
+
         Debug.Log("Golpeo flecha y se reproduce animación de destrucción de flecha");
         //AQUÍ ANIMACIÓN DE FLECHA COLISIONANDO
     }
