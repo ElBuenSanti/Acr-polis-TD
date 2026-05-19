@@ -25,17 +25,20 @@ public class BuildingManager : MonoBehaviour
     private bool moveMode;
     private float hightOffset = 1.5f;
 
+    // Inicializa la instancia Singleton global y cachea el sistema de pooling para la reutilización de objetos tridimensionales
     private void Awake()
     {
         Instance = this;
         constructionPooling = FindAnyObjectByType<Pooling>();
     }
 
+    // Asegura el estado inicial vacío de la edificación seleccionada al iniciar el ciclo de vida del juego
     private void Start()
     {
         currentBuilding = null;
     }
 
+    // Configura e inyecta la referencia de la edificación actual usando un índice de la lista base de datos
     public void SetConstructionIndex(int index)
     {
         if (index < 0 || index >= buildingDataList.Count)
@@ -53,6 +56,7 @@ public class BuildingManager : MonoBehaviour
         UpdatePreview();
     }
 
+    // Resetea el puntero de la edificación activa y elimina los objetos flotantes de previsualización
     public void ClearCurrentBuildingSelection()
     {
         currentBuilding = null;
@@ -60,18 +64,25 @@ public class BuildingManager : MonoBehaviour
         UpdatePreview();
     }
 
+    // Actualiza dinámicamente la baldosa sobre la que se encuentra el puntero del ratón
     public void SetHoveredTile(Tile tile)
     {
         hoveredTile = tile;
         UpdatePreview();
     }
 
+    // Limpia el rastro de la baldosa enfocada y redibuja los contenedores gráficos del terreno
     public void ClearHover()
     {
         hoveredTile = null;
         UpdatePreview();
     }
 
+    // LÍNEA RARA / COMPLEJA: Restauración Masiva de Estado de Malla Táctica y Actualización Crítica del Holograma Preview ('UpdatePreview').
+    // Itera recursivamente sobre la colección estática de todas las casillas del escenario táctico ('Tile.AllTiles') para forzar su 
+    // restauración de color e iluminación original, evitando que los tintes de previsualizaciones anteriores queden congelados en el mapa. 
+    // Acto seguido, valida la presencia de selecciones activas y delega el cálculo de coloración contextual y traslación del objeto fantasma 
+    // a las subfunciones específicas de renderizado y posicionamiento.
     private void UpdatePreview()
     {
         foreach (Tile t in Tile.AllTiles)
@@ -87,6 +98,11 @@ public class BuildingManager : MonoBehaviour
         UpdatePreviewObject(hoveredTile);
     }
 
+    // LÍNEA RARA / COMPLEJA: Inyección Procedural de Matrices de Color por Vecindad de Fila Estructurada ('ApplyPreview').
+    // Determina la viabilidad espacial llamando a 'CanPlaceOnTile'. Aplica un operador ternario básico para teñir la baldosa raíz (Amarillo/Rojo). 
+    // Si la estructura corresponde a un muro ('ConstructionType.Wall'), el script expande su análisis lógico e itera sobre los arreglos 
+    // de vecinos horizontales ('sameRowNeighbors') y superiores ('upperRowNeighbors') para inyectarles colores diferenciados (Cian y Verde), 
+    // previsualizando en tiempo real el área de cobertura total que abarcará la barrera defensiva multilocalizada antes de ser consolidada.
     private void ApplyPreview(Tile tile)
     {
         bool valid = CanPlaceOnTile(tile);
@@ -109,12 +125,18 @@ public class BuildingManager : MonoBehaviour
         }
     }
 
+    // Almacena la referencia técnica de la construcción seleccionada para su posterior manipulación o consulta de atributos
     public void Select(ConstructionController construction)
     {
         selectedConstruction = construction;
         Debug.Log("Seleccionado: " + construction.name);
     }
 
+    // LÍNEA RARA / COMPLEJA: Algoritmo Mutativo con Penalización por Repetición y Despliegue de Componentes de Pooling ('PlaceBuilding').
+    // Valida la escala de tiempo. Evalúa si ya existe una estructura del mismo tipo en el mapa mediante 'ExistsConstructionOfType'. 
+    // Si es positivo, aplica la lista de costos incrementales por inflación de recursos ('bonusWillToPay'); si es la primera unidad, usa la tasa base 
+    // ('willToPay'). Tras debitar el capital mediante 'WillManager', procesa las casillas objetivo e invoca al sistema de optimización de memoria 
+    // 'constructionPooling.CreateObject', evitando la sobrecarga del recolector de basura al reciclar las mallas tridimensionales desde el pool.
     public void PlaceBuilding(Tile tile)
     {
         if (WaveSpawner.Instance.IsWaveRunning())
@@ -221,6 +243,7 @@ public class BuildingManager : MonoBehaviour
         ClearCurrentBuildingSelection();
     }
 
+    // Configura e inicializa el estado lógico global para trasladar estructuras existentes a lo largo de la cuadrícula
     public void TryEnterMoveMode()
     {
         currentBuilding = null;
@@ -263,6 +286,11 @@ public class BuildingManager : MonoBehaviour
         ShowStatus("Modo mover activado");
     }
 
+    // LÍNEA RARA / COMPLEJA: Reubicación Coordenada Colectiva de Miembros de Grupo Estructural ('MoveConstruction').
+    // Desglosa las baldosas de origen y destino discriminando si el objeto posee un componente de enlace colectivo ('group'). 
+    // Libera de forma masiva los conmutadores lógicos de ocupación de las celdas antiguas setting '.SetOccupied(false)' 
+    // y desplaza espacialmente mediante matrices de transformación lineal cada pieza del conjunto hacia las nuevas coordenadas 
+    // calculadas de forma indexada, resincronizando sus punteros nativos de baldosas sin necesidad de destruir o recrear las entidades.
     private void MoveConstruction(Tile newTile)
     {
         if (constructionToMove == null)
@@ -351,6 +379,7 @@ public class BuildingManager : MonoBehaviour
         ClearCurrentBuildingSelection();
     }
 
+    // Busca de forma exhaustiva en la escena la presencia de cualquier entidad activa que coincida con el tipo estructural consultado
     private bool ExistsConstructionOfType(ConstructionType type)
     {
         BaseConstruction[] all = FindObjectsByType<BaseConstruction>(FindObjectsSortMode.None);
@@ -364,6 +393,7 @@ public class BuildingManager : MonoBehaviour
         return false;
     }
 
+    // Retorna la colección de baldosas requeridas para una edificación, anexando vecinos si se trata de un muro compuesto
     private List<Tile> GetTilesToBuild(Tile tile)
     {
         List<Tile> tiles = new List<Tile>();
@@ -382,6 +412,7 @@ public class BuildingManager : MonoBehaviour
         return tiles;
     }
 
+    // Evalúa de forma integral las condiciones de ocupación física del suelo y la solvencia económica del usuario
     private bool CanPlaceOnTile(Tile tile)
     {
         if (tile == null || currentBuilding == null)
@@ -398,6 +429,7 @@ public class BuildingManager : MonoBehaviour
         return HasEnoughResources(currentBuilding);
     }
 
+    // Compara el inventario monetario global contra el costo de producción indexado de la estructura seleccionada
     private bool HasEnoughResources(ConstructionData data)
     {
         if (data == null)
@@ -415,6 +447,11 @@ public class BuildingManager : MonoBehaviour
         return true;
     }
 
+    // LÍNEA RARA / COMPLEJA: Clonación Estática Secuencial y Desactivación por Software de Componentes en Holograma ('CreatePreviewObject').
+    // Instancia una copia huérfana del prefab original para que actúe como fantasma de posicionamiento espacial. Para evitar colisiones 
+    // físicas anómalas o interferencias con el sistema de trazado de rayos ('Raycasting'), recorre matricialmente todos los 'Collider' 
+    // desactivándolos mediante '.enabled = false'. Ejecuta el mismo procedimiento de apagado con todos los componentes lógicos que hereden 
+    // de 'MonoBehaviour' para congelar la lógica interna e inteligencia artificial del objeto durante su fase de previsualización estética.
     private void CreatePreviewObject()
     {
         ClearPreviewObject();
@@ -435,6 +472,7 @@ public class BuildingManager : MonoBehaviour
         previewObject.SetActive(false);
     }
 
+    // Destruye de la memoria de Unity el objeto translúcido de previsualización activa y purga la variable contenedora
     private void ClearPreviewObject()
     {
         if (previewObject != null)
@@ -443,6 +481,7 @@ public class BuildingManager : MonoBehaviour
         previewObject = null;
     }
 
+    // Traslada el objeto fantasma hacia las coordenadas espaciales de la baldosa enfocada alternando su material según validez técnica
     private void UpdatePreviewObject(Tile tile)
     {
         if (previewObject == null || currentBuilding == null || tile == null)
@@ -461,6 +500,7 @@ public class BuildingManager : MonoBehaviour
         ApplyPreviewMaterial(valid ? validPreviewMaterial : invalidPreviewMaterial);
     }
 
+    // Extrae y sobrescribe de manera recursiva la propiedad material de todos los componentes de renderizado de la estructura flotante
     private void ApplyPreviewMaterial(Material material)
     {
         if (previewObject == null || material == null)
@@ -472,12 +512,14 @@ public class BuildingManager : MonoBehaviour
             renderer.material = material;
     }
 
+    // Reproduce la pista de audio asignada para denotar un error en el posicionamiento o falta de fondos económicos
     private void PlayInvalidSound()
     {
         if (GameplaySoundPlayer.Instance != null)
             GameplaySoundPlayer.Instance.PlayInvalidPlacement();
     }
 
+    // Registra logs internos en la consola de depuración y reenvía las alertas textuales al sistema de notificaciones del HUD
     private void ShowStatus(string message)
     {
         if (StatusMessageUI.Instance != null)
@@ -486,3 +528,25 @@ public class BuildingManager : MonoBehaviour
         Debug.Log(message);
     }
 }
+
+/*
+   ========================================================================================================
+   DESCRIPCIÓN GENERAL DEL CÓDIGO
+   ========================================================================================================
+   Este script actúa como el Gestor y Núcleo de Construcción Táctica del Escenario (BuildingManager). Su cometido principal 
+   dentro del flujo lógico del videojuego es coordinar la colocación, validación, previsualización material y traslado 
+   espacial de todas las estructuras defensivas y muros sobre la cuadrícula del mapa, interactuando de forma síncrona con los 
+   sistemas económicos globales (`WillManager`) y la planificación del flujo de oleadas enemigas (`WaveSpawner`).
+
+   Características clave:
+   1. Control de Costos por Inflación de Estructuras: Incorpora una mecánica avanzada de economía donde el precio de 
+      las edificaciones varía dinámicamente. Evalúa la presencia previa de unidades del mismo tipo en la escena para decidir 
+      si cobra la tarifa base o aplica penalizaciones de encarecimiento progresivo definidas en las variables de bonus.
+   2. Sistema de Previsualización Holográfica Limpia: Genera copias flotantes eficientes a través de la desactivación recursiva 
+      por software de colisionadores y scripts nativos. Esto evita que los objetos fantasma interfieran con las físicas globales, 
+      mientras que la alteración dinámica de materiales (`validPreviewMaterial` / `invalidPreviewMaterial`) otorga un feedback inmediato.
+   3. Gestión de Estructuras Compuestas (Muros por Grupo): Cuenta con soporte lógico nativo para gestionar la colocación y el 
+      traslado unificado de elementos que ocupan múltiples celdas espaciales (como las secciones de muros de la Acrópolis). Al enlazar 
+      las baldosas adyacentes a través de clases contenedoras (`ConstructionGroup`), permite mover o bloquear bloques enteros sin perder la integridad.
+   ========================================================================================================
+*/

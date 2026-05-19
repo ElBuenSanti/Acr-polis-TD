@@ -27,8 +27,12 @@ public class GamepadInputController : MonoBehaviour
 
     [SerializeField] private UISoundPlayer uiSoundPlayer;
 
+    // Busca de forma automática en la escena las referencias que no hayan sido asignadas manualmente en el Inspector
     private void Awake()
     {
+        // LÍNEA RARA / COMPLEJA: 'FindAnyObjectByType<T>()' es un método moderno de Unity (remplaza al antiguo FindObjectOfType).
+        // Se encarga de buscar en toda la escena activa cualquier objeto que tenga el script especificado entre los signos '< >'.
+        // Es muy útil para autoconectar componentes, pero debe usarse únicamente en Awake o Start porque es costoso en rendimiento.
         if (selector == null)
             selector = FindAnyObjectByType<GridSelector>();
 
@@ -62,21 +66,25 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // MOVEMENT
     // ---------------------------
+    // Mensaje automático enviado por el componente 'Player Input' de Unity al mover el Joystick Izquierdo o las Flechas
     public void OnMove(InputValue value)
     {
+        // EXPLICACIÓN: 'value.Get<Vector2>()' extrae las coordenadas físicas X (horizontal) y Y (vertical) del stick.
+        // Los valores devueltos oscilan entre -1f y 1f, mapeando la dirección exacta del joystick del control.
         Vector2 input = value.Get<Vector2>();
 
+        // LÓGICA DE ESTADOS: Redirecciona el mismo Joystick para controlar diferentes sistemas según el momento del juego.
         if (GameStateController.Instance.currentState == GameState.BlessingSelection)
         {
             if (blessingChoiceUI != null)
-                blessingChoiceUI.Move(input);
+                blessingChoiceUI.Move(input); // Mueve el cursor de selección de bendiciones de dioses
 
             return;
         }
 
         if (GameStateController.Instance.currentState == GameState.RadialOpen)
         {
-            radialMenu.ReadStick(input);
+            radialMenu.ReadStick(input); // Direcciona la aguja del menú radial selector
             return;
         }
 
@@ -84,16 +92,18 @@ public class GamepadInputController : MonoBehaviour
             GameStateController.Instance.currentState == GameState.PlacingTower ||
             GameStateController.Instance.currentState == GameState.MovingTower)
         {
-            selector.Move(input);
+            selector.Move(input); // Mueve el selector de la cuadrícula o rejilla sobre el mapa del juego
         }
     }
 
     // ---------------------------
     // CONFIRM (A)
     // ---------------------------
+    // Registra la pulsación del botón de confirmación (típicamente el botón 'A' en Xbox o 'X' en PlayStation)
     public void OnConfirm(InputValue value)
     {
-        
+
+        // Verifica que la acción corresponda al momento en que se presiona el botón, no cuando se suelta
         if (!value.isPressed)
             return;
 
@@ -157,6 +167,7 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // CANCEL (B)
     // ---------------------------
+    // Registra la pulsación del botón de retroceso (típicamente el botón 'B' en Xbox o 'Círculo' en PlayStation)
     public void OnCancel(InputValue value)
     {
         if (!value.isPressed)
@@ -229,11 +240,13 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // MOVE TOWER (X)
     // ---------------------------
+    // Activa la reubicación de una torre previamente seleccionada (Botón 'X' de Xbox / 'Cuadrado' de PlayStation)
     public void OnMoveTower(InputValue value)
     {
         if (!value.isPressed)
             return;
 
+        // Comprueba que no haya una horda activa atacando que impida reconstruir
         if (IsWaveBlockingAction())
             return;
 
@@ -250,6 +263,7 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // START WAVE (Y)
     // ---------------------------
+    // Inicia u optimiza el control del tiempo/oleada (Botón 'Y' de Xbox / 'Triángulo' de PlayStation)
     public void OnStartWave(InputValue value)
     {
         if (!value.isPressed)
@@ -260,13 +274,14 @@ public class GamepadInputController : MonoBehaviour
 
         if (gameSpeedUI != null)
         {
-            gameSpeedUI.ToggleSpeed();
+            gameSpeedUI.ToggleSpeed(); // Cambia o acelera la velocidad temporal del combate
         }
     }
 
     // ---------------------------
     // PAUSE (START)
     // ---------------------------
+    // Alterna la activación del menú de pausa principal mediante el botón de opciones
     public void OnPause(InputValue value)
     {
         if (!value.isPressed)
@@ -284,6 +299,7 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // SHOP (LT / RT)
     // ---------------------------
+    // Los gatillos traseros abren o cierran el catálogo de compras del juego
     public void OnOpenShopLeft(InputValue value)
     {
         if (!value.isPressed)
@@ -309,6 +325,7 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // SHOP NAVIGATION (LB / RB)
     // ---------------------------
+    // Los botones superiores (Bumpers) cambian de pestañas o artículos en el menú de la tienda
     public void OnShopLeft(InputValue value)
     {
         if (!value.isPressed)
@@ -328,6 +345,7 @@ public class GamepadInputController : MonoBehaviour
     // ---------------------------
     // SELECT TOWER
     // ---------------------------
+    // Intenta identificar y seleccionar la estructura ubicada debajo del cursor del jugador
     private void TrySelectTower()
     {
         if (WaveSpawner.Instance.IsWaveRunning())
@@ -355,6 +373,9 @@ public class GamepadInputController : MonoBehaviour
         BuildingManager.Instance.Select(construction);
 
 
+        // LÍNEA RARA / COMPLEJA: Intenta extraer componentes específicos usando Polimorfismo.
+        // Obtiene el script base y el componente del Templo de forma separada para validar si la estructura 
+        // seleccionada corresponde al Templo principal del mapa o es una edificación defensiva estándar.
         BaseConstruction baseConstruction = construction.GetComponent<BaseConstruction>();
         Temple temple = construction.GetComponent<Temple>();
 
@@ -364,6 +385,7 @@ public class GamepadInputController : MonoBehaviour
         {
             BuildingManager.Instance.Select(construction);
 
+            // Si el templo no tiene una deidad vinculada, interrumpe el flujo normal para obligar a elegir un Dios
             if (!construction.HasBlessingChosen())
             {
                 if (blessingChoiceUI != null)
@@ -385,32 +407,39 @@ public class GamepadInputController : MonoBehaviour
         GameStateController.Instance.SetState(GameState.RadialOpen);
     }
 
+    // Busca de manera iterativa dentro del listado estático global qué construcción coincide exactamente con la celda consultada
     private ConstructionController FindConstructionOnTile(Tile tile)
     {
+        // Bucle Foreach: Recorre uno a uno todos los elementos contenidos en la lista 'AllConstructions'
         foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
         {
             if (construction == null)
-                continue;
+                continue; // Salta al siguiente elemento de la lista si este registro está destruido o corrupto
 
             if (construction.GetTile() == tile)
             {
-                return construction.GetComponent<ConstructionController>();
+                return construction.GetComponent<ConstructionController>(); // Retorna el script controlador si coinciden las coordenadas
             }
         }
 
         return null;
     }
 
+    // Captura los clics realizados en la cruceta direccional (D-Pad / Flechas de un Gamepad)
     public void OnDpad(InputValue value)
     {
         Vector2 input = value.Get<Vector2>();
 
+        // EXPLICACIÓN COMPLEJA: Evita lecturas continuas o falsos positivos (anti-spam).
+        // Las crucetas de los gamepads a veces detectan micro-movimientos imprecisos. Al medir la magnitud del vector,
+        // si el usuario no presiona firmemente la flecha (magnitud menor a 0.4f), se apaga la bandera y se ignora el input.
         if (input.magnitude < 0.4f)
         {
             dpadInUse = false;
             return;
         }
 
+        // Si la cruceta se mantiene hundida de manera continua, bloquea la repetición del comando hasta que el usuario la suelte
         if (dpadInUse)
             return;
 
@@ -422,28 +451,29 @@ public class GamepadInputController : MonoBehaviour
         if (IsWaveBlockingAction())
             return;
 
-        if (input.y > 0.5f)
+        // EVALUACIÓN DE DIRECCIÓN: Determina qué flecha física de la cruceta fue presionada en base a los ejes cartesianos
+        if (input.y > 0.5f) // D-Pad Arriba
         {
             if (dpadPanelUI != null)
-                dpadPanelUI.FlashUp();
+                dpadPanelUI.FlashUp(); // Destello visual en la interfaz
 
             RepairWallShortcut();
         }
-        else if (input.y < -0.5f)
+        else if (input.y < -0.5f) // D-Pad Abajo
         {
             if (dpadPanelUI != null)
                 dpadPanelUI.FlashDown();
 
             BuildWallShortcut();
         }
-        else if (input.x < -0.5f)
+        else if (input.x < -0.5f) // D-Pad Izquierda
         {
             if (dpadPanelUI != null)
                 dpadPanelUI.FlashLeft();
 
             MoveSelectedStructureShortcut();
         }
-        else if (input.x > 0.5f)
+        else if (input.x > 0.5f) // D-Pad Derecha
         {
             if (dpadPanelUI != null)
                 dpadPanelUI.FlashRight();
@@ -452,17 +482,19 @@ public class GamepadInputController : MonoBehaviour
         }
     }
 
+    // Función de control que bloquea mecánicas constructivas durante la ejecución del combate
     private bool IsWaveBlockingAction()
     {
         if (!WaveSpawner.Instance.IsWaveRunning())
-            return false;
+            return false; // Permite la acción si la oleada no está en curso
 
         if (StatusMessageUI.Instance != null)
             StatusMessageUI.Instance.ShowMessage("No puedes hacer esto durante la oleada");
 
-        return true;
+        return true; // Bloquea la acción
     }
 
+    // Atajo rápido para equipar directamente la construcción de muros
     private void BuildWallShortcut()
     {
         BuildingManager.Instance.SetConstructionIndex(wallConstructionIndex);
@@ -472,6 +504,7 @@ public class GamepadInputController : MonoBehaviour
             StatusMessageUI.Instance.ShowMessage("Construir muro");
     }
 
+    // Atajo rápido para reparar los daños generales del muro
     private void RepairWallShortcut()
     {
         Wall wall = FindAnyObjectByType<Wall>();
@@ -482,10 +515,11 @@ public class GamepadInputController : MonoBehaviour
             return;
         }
 
-        wall.RepairGroup();
+        wall.RepairGroup(); // Activa la reparación colectiva del sistema defensivo
         StatusMessageUI.Instance.ShowMessage("Reparando muro");
     }
 
+    // Atajo rápido que extrae la estructura del mosaico apuntado y arranca su modo de desplazamiento
     private void MoveSelectedStructureShortcut()
     {
         Tile tile = selector.currentTile;
@@ -517,6 +551,7 @@ public class GamepadInputController : MonoBehaviour
         StatusMessageUI.Instance.ShowMessage("Mover estructura");
     }
 
+    // Atajo rápido para encuadrar y centrar inmediatamente el enfoque en el Templo Sagrado
     private void FocusTempleShortcut()
     {
         ConstructionController temple = FindTempleController();
@@ -538,6 +573,7 @@ public class GamepadInputController : MonoBehaviour
 
         BuildingManager.Instance.Select(temple);
 
+        // Si el templo requiere asignar una bendición, despliega el panel divino correspondiente
         if (!temple.HasBlessingChosen())
         {
             if (blessingChoiceUI == null)
@@ -551,12 +587,14 @@ public class GamepadInputController : MonoBehaviour
             return;
         }
 
+        // Si ya posee una bendición divina, despliega el menú radial estándar para interactuar con él
         if (radialMenu != null)
             radialMenu.Open(temple);
 
         GameStateController.Instance.SetState(GameState.RadialOpen);
     }
 
+    // Localiza de manera exhaustiva el Templo dentro de los registros activos del mapa de juego
     private ConstructionController FindTempleController()
     {
         foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
@@ -576,3 +614,25 @@ public class GamepadInputController : MonoBehaviour
         return null;
     }
 }
+
+/*
+   ========================================================================================================
+   DESCRIPCIÓN GENERAL DEL CÓDIGO
+   ========================================================================================================
+   Este script actúa como el Traductor e Intérprete del Control de Mandos (GamepadInputController). Su principal 
+   objetivo es recibir las entradas físicas de un mando clásico de consola (usando el moderno sistema 'New Input System' 
+   de Unity) y transformarlas en instrucciones lógicas dentro del videojuego (un juego estilo Tower Defense o Estrategia).
+
+   Características clave:
+   1. Control Dinámico Basado en Contexto: Redirecciona de manera sumamente eficiente las palancas y botones del mando. 
+      Por ejemplo, la palanca izquierda sirve para mover la retícula sobre el mapa en estado normal, pero si el usuario abre 
+      un menú de deidades o una interfaz de selección radial, la palanca pasa automáticamente a navegar las opciones internas 
+      de dichos menús sin encimarse con el mundo.
+   2. Sistema de Atajos mediante Cruceta (D-Pad): Mapea las direcciones de las flechas del control para desencadenar 
+      acciones instantáneas o macroinstrucciones del juego, tales como la compra rápida de murallas, reparaciones grupales automatizadas, 
+      focalización inmediata en el Templo central o la activación del traslado de torres.
+   3. Protección de Estado y Flujo del Juego (Seguridad de Estado): Monitorea de manera constante a través del 'GameStateController' 
+      y del 'WaveSpawner' si es legal ejecutar ciertas acciones; bloquea de manera inteligente funciones como la alteración, 
+      compra o movimiento de defensas estratégicas en medio del asalto de una oleada enemiga, enviando avisos informativos en pantalla al usuario.
+   ========================================================================================================
+*/

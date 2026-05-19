@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GameplaySoundPlayer : MonoBehaviour
 {
+    // Patrón Singleton: Permite llamar de forma global a los efectos de juego usando 'GameplaySoundPlayer.Instance'
     public static GameplaySoundPlayer Instance;
 
     [Header("Construction")]
@@ -50,8 +51,11 @@ public class GameplaySoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip fireBallClip;
     [SerializeField] private AudioClip bossDeathClip;
 
+    // Inicialización del Singleton para el sistema de juego actual
     private void Awake()
     {
+        // LINEA RARA / IMPORTANTE: A diferencia del AudioManager anterior, aquí se usa 'Destroy(this)' en lugar de 'Destroy(gameObject)'.
+        // Esto significa que si hay un duplicado, solo se destruirá este script específico (componente), pero NO borrará el objeto entero de la escena.
         if (Instance != null && Instance != this)
         {
             Destroy(this);
@@ -106,13 +110,16 @@ public class GameplaySoundPlayer : MonoBehaviour
         Play(blessingOpenClip);
     }
 
+    // Evalúa qué tipo de Dios otorgó la bendición para reproducir su respectivo audio
     public void PlayBlessing(GodType god)
     {
+        // LÍNEA RARA / COMPLEJA: Recibe un enumerador 'GodType' (una lista de opciones lógicas) y usa un 'switch' para evaluar el caso.
+        // Dependiendo de qué dios sea el valor de la variable 'god', ejecutará el bloque de código correspondiente.
         switch (god)
         {
             case GodType.Aphrodite:
                 Play(aphroditeBlessingClip);
-                break;
+                break; // El 'break' es obligatorio para salir de la evaluación una vez que encuentra la coincidencia
 
             case GodType.Ares:
                 Play(aresBlessingClip);
@@ -149,10 +156,13 @@ public class GameplaySoundPlayer : MonoBehaviour
         Play(defeatClip);
     }
 
+    // Método puente interno que centraliza la comunicación con el AudioManager global
     private void Play(AudioClip clip)
     {
+        // LÍNEA RARA / COMPLEJA: Realiza un chequeo preventivo de seguridad ('!= null').
+        // Si el AudioManager global no se ha cargado en la escena todavía, evita que el juego tire un error de tipo "NullReferenceException" en la consola.
         if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(clip);
+            AudioManager.Instance.PlaySFX(clip); // Redirige el clip al canal de SFX (efectos de sonido)
     }
 
     public void PlayArrowShot()
@@ -215,3 +225,20 @@ public class GameplaySoundPlayer : MonoBehaviour
         Play(bossDeathClip);
     }
 }
+
+/*
+   ========================================================================================================
+   DESCRIPCIÓN GENERAL DEL CÓDIGO
+   ========================================================================================================
+   Este script actúa como una "Librería de Acceso Rápido" o Fachada (Facade Pattern) dedicada exclusivamente 
+   a los efectos de sonido (SFX) que ocurren durante las mecánicas activas del juego (combate, construcción, oleadas, economía).
+
+   Características clave:
+   1. Interfaz Limpia para el Programador: En lugar de que los scripts de los enemigos o las torres tengan que buscar 
+      e identificar clips de audio específicos, simplemente llaman a métodos lógicos y directos como 'GameplaySoundPlayer.Instance.PlayArrowHit()'.
+   2. Desacoplamiento de Datos: Almacena de manera ordenada en el inspector de Unity todas las referencias a los archivos 
+      de sonido comprimidos (.mp3, .wav), agrupados por categorías visuales gracias al atributo '[Header]'.
+   3. Conexión Modular: No reproduce los sonidos por sí mismo; en su lugar, valida la existencia del 'AudioManager' principal 
+      y le delega la responsabilidad de la reproducción física a través del canal de efectos de sonido. Esto mantiene el código organizado y modular.
+   ========================================================================================================
+*/
