@@ -43,5 +43,17 @@ public class Temple : Plaza
         Debug.Log("Has perdido");
         OnTempleDestruction?.Invoke(); 
     }
+
+    private bool blessingChosen;
+
+    public bool HasBlessingChosen()
+    {
+        return blessingChosen;
+    }
+
+    public void MarkBlessingChosen()
+    {
+        blessingChosen = true;
+    }
 }
 

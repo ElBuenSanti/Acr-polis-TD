@@ -45,6 +45,13 @@ public class WaveSpawner : MonoBehaviour
         if (waveRunning)
             return;
 
+        if (!HasAnyDefenseBuilt())
+        {
+            ShowStatus("Construye defensas antes de iniciar la ronda");
+            GameplaySoundPlayer.Instance.PlayInvalidPlacement();
+            return;
+        }
+
         if (currentWaveIndex >= waves.Length)
         {
             ShowStatus("No hay más oleadas disponibles");
@@ -242,5 +249,21 @@ public class WaveSpawner : MonoBehaviour
     public int GetTotalWaves()
     {
         return waves.Length;
+    }
+
+    private bool HasAnyDefenseBuilt()
+    {
+        foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
+        {
+            if (construction == null || construction.Data == null)
+                continue;
+
+            if (construction.Data.type == ConstructionType.Defense ||
+                construction.Data.type == ConstructionType.Barracks ||
+                construction.Data.type == ConstructionType.Wall)
+                return true;
+        }
+
+        return false;
     }
 }

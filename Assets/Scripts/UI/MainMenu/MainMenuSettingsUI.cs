@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -8,30 +7,43 @@ public class MainMenuSettingsUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Slider uiSlider;
+    [SerializeField] private Slider ambienceSlider;
     [SerializeField] private Toggle fullscreenToggle;
 
     [Header("Navigation")]
     [SerializeField] private GameObject firstSelectedObject;
 
-    [Header("Audio")]
-    [SerializeField] private AudioMixer audioMixer;
-
     private void Start()
     {
+        float musicValue = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        float sfxValue = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        float uiValue = PlayerPrefs.GetFloat("UIVolume", 1f);
+        float ambienceValue = PlayerPrefs.GetFloat("AmbienceVolume", 1f);
+        bool fullscreen = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
+
+
         if (musicSlider != null)
-        {
-            musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 1f);
-            SetMusicVolume(musicSlider.value);
-        }
+            musicSlider.SetValueWithoutNotify(musicValue);
 
         if (sfxSlider != null)
-        {
-            sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
-            SetSFXVolume(sfxSlider.value);
-        }
+            sfxSlider.SetValueWithoutNotify(sfxValue);
+
+        if (uiSlider != null)
+            uiSlider.SetValueWithoutNotify(uiValue);
+
+        if (ambienceSlider != null)
+            ambienceSlider.SetValueWithoutNotify(ambienceValue);
+
 
         if (fullscreenToggle != null)
-            fullscreenToggle.isOn = Screen.fullScreen;
+            fullscreenToggle.SetIsOnWithoutNotify(fullscreen);
+
+        SetMusicVolume(musicValue);
+        SetSFXVolume(sfxValue);
+        SetUIVolume(uiValue);
+        SetAmbienceVolume(ambienceValue);
+        SetFullscreen(fullscreen);
     }
 
     public void SelectFirstObject()
@@ -42,31 +54,37 @@ public class MainMenuSettingsUI : MonoBehaviour
 
     public void SetMusicVolume(float value)
     {
-        PlayerPrefs.SetFloat("MusicVolume", value);
-        PlayerPrefs.Save();
-        SetMixerVolume("MusicVolume", value);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetMusicVolume(value);
     }
 
     public void SetSFXVolume(float value)
     {
-        PlayerPrefs.SetFloat("SFXVolume", value);
-        PlayerPrefs.Save();
-        SetMixerVolume("SFXVolume", value);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetSFXVolume(value);
+    }
+
+    public void SetUIVolume(float value)
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetUIVolume(value);
+    }
+
+    public void SetAmbienceVolume(float value)
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetAmbienceVolume(value);
     }
 
     public void SetFullscreen(bool active)
     {
+        Screen.fullScreenMode = active
+            ? FullScreenMode.ExclusiveFullScreen
+            : FullScreenMode.Windowed;
+
         Screen.fullScreen = active;
+
         PlayerPrefs.SetInt("Fullscreen", active ? 1 : 0);
         PlayerPrefs.Save();
-    }
-
-    private void SetMixerVolume(string parameterName, float value)
-    {
-        if (audioMixer == null)
-            return;
-
-        float volume = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
-        audioMixer.SetFloat(parameterName, volume);
     }
 }

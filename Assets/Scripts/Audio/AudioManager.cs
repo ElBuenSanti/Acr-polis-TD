@@ -6,6 +6,11 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
+    private const string MUSIC_KEY = "MusicVolume";
+    private const string SFX_KEY = "SFXVolume";
+    private const string UI_KEY = "UIVolume";
+    private const string AMBIENCE_KEY = "AmbienceVolume";
+
     [Header("Mixer")]
     [SerializeField] private AudioMixer audioMixer;
 
@@ -24,7 +29,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -32,6 +37,7 @@ public class AudioManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        LoadSavedVolumes();
     }
 
     public void PlayUI(AudioClip clip)
@@ -107,6 +113,46 @@ public class AudioManager : MonoBehaviour
     public void FadeOutMusic(float duration = 1f)
     {
         StopMusic(duration);
+    }
+
+    public void LoadSavedVolumes()
+    {
+        SetMixerVolume("MusicVolume", PlayerPrefs.GetFloat(MUSIC_KEY, 1f));
+        SetMixerVolume("SFXVolume", PlayerPrefs.GetFloat(SFX_KEY, 1f));
+        SetMixerVolume("UIVolume", PlayerPrefs.GetFloat(UI_KEY, 1f));
+        SetMixerVolume("AmbienceVolume", PlayerPrefs.GetFloat(AMBIENCE_KEY, 1f));
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        PlayerPrefs.SetFloat(MUSIC_KEY, value);
+        PlayerPrefs.Save();
+
+        SetMixerVolume("MusicVolume", value);
+    }
+
+    public void SetSFXVolume(float value)
+    {
+        PlayerPrefs.SetFloat(SFX_KEY, value);
+        PlayerPrefs.Save();
+
+        SetMixerVolume("SFXVolume", value);
+    }
+
+    public void SetUIVolume(float value)
+    {
+        PlayerPrefs.SetFloat(UI_KEY, value);
+        PlayerPrefs.Save();
+
+        SetMixerVolume("UIVolume", value);
+    }
+
+    public void SetAmbienceVolume(float value)
+    {
+        PlayerPrefs.SetFloat(AMBIENCE_KEY, value);
+        PlayerPrefs.Save();
+
+        SetMixerVolume("AmbienceVolume", value);
     }
 
     public void SetMixerVolume(string parameterName, float value)

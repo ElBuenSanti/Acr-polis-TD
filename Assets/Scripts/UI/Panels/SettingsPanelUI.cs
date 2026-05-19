@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Audio;
 
 public class SettingsPanelUI : MonoBehaviour
 {
@@ -12,6 +11,8 @@ public class SettingsPanelUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Slider uiSlider;
+    [SerializeField] private Slider ambienceSlider;
     [SerializeField] private Toggle fullscreenToggle;
     [SerializeField] private GameObject firstSelectedObject;
     [SerializeField] private Button pauseFirstSelectedButton;
@@ -19,16 +20,16 @@ public class SettingsPanelUI : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private float fadeSpeed = 10f;
 
-    [Header("Audio")]
-    [SerializeField] private AudioMixer audioMixer;
-
+    [Header("Sound")]
     [SerializeField] private UISoundPlayer uiSoundPlayer;
+
     private bool isOpen;
 
     private void Awake()
     {
         if (settingsGroup == null)
             settingsGroup = GetComponent<CanvasGroup>();
+
         if (uiSoundPlayer == null)
             uiSoundPlayer = FindAnyObjectByType<UISoundPlayer>();
     }
@@ -37,17 +38,33 @@ public class SettingsPanelUI : MonoBehaviour
     {
         HideInstant();
 
+        float musicValue = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        float sfxValue = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        float uiValue = PlayerPrefs.GetFloat("UIVolume", 1f);
+        float ambienceValue = PlayerPrefs.GetFloat("AmbienceVolume", 1f);
+        bool fullscreen = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
+
         if (musicSlider != null)
-            musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 1f);
+            musicSlider.SetValueWithoutNotify(musicValue);
 
         if (sfxSlider != null)
-            sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
+            sfxSlider.SetValueWithoutNotify(sfxValue);
+
+        if (uiSlider != null)
+            uiSlider.SetValueWithoutNotify(uiValue);
+
+        if (ambienceSlider != null)
+            ambienceSlider.SetValueWithoutNotify(ambienceValue);
+
 
         if (fullscreenToggle != null)
-            fullscreenToggle.isOn = Screen.fullScreen;
+            fullscreenToggle.SetIsOnWithoutNotify(fullscreen);
 
-        SetMixerVolume("MusicVolume", musicSlider != null ? musicSlider.value : 1f);
-        SetMixerVolume("SFXVolume", sfxSlider != null ? sfxSlider.value : 1f);
+        SetMusicVolume(musicValue);
+        SetSFXVolume(sfxValue);
+        SetUIVolume(uiValue);
+        SetAmbienceVolume(ambienceValue);
+        SetFullscreen(fullscreen);
     }
 
     private void Update()
@@ -56,17 +73,16 @@ public class SettingsPanelUI : MonoBehaviour
 
         if (settingsGroup != null)
         {
-            settingsGroup.alpha = Mathf.Lerp(
-                 settingsGroup.alpha,
-                 targetAlpha,
-                 Time.unscaledDeltaTime * fadeSpeed
+            settingsGroup.alpha = Mathf.MoveTowards(
+                settingsGroup.alpha,
+                targetAlpha,
+                Time.unscaledDeltaTime * fadeSpeed
             );
         }
     }
 
     public void Open()
     {
-
         if (uiSoundPlayer != null)
             uiSoundPlayer.PlayOpenPanel();
 
@@ -77,13 +93,12 @@ public class SettingsPanelUI : MonoBehaviour
         SetGroup(pauseGroup, false);
         SetGroup(settingsGroup, true);
 
-        if (firstSelectedObject != null)
+        if (firstSelectedObject != null && EventSystem.current != null)
             EventSystem.current.SetSelectedGameObject(firstSelectedObject);
     }
 
     public void CloseToPause()
     {
-
         if (uiSoundPlayer != null)
             uiSoundPlayer.PlayClosePanel();
 
@@ -94,38 +109,42 @@ public class SettingsPanelUI : MonoBehaviour
         SetGroup(settingsGroup, false);
         SetGroup(pauseGroup, true);
 
-        if (pauseFirstSelectedButton != null)
+        if (pauseFirstSelectedButton != null && EventSystem.current != null)
             EventSystem.current.SetSelectedGameObject(pauseFirstSelectedButton.gameObject);
     }
 
     public void SetMusicVolume(float value)
     {
-        PlayerPrefs.SetFloat("MusicVolume", value);
-        PlayerPrefs.Save();
-
-        SetMixerVolume("MusicVolume", value);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetMusicVolume(value);
     }
 
     public void SetSFXVolume(float value)
     {
-        PlayerPrefs.SetFloat("SFXVolume", value);
-        PlayerPrefs.Save();
-
-        SetMixerVolume("SFXVolume", value);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetSFXVolume(value);
     }
 
-    private void SetMixerVolume(string parameterName, float value)
+    public void SetUIVolume(float value)
     {
-        if (audioMixer == null)
-            return;
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetUIVolume(value);
+    }
 
-        float volume = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
-        audioMixer.SetFloat(parameterName, volume);
+    public void SetAmbienceVolume(float value)
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SetAmbienceVolume(value);
     }
 
     public void SetFullscreen(bool active)
     {
+        Screen.fullScreenMode = active
+            ? FullScreenMode.ExclusiveFullScreen
+            : FullScreenMode.Windowed;
+
         Screen.fullScreen = active;
+
         PlayerPrefs.SetInt("Fullscreen", active ? 1 : 0);
         PlayerPrefs.Save();
     }
@@ -149,8 +168,5 @@ public class SettingsPanelUI : MonoBehaviour
 
         group.interactable = active;
         group.blocksRaycasts = active;
-
-        if (active)
-            group.alpha = 1f;
     }
 }

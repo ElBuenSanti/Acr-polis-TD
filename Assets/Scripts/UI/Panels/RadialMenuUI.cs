@@ -52,6 +52,9 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private float startScale = 0.85f;
     [SerializeField] private float endScale = 1f;
 
+    [SerializeField] private float invalidSoundCooldown = 0.6f;
+    private float lastInvalidSoundTime = -999f;
+
     private Coroutine radialAnimationRoutine;
 
     private ConstructionController selectedConstruction;
@@ -84,12 +87,11 @@ public class RadialMenuUI : MonoBehaviour
 
         if (selectedConstruction == null || IsTempleSelected())
         {
-            if (GameplaySoundPlayer.Instance != null)
-                GameplaySoundPlayer.Instance.PlayInvalidPlacement();
+            //PlayInvalidSoundWithCooldown();
             ShowStatus("El templo no se puede vender");
             return;
         }
-        
+
         sellTimer += Time.deltaTime;
         UpdateSellHoldVisual();
 
@@ -561,5 +563,16 @@ public class RadialMenuUI : MonoBehaviour
 
         if (radialCanvasGroup != null)
             radialCanvasGroup.alpha = 1f;
+    }
+
+    private void PlayInvalidSoundWithCooldown()
+    {
+        if (Time.unscaledTime < lastInvalidSoundTime + invalidSoundCooldown)
+            return;
+
+        lastInvalidSoundTime = Time.unscaledTime;
+
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayInvalidPlacement();
     }
 }

@@ -356,24 +356,31 @@ public class GamepadInputController : MonoBehaviour
 
 
         BaseConstruction baseConstruction = construction.GetComponent<BaseConstruction>();
+        Temple temple = construction.GetComponent<Temple>();
 
         if (baseConstruction != null &&
             baseConstruction.Data != null &&
-            baseConstruction.Data.type == ConstructionType.Temple &&
-            baseConstruction.Data.god == GodType.Base)
+            baseConstruction.Data.type == ConstructionType.Temple)
         {
             BuildingManager.Instance.Select(construction);
 
-            if (blessingChoiceUI != null)
-                blessingChoiceUI.Open(construction);
+            if (!construction.HasBlessingChosen())
+            {
+                if (blessingChoiceUI != null)
+                    blessingChoiceUI.Open(construction);
 
+                return;
+            }
+
+            if (radialMenu != null)
+                radialMenu.Open(construction);
+
+            GameStateController.Instance.SetState(GameState.RadialOpen);
             return;
         }
 
         if (radialMenu != null)
-        {
             radialMenu.Open(construction);
-        }
 
         GameStateController.Instance.SetState(GameState.RadialOpen);
     }
@@ -489,6 +496,8 @@ public class GamepadInputController : MonoBehaviour
             return;
         }
 
+        BuildingManager.Instance.ClearCurrentBuildingSelection();
+
         ConstructionController construction = FindConstructionOnTile(tile);
 
         if (construction == null)
@@ -529,7 +538,7 @@ public class GamepadInputController : MonoBehaviour
 
         BuildingManager.Instance.Select(temple);
 
-        if (baseConstruction.Data.god == GodType.Base)
+        if (!temple.HasBlessingChosen())
         {
             if (blessingChoiceUI == null)
             {

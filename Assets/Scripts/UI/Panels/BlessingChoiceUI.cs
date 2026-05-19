@@ -7,21 +7,23 @@ public class BlessingChoiceUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Button[] blessingButtons;
+    [SerializeField] private BlessingCardHighlightUI[] cardHighlights;
+
+    [Header("Sound")]
+    [SerializeField] private UISoundPlayer uiSoundPlayer;
 
     [Header("Animation")]
     [SerializeField] private float fadeSpeed = 8f;
 
     [Header("Navigation")]
     [SerializeField] private float inputDeadZone = 0.6f;
+    [SerializeField] private float confirmDelay = 0.25f;
 
     private bool isOpen;
     private bool stickInUse;
     private int currentIndex;
+    private float openTime;
     private ConstructionController templeController;
-
-    [SerializeField] private BlessingCardHighlightUI[] cardHighlights;
-
-    [SerializeField] private UISoundPlayer uiSoundPlayer;
 
     private void Start()
     {
@@ -30,6 +32,9 @@ public class BlessingChoiceUI : MonoBehaviour
 
     private void Update()
     {
+        if (canvasGroup == null)
+            return;
+
         float targetAlpha = isOpen ? 1f : 0f;
 
         canvasGroup.alpha = Mathf.Lerp(
@@ -41,20 +46,26 @@ public class BlessingChoiceUI : MonoBehaviour
 
     public void Open(ConstructionController temple)
     {
-
-        if (uiSoundPlayer != null)
-            uiSoundPlayer.PlayOpenPanel();
-
         templeController = temple;
         isOpen = true;
         currentIndex = 0;
         stickInUse = false;
+        openTime = Time.unscaledTime;
 
-        canvasGroup.interactable = true;
-        canvasGroup.blocksRaycasts = true;
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
+
+        if (uiSoundPlayer != null)
+            uiSoundPlayer.PlayOpenPanel();
+
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayBlessingOpen();
 
         GameStateController.Instance.SetState(GameState.BlessingSelection);
-        GameplaySoundPlayer.Instance.PlayBlessingOpen();
+
         SelectCurrentButton();
 
         if (StatusMessageUI.Instance != null)
@@ -65,13 +76,16 @@ public class BlessingChoiceUI : MonoBehaviour
 
     public void Close()
     {
+        isOpen = false;
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
 
         if (uiSoundPlayer != null)
             uiSoundPlayer.PlayClosePanel();
-
-        isOpen = false;
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
 
         if (EventSystem.current != null)
             EventSystem.current.SetSelectedGameObject(null);
@@ -110,7 +124,13 @@ public class BlessingChoiceUI : MonoBehaviour
         if (!isOpen)
             return;
 
+        if (Time.unscaledTime < openTime + confirmDelay)
+            return;
+
         if (currentIndex < 0 || currentIndex >= blessingButtons.Length)
+            return;
+
+        if (blessingButtons[currentIndex] == null)
             return;
 
         blessingButtons[currentIndex].onClick.Invoke();
@@ -133,10 +153,13 @@ public class BlessingChoiceUI : MonoBehaviour
 
         selectedButton.Select();
 
-        for (int i = 0; i < cardHighlights.Length; i++)
+        if (cardHighlights != null)
         {
-            if (cardHighlights[i] != null)
-                cardHighlights[i].SetSelected(i == currentIndex);
+            for (int i = 0; i < cardHighlights.Length; i++)
+            {
+                if (cardHighlights[i] != null)
+                    cardHighlights[i].SetSelected(i == currentIndex);
+            }
         }
 
         Debug.Log("Blessing selected index: " + currentIndex);
@@ -145,9 +168,13 @@ public class BlessingChoiceUI : MonoBehaviour
     private void HideInstant()
     {
         isOpen = false;
-        canvasGroup.alpha = 0f;
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 
     public void ChooseAphrodite()
@@ -167,12 +194,19 @@ public class BlessingChoiceUI : MonoBehaviour
 
     private void ChooseGod(GodType god)
     {
+        if (!isOpen)
+            return;
+
+        if (Time.unscaledTime < openTime + confirmDelay)
+            return;
+
         if (templeController == null)
             return;
 
         Debug.Log("Choosing blessing: " + god);
 
         templeController.SetSelectedGod(god);
+        templeController.MarkBlessingChosen();
         templeController.Upgrade();
 
         BaseConstruction baseConstruction = templeController.GetComponent<BaseConstruction>();
@@ -185,12 +219,11 @@ public class BlessingChoiceUI : MonoBehaviour
                 + baseConstruction.Data.level);
         }
 
+        if (GameplaySoundPlayer.Instance != null)
+            GameplaySoundPlayer.Instance.PlayBlessing(god);
 
         if (StatusMessageUI.Instance != null)
-        {
-            GameplaySoundPlayer.Instance.PlayBlessing(god);
             StatusMessageUI.Instance.ShowMessage("Condición elegida: " + god);
-        }
 
         Close();
     }

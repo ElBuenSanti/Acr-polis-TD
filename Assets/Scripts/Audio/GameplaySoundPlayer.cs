@@ -50,14 +50,20 @@ public class GameplaySoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip fireBallClip;
     [SerializeField] private AudioClip bossDeathClip;
 
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+    }
+
     public void PlayWillGenerated()
     {
         Play(willGeneratedClip);
-    }
-
-    private void Awake()
-    {
-        Instance = this;
     }
 
     public void PlayBuildStructure()

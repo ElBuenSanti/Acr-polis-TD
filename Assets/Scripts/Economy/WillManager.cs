@@ -59,4 +59,9 @@ public class WillManager : MonoBehaviour
     {
         return money[type];
     }
+
+    public bool HasEnoughMoney(Will type, float amount)
+    {
+        return CanAfford(type, amount);
+    }
 }

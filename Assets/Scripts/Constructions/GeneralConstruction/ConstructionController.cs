@@ -12,7 +12,7 @@ public class ConstructionController : MonoBehaviour
     private int level;
     private int nextLevel;
 
-
+    private bool blessingChosen;
 
     //Initialize new construction with upgrade
     void Awake()
@@ -79,7 +79,8 @@ public class ConstructionController : MonoBehaviour
         {
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
-                Debug.Log("No te alcanza para evolucionar " + type + "del Dios " + selectedGod);
+                Debug.Log("Te falta " + w.type + " para mejorar");
+                StatusMessageUI.Instance.ShowMessage("Te falta " + w.type + " para mejorar");
                 return;
             }
             
@@ -132,12 +133,25 @@ public class ConstructionController : MonoBehaviour
 
         newController.Initialize(newData); //, currentTile.transform
 
+        if (blessingChosen)
+            newController.MarkBlessingChosen();
+
         var temple = GetComponent<Temple>();
 
         if (temple != null)
         {
             temple.NotifyGodSelected(selectedGod);
         }
+    }
+
+    public bool HasBlessingChosen()
+    {
+        return blessingChosen;
+    }
+
+    public void MarkBlessingChosen()
+    {
+        blessingChosen = true;
     }
 
 }
