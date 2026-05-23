@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 18837393010277405}
   - component: {fileID: -7436682676355322981}
   - component: {fileID: 5105624048700881122}
+  - component: {fileID: -2470939292599251125}
   m_Layer: 0
   m_Name: Defense_Lv2
   m_TagString: Untagged
@@ -138,3 +139,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   database: {fileID: 0}
+  group: {fileID: 0}
+--- !u!114 &-2470939292599251125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570978340087042814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938ad342bac192b4eadcff367795c186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 6800094962317380553, guid: f26abac0681d805499917b90ad73633e, type: 3}
+  offset: {x: 0, y: 2.2, z: 0}

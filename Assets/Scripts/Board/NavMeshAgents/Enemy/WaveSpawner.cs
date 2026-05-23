@@ -88,7 +88,7 @@ public class WaveSpawner : MonoBehaviour
         OnWaveIndexChanged?.Invoke(GetCurrentWaveNumber(), GetTotalWaves());
         OnWaveStarted?.Invoke();
 
-        ShowStatus("Oleada iniciada");
+        ShowStatus("Oleada " + GetCurrentWaveNumber() + " iniciada. Defiende la Acrópolis.");
 
         if (currentWave.waveType == Wave.FinalBattle)
         {
@@ -232,7 +232,7 @@ public class WaveSpawner : MonoBehaviour
 
         OnWaveProgressChanged?.Invoke(1f);
 
-        ShowStatus("Fin de la Oleada");
+        ShowStatus("Oleada completada. Repara, mejora y prepárate.");
 
         if (MusicManager.Instance != null)
             MusicManager.Instance.PlayConstructionMusic();

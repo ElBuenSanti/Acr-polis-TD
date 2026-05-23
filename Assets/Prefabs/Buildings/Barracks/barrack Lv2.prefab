@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6789805675710892178}
   - component: {fileID: 2865254419040775960}
   - component: {fileID: 3571251488174666143}
+  - component: {fileID: -6271841141741591304}
   m_Layer: 0
   m_Name: barrack Lv2
   m_TagString: Untagged
@@ -125,7 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soldierPrefab: {fileID: 9143700623352109469, guid: ea2d0e492e34c4546a093149b596fb8c, type: 3}
-  spawnPoint: {fileID: 0}
 --- !u!114 &3571251488174666143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,3 +140,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   database: {fileID: 0}
   group: {fileID: 0}
+--- !u!114 &-6271841141741591304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8337416981776415849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938ad342bac192b4eadcff367795c186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 6800094962317380553, guid: f26abac0681d805499917b90ad73633e, type: 3}
+  offset: {x: 0, y: 2.2, z: 0}

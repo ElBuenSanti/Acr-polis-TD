@@ -7,11 +7,17 @@ public class RadialOptionVisual : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private RectTransform targetTransform;
 
+    [Header("Optional Glow")]
+    [SerializeField] private CanvasGroup glowGroup;
+    [SerializeField] private Image glowImage;
+
     [Header("Settings")]
     [SerializeField] private float activeScale = 1.08f;
     [SerializeField] private float inactiveScale = 1f;
     [SerializeField] private float activeAlpha = 1f;
-    [SerializeField] private float inactiveAlpha = 0f;
+    [SerializeField] private float inactiveAlpha = 0.35f;
+    [SerializeField] private float activeGlowAlpha = 1f;
+    [SerializeField] private float inactiveGlowAlpha = 0.05f;
     [SerializeField] private float animationSpeed = 12f;
 
     private bool isActive;
@@ -24,6 +30,9 @@ public class RadialOptionVisual : MonoBehaviour
 
         if (targetTransform == null)
             targetTransform = GetComponent<RectTransform>();
+
+        if (glowGroup == null && glowImage != null)
+            glowGroup = glowImage.GetComponent<CanvasGroup>();
     }
 
     // Gestiona la transición animada del tamaño y la opacidad del elemento visual según su estado de selección
@@ -31,6 +40,7 @@ public class RadialOptionVisual : MonoBehaviour
     {
         float targetAlpha = isActive ? activeAlpha : inactiveAlpha;
         float targetScale = isActive ? activeScale : inactiveScale;
+        float targetGlowAlpha = isActive ? activeGlowAlpha : inactiveGlowAlpha;
 
         // LÍNEA RARA / COMPLEJA: Interpolación Lineal Asíncrona de Opacidad ('Mathf.Lerp').
         // Modifica de forma matemática y progresiva el valor alfa de la UI basándose en 'Time.deltaTime'. 
@@ -47,6 +57,13 @@ public class RadialOptionVisual : MonoBehaviour
             targetTransform.localScale = Vector3.Lerp(
                 targetTransform.localScale,
                 Vector3.one * targetScale,
+                Time.deltaTime * animationSpeed
+            );
+
+        if (glowGroup != null)
+            glowGroup.alpha = Mathf.Lerp(
+                glowGroup.alpha,
+                targetGlowAlpha,
                 Time.deltaTime * animationSpeed
             );
     }

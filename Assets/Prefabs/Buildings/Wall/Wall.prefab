@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 821645206117327998}
   - component: {fileID: -994232612560912414}
   - component: {fileID: 8861978048601054011}
+  - component: {fileID: 8964863088898625730}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
@@ -123,6 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   database: {fileID: 0}
+  group: {fileID: 0}
 --- !u!114 &8861978048601054011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,3 +137,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 101104bd101ab1846b00dc5fffd9b45b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8964863088898625730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111215904111434566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938ad342bac192b4eadcff367795c186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 6800094962317380553, guid: f26abac0681d805499917b90ad73633e, type: 3}
+  offset: {x: 0, y: 2.2, z: 0}

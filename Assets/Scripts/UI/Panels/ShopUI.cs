@@ -35,11 +35,19 @@ public class ShopUI : MonoBehaviour
     [Header("Confirm Icons")]
     [SerializeField] private GameObject[] confirmIcons;
 
+    // NUEVO
+    [Header("Smart Panel")]
+    [SerializeField] private SmartSidePanelUI smartSidePanel;
+
     // Inicializa por código el componente de opacidad si no se asignó en el editor
     private void Awake()
     {
         if (shopCanvasGroup == null)
             shopCanvasGroup = GetComponent<CanvasGroup>();
+
+        // NUEVO
+        if (smartSidePanel == null)
+            smartSidePanel = FindAnyObjectByType<SmartSidePanelUI>();
     }
 
     // Ejecuta la sincronización visual y de datos en el primer frame de ciclo de vida
@@ -48,6 +56,9 @@ public class ShopUI : MonoBehaviour
         RefreshCards();
         RefreshResources();
         UpdateFocusVisual();
+
+        // NUEVO
+        ShowCardsMode();
     }
 
     // Mantiene actualizados los medidores económicos de los dioses y procesa las interpolaciones mecánicas de las tarjetas
@@ -73,15 +84,25 @@ public class ShopUI : MonoBehaviour
 
             return;
         }
+
         GameStateController.Instance.SetState(GameState.ShopOpen);
+
         RefreshCards();
+
+        // NUEVO
+        ShowCardsMode();
     }
 
     // Devuelve el flujo lógico del software al estado de exploración libre y redibuja los contenedores gráficos
     public void Close()
     {
         GameStateController.Instance.SetState(GameState.MapIdle);
+
         RefreshCards();
+
+        ShowCardsMode();
+        if (smartSidePanel != null)
+            smartSidePanel.SetCompact();
     }
 
     // Conmuta de forma segura la visibilidad de la tienda basándose en la configuración de la máquina de estados actual
@@ -141,8 +162,13 @@ public class ShopUI : MonoBehaviour
             return;
 
         BuildingManager.Instance.SetConstructionIndex(currentIndex);
+
         GameStateController.Instance.SetState(GameState.PlacingTower);
+
         RefreshCards();
+
+        // NUEVO
+        ShowCardsMode();
     }
 
     // LÍNEA RARA / COMPLEJA: Iteración y Sincronización Masiva Heterogénea de Tarjetas Visuales ('RefreshCards').
@@ -208,6 +234,11 @@ public class ShopUI : MonoBehaviour
         if (shopCanvasGroup == null)
             return;
 
+        // Si existe SmartSidePanelUI, dejamos que ese script controle la opacidad.
+        // Evitamos pelear contra SmartSidePanelUI escribiendo alpha cada frame.
+        if (smartSidePanel != null)
+            return;
+
         shopCanvasGroup.alpha = GameStateController.Instance.currentState == GameState.ShopOpen ? 1f : 0.65f;
     }
 
@@ -240,17 +271,31 @@ public class ShopUI : MonoBehaviour
 
 
     // Desactiva los datos extendidos del menú para restablecer la vista limpia del carrusel de cartas de compra
+    // Desactiva los datos extendidos del menú para restablecer la vista limpia del carrusel de cartas de compra
     public void ShowCardsMode()
     {
-        if (cardsArea != null) cardsArea.SetActive(true);
-        if (detailsArea != null) detailsArea.SetActive(false);
+        if (cardsArea != null)
+            cardsArea.SetActive(true);
+
+        if (detailsArea != null)
+            detailsArea.SetActive(false);
+
+        if (smartSidePanel != null)
+            smartSidePanel.SetExpanded();
     }
 
     // Oculta el carrusel de cartas estándar del HUD para dar visibilidad al lienzo técnico de detalles de estructura
     public void ShowDetailsMode()
     {
-        if (cardsArea != null) cardsArea.SetActive(false);
-        if (detailsArea != null) detailsArea.SetActive(true);
+        if (cardsArea != null)
+            cardsArea.SetActive(false);
+
+        if (detailsArea != null)
+            detailsArea.SetActive(true);
+
+        // NUEVO
+        if (smartSidePanel != null)
+            smartSidePanel.SetExpanded();
     }
 }
 

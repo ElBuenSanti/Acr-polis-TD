@@ -15,7 +15,6 @@ public class GamepadInputController : MonoBehaviour
     private bool dpadInUse;
     [SerializeField] private DPadActionPanelUI dpadPanelUI;
 
-
     [Header("Blessing Selection")]
     [SerializeField] private BlessingChoiceUI blessingChoiceUI;
 
@@ -59,8 +58,15 @@ public class GamepadInputController : MonoBehaviour
 
         if (controlsPanelUI == null)
             controlsPanelUI = FindAnyObjectByType<ControlsPanelUI>();
+
         if (uiSoundPlayer == null)
             uiSoundPlayer = FindAnyObjectByType<UISoundPlayer>();
+    }
+
+    private bool IsTutorialOpen()
+    {
+        return GameStateController.Instance != null &&
+               GameStateController.Instance.currentState == GameState.Tutorial;
     }
 
     // ---------------------------
@@ -69,6 +75,9 @@ public class GamepadInputController : MonoBehaviour
     // Mensaje automático enviado por el componente 'Player Input' de Unity al mover el Joystick Izquierdo o las Flechas
     public void OnMove(InputValue value)
     {
+        if (IsTutorialOpen())
+            return;
+
         // EXPLICACIÓN: 'value.Get<Vector2>()' extrae las coordenadas físicas X (horizontal) y Y (vertical) del stick.
         // Los valores devueltos oscilan entre -1f y 1f, mapeando la dirección exacta del joystick del control.
         Vector2 input = value.Get<Vector2>();
@@ -102,15 +111,22 @@ public class GamepadInputController : MonoBehaviour
     // Registra la pulsación del botón de confirmación (típicamente el botón 'A' en Xbox o 'X' en PlayStation)
     public void OnConfirm(InputValue value)
     {
-
         // Verifica que la acción corresponda al momento en que se presiona el botón, no cuando se suelta
         if (!value.isPressed)
             return;
 
+        GameState state = GameStateController.Instance.currentState;
+
+        if (state == GameState.Tutorial)
+        {
+            if (TutorialPanelUI.Instance != null)
+                TutorialPanelUI.Instance.TryCloseFromInput();
+
+            return;
+        }
+
         if (uiSoundPlayer != null)
             uiSoundPlayer.PlayConfirm();
-
-        GameState state = GameStateController.Instance.currentState;
 
         if (state == GameState.BlessingSelection)
         {
@@ -145,6 +161,10 @@ public class GamepadInputController : MonoBehaviour
         if (state == GameState.PlacingTower)
         {
             BuildingManager.Instance.PlaceBuilding(selector.currentTile);
+
+            if (shopUI != null)
+                shopUI.Close();
+
             GameStateController.Instance.SetState(GameState.MapIdle);
             return;
         }
@@ -153,6 +173,10 @@ public class GamepadInputController : MonoBehaviour
         if (state == GameState.MovingTower)
         {
             BuildingManager.Instance.PlaceBuilding(selector.currentTile);
+
+            if (shopUI != null)
+                shopUI.Close();
+
             GameStateController.Instance.SetState(GameState.MapIdle);
             return;
         }
@@ -173,10 +197,13 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
+        GameState state = GameStateController.Instance.currentState;
+
+        if (state == GameState.Tutorial)
+            return;
+
         if (uiSoundPlayer != null)
             uiSoundPlayer.PlayCancel();
-
-        GameState state = GameStateController.Instance.currentState;
 
         if (state == GameState.RadialOpen)
         {
@@ -246,6 +273,9 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
+        if (IsTutorialOpen())
+            return;
+
         // Comprueba que no haya una horda activa atacando que impida reconstruir
         if (IsWaveBlockingAction())
             return;
@@ -269,8 +299,18 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
+        if (IsTutorialOpen())
+            return;
+
         if (GameStateController.Instance.currentState != GameState.MapIdle)
             return;
+
+        if (TutorialPanelUI.Instance != null &&
+            TutorialPanelUI.Instance.ShouldShowTutorial())
+        {
+            TutorialPanelUI.Instance.Open();
+            return;
+        }
 
         if (gameSpeedUI != null)
         {
@@ -287,14 +327,14 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
+        if (IsTutorialOpen())
+            return;
+
         if (pauseMenuUI != null)
         {
             pauseMenuUI.Toggle();
         }
     }
-
-
-
 
     // ---------------------------
     // SHOP (LT / RT)
@@ -303,6 +343,9 @@ public class GamepadInputController : MonoBehaviour
     public void OnOpenShopLeft(InputValue value)
     {
         if (!value.isPressed)
+            return;
+
+        if (IsTutorialOpen())
             return;
 
         if (IsWaveBlockingAction())
@@ -314,6 +357,9 @@ public class GamepadInputController : MonoBehaviour
     public void OnOpenShopRight(InputValue value)
     {
         if (!value.isPressed)
+            return;
+
+        if (IsTutorialOpen())
             return;
 
         if (IsWaveBlockingAction())
@@ -331,12 +377,18 @@ public class GamepadInputController : MonoBehaviour
         if (!value.isPressed)
             return;
 
+        if (IsTutorialOpen())
+            return;
+
         shopUI.MoveLeft();
     }
 
     public void OnShopRight(InputValue value)
     {
         if (!value.isPressed)
+            return;
+
+        if (IsTutorialOpen())
             return;
 
         shopUI.MoveRight();
@@ -371,7 +423,6 @@ public class GamepadInputController : MonoBehaviour
         }
 
         BuildingManager.Instance.Select(construction);
-
 
         // LÍNEA RARA / COMPLEJA: Intenta extraer componentes específicos usando Polimorfismo.
         // Obtiene el script base y el componente del Templo de forma separada para validar si la estructura 
@@ -428,6 +479,9 @@ public class GamepadInputController : MonoBehaviour
     // Captura los clics realizados en la cruceta direccional (D-Pad / Flechas de un Gamepad)
     public void OnDpad(InputValue value)
     {
+        if (IsTutorialOpen())
+            return;
+
         Vector2 input = value.Get<Vector2>();
 
         // EXPLICACIÓN COMPLEJA: Evita lecturas continuas o falsos positivos (anti-spam).

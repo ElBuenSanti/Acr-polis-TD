@@ -52,8 +52,8 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private float startScale = 0.85f;
     [SerializeField] private float endScale = 1f;
 
-    [SerializeField] private float invalidSoundCooldown = 0.6f;
-    private float lastInvalidSoundTime = -999f;
+    //[SerializeField] private float invalidSoundCooldown = 0.6f;
+    //private float lastInvalidSoundTime = -999f;
 
     private Coroutine radialAnimationRoutine;
 
@@ -90,7 +90,9 @@ public class RadialMenuUI : MonoBehaviour
 
         if (selectedConstruction == null || IsTempleSelected())
         {
-            //PlayInvalidSoundWithCooldown();
+            if (GameplaySoundPlayer.Instance != null)
+                GameplaySoundPlayer.Instance.PlayInvalidPlacement();
+
             ShowStatus("El templo no se puede vender");
             return;
         }
@@ -618,16 +620,19 @@ public class RadialMenuUI : MonoBehaviour
     // Si el jugador realiza comandos erróneos de forma masiva en el joystick (lo que normalmente causaría un solapamiento 
     // estridente e insoportable del archivo de audio de error), este método bloquea las peticiones sucesivas hasta que 
     // transcurra la ventana de enfriamiento definida en 'invalidSoundCooldown', protegiendo la integridad acústica del juego.
-    private void PlayInvalidSoundWithCooldown()
-    {
-        if (Time.unscaledTime < lastInvalidSoundTime + invalidSoundCooldown)
-            return;
 
-        lastInvalidSoundTime = Time.unscaledTime;
 
-        if (GameplaySoundPlayer.Instance != null)
-            GameplaySoundPlayer.Instance.PlayInvalidPlacement();
-    }
+
+    //private void PlayInvalidSoundWithCooldown()
+    //{
+    //    if (Time.unscaledTime < lastInvalidSoundTime + invalidSoundCooldown)
+    //        return;
+
+    //    lastInvalidSoundTime = Time.unscaledTime;
+
+    //    if (GameplaySoundPlayer.Instance != null)
+    //        GameplaySoundPlayer.Instance.PlayInvalidPlacement();
+    //}
 }
 
 /*

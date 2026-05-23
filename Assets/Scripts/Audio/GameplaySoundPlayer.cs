@@ -51,6 +51,11 @@ public class GameplaySoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip fireBallClip;
     [SerializeField] private AudioClip bossDeathClip;
 
+    [Header("Cooldowns")]
+    [SerializeField] private float invalidSoundCooldown = 1.5f;
+
+    private float lastInvalidSoundTime = -999f;
+
     // Inicialización del Singleton para el sistema de juego actual
     private void Awake()
     {
@@ -82,6 +87,11 @@ public class GameplaySoundPlayer : MonoBehaviour
 
     public void PlayInvalidPlacement()
     {
+        if (Time.unscaledTime < lastInvalidSoundTime + invalidSoundCooldown)
+            return;
+
+        lastInvalidSoundTime = Time.unscaledTime;
+
         Play(invalidPlacementClip);
     }
 

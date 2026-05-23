@@ -50,7 +50,7 @@ public class BuildingManager : MonoBehaviour
         moveMode = false;
         constructionToMove = null;
 
-        ShowStatus("Seleccionaste: " + currentBuilding.type);
+        ShowStatus("Seleccionaste " + GetConstructionName(currentBuilding.type) + ". Elige una casilla para construir.");
 
         CreatePreviewObject();
         UpdatePreview();
@@ -193,7 +193,7 @@ public class BuildingManager : MonoBehaviour
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
                 PlayInvalidSound();
-                ShowStatus("Te falta " + w.type + " para construir");
+                ShowStatus("Te falta " + w.amount + " de " + w.type + " para construir.");
                 return;
             }
         }
@@ -238,7 +238,7 @@ public class BuildingManager : MonoBehaviour
                 GameplaySoundPlayer.Instance.PlayBuildStructure();
         }
 
-        ShowStatus("Construcción colocada");
+        ShowStatus(GetConstructionName(currentBuilding.type) + " colocado correctamente.");
 
         ClearCurrentBuildingSelection();
     }
@@ -374,7 +374,7 @@ public class BuildingManager : MonoBehaviour
         moveMode = false;
         constructionToMove = null;
 
-        ShowStatus("Construcción movida con éxito");
+        ShowStatus("Estructura movida correctamente.");
 
         ClearCurrentBuildingSelection();
     }
@@ -526,6 +526,25 @@ public class BuildingManager : MonoBehaviour
             StatusMessageUI.Instance.ShowMessage(message);
 
         Debug.Log(message);
+    }
+
+    private string GetConstructionName(ConstructionType type)
+    {
+        switch (type)
+        {
+            case ConstructionType.Wall:
+                return "Muro";
+            case ConstructionType.Defense:
+                return "Defensa";
+            case ConstructionType.Barracks:
+                return "Barracas";
+            case ConstructionType.Plaza:
+                return "Plaza";
+            case ConstructionType.Temple:
+                return "Templo";
+            default:
+                return type.ToString();
+        }
     }
 }
 

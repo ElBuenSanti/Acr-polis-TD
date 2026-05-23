@@ -92,6 +92,13 @@ namespace UnityEditor.AI
             return new Bounds(navSurface.transform.position, navSurface.size);
         }
 
+        // LÍNEA RARA / COMPLEJA: Renderizado del Inspector GUI mediante Serialización y Barra de Progreso de Hilos Asíncronos ('OnInspectorGUI').
+        // Actualiza el búfer virtual mediante 'serializedObject.Update()' e intercepta la configuración física del agente para proyectar 
+        // un diagrama de previsualización 2D ('DrawAgentDiagram'). Ejecuta bloques de control condicional complejos acoplados a la indentación 
+        // del editor ('EditorGUI.indentLevel++') para desvelar menús plegables ('EditorGUILayout.Foldout') de manipulación de vóxeles y teselas (tiles). 
+        // Tras aplicar las propiedades modificadas, procesa un reporte inverso recorriendo las operaciones activas de la GPU en hilos asíncronos 
+        // extraídas de 'NavMeshAssetManager.instance.GetBakeOperations()'. Si la operación está en progreso, dibuja una barra interactiva de cancelación 
+        // y renderiza una barra de carga procedural ('EditorGUI.ProgressBar') inyectando el flotante de ratio realizado, forzando el repintado del frame.
         public override void OnInspectorGUI()
         {
             if (s_Styles == null)
@@ -318,6 +325,12 @@ namespace UnityEditor.AI
                 Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Icon", true);
         }
 
+        // LÍNEA RARA / COMPLEJA: Inyección de Matrices TRS no Escaladas para el Dibujo Tridimensional de Contenedores Volumétricos ('RenderBoxGizmo').
+        // Coordina el renderizado de Gizmos en la vista de escena de Unity aplicando colores con opacidad alfa controlada basados en la selección. 
+        // Almacena en memoria temporal el color y la matriz previa del motor. Acto seguido, calcula una matriz afín de transformación de coordenadas 
+        // locales a mundiales ('Matrix4x4.TRS') utilizando la posición y rotación del componente, pero forzando un vector de escala unitaria 
+        // stática ('Vector3.one'). Al sobreescribir 'Gizmos.matrix', desvincula el volumen de renderizado de la escala del transformador del GameObject, 
+        // dibujando de forma matemática una caja alámbrica ('DrawWireCube') y un cubo sólido traslúcido perfectos que delimitan la zona de cálculo de IA.
         static void RenderBoxGizmo(NavMeshSurface navSurface, GizmoType gizmoType, bool selected)
         {
             var color = selected ? s_HandleColorSelected : s_HandleColor;
@@ -359,6 +372,12 @@ namespace UnityEditor.AI
             Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Icon", true);
         }
 
+        // LÍNEA RARA / COMPLEJA: Manipulación del Ámbito de Manejadores de Escena e Intercepción de Cambios para Historial de Deshacer ('OnSceneGUI').
+        // Activa la proyección del manipulador del cuadro tridimensional ('BoxBoundsHandle') en el espacio de la escena si el modo de edición de 
+        // colisionadores está habilitado. Establece una directiva 'Handles.DrawingScope' inyectando la matriz TRS pura. Abre un bloque detector 
+        // 'EditorGUI.BeginChangeCheck()' y procesa la proyección interactiva del objeto ('m_BoundsHandle.DrawHandle()'). Si el diseñador arrastra 
+        // las aristas en la vista de escena, captura el delta físico, inyecta la firma en el búfer de operaciones reversibles del editor mediante 
+        // 'Undo.RecordObject' (habilitando el Ctrl+Z), sobrescribe los vectores 'center' y 'size' y marca el archivo de escena como sucio ('SetDirty').
         void OnSceneGUI()
         {
             if (!editingCollider)
@@ -398,3 +417,26 @@ namespace UnityEditor.AI
         }
     }
 }
+
+/*
+   ========================================================================================================
+   DESCRIPCIÓN GENERAL DEL CÓDIGO
+   ========================================================================================================
+   Este script actúa como el **Inspector Personalizado y Módulo de Extensión del Editor para Superficies de Navegación** (`NavMeshSurfaceEditor`). Pertenece de forma exclusiva al ecosistema de desarrollo de Unity (`UnityEditor`). Su responsabilidad 
+   arquitectónica es rediseñar por completo la interfaz gráfica del componente `NavMeshSurface` dentro del Inspector de Unity, 
+   proporcionando herramientas visuales avanzadas para configurar, validar, depurar y precalcular (bake) mallas de navegación para IA.
+
+   Características arquitectónicas clave:
+   1. Interfaz Gráfica Avanzada Basada en Datos de Agentes (Custom Inspector Layout): Utiliza las APIs de maquetación de Unity 
+      (`EditorGUILayout`) para dibujar diagramas interactivos que representan las dimensiones físicas del agente de navegación actual 
+      (radio, pendiente máxima de escalada, altura). Adapta dinámicamente las secciones de configuración basándose en si la recopilación 
+      de objetos se realiza por volumen geométrico o de forma global.
+   2. Manipulación Espacial Directa en la Escena (SceneView Handles): Sobrescribe `OnSceneGUI` implementando un manejador volumétrico 
+      `BoxBoundsHandle`. Esto permite a los diseñadores de niveles arrastrar y redimensionar interactivamente las fronteras de cálculo 
+      de la IA de forma tridimensional directamente en la Scene View de Unity, integrándose limpiamente con el búfer de deshacer (`Undo`).
+   3. Monitoreo Asíncrono del Proceso de Horneado (Bake Process Pooling): El inspector interactúa directamente con hilos de cómputo en 
+      segundo plano controlados por el `NavMeshAssetManager`. Captura la progresión fraccionada del cálculo geométrico de la malla de 
+      navegación y proyecta de forma procedural barras de carga nativas, permitiendo cancelar asertivamente los subprocesos de la CPU 
+      sin congelar la interfaz general del motor de videojuegos.
+   ========================================================================================================
+*/

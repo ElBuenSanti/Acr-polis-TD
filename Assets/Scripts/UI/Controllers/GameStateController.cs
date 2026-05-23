@@ -16,7 +16,8 @@ public enum GameState
     Settings,
     Controls,
     EndGame,
-    MainMenu
+    MainMenu,
+    Tutorial
 }
 
 public class GameStateController : MonoBehaviour

@@ -86,7 +86,7 @@ public class ConstructionController : MonoBehaviour
             if (!WillManager.Instance.SpendMoney(w.type, w.amount))
             {
                 Debug.Log("Te falta " + w.type + " para mejorar");
-                StatusMessageUI.Instance.ShowMessage("Te falta " + w.type + " para mejorar");
+                StatusMessageUI.Instance.ShowMessage("Te falta " + w.amount + " de " + w.type + " para mejorar.");
                 return;
             }
 
@@ -153,6 +153,9 @@ public class ConstructionController : MonoBehaviour
         {
             temple.NotifyGodSelected(selectedGod);
         }
+
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage("Mejora aplicada: " + selectedGod + " nivel " + nextLevel);
     }
 
     // Devuelve el estado de activación del modificador o bendición de la estructura
