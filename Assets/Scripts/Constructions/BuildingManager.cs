@@ -199,8 +199,9 @@ public class BuildingManager : MonoBehaviour
                     {
                         PlayInvalidSound();
                         ShowStatus("Te falta " + w.amount + " de " + w.type + " para construir.");
-                        //return;
+                        return;
                     }
+
                 }
             }
         }
@@ -261,6 +262,7 @@ public class BuildingManager : MonoBehaviour
         }
 
         ShowStatus(GetConstructionName(currentBuilding.type) + " colocado correctamente.");
+
 
         ClearCurrentBuildingSelection();
     }

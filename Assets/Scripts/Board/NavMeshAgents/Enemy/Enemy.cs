@@ -39,9 +39,11 @@ public class Enemy : NavMeshAgentBehaviour
 
     }
 
-    protected override void Start()
+
+    protected override void ShootParticles()
     {
         colorOfParticles = new Color(1f, 0f, 0.5f);
+        base.ShootParticles();
     }
 
     // Desempaqueta el contenedor ScriptableObject e inyecta dinámicamente las estadísticas de combate en el agente de navegación
@@ -177,8 +179,6 @@ public class Enemy : NavMeshAgentBehaviour
     {
         currentTarget = null;
         // AQUÍ ANIMACIÓN DE MUERTE DE ENEMIGO
-        Color redColor = new Color(1f, 0f, 0f);
-        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
         if (GameplaySoundPlayer.Instance != null)
             GameplaySoundPlayer.Instance.PlayEnemyDeath();
         Debug.Log("enemigo Murió");
@@ -227,22 +227,23 @@ public class Enemy : NavMeshAgentBehaviour
     {
         base.OnLoosingWave();
         // AQUÍ AIMACIÓN DE DERROTA DE ENEMIGO
-
-        colorOfParticles = new Color(1f, 0f, 0f);
-        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
 
     protected override void OnWinningWave()
     {
         base.OnWinningWave();
         // AQUÍ AIMACIÓN DE VICTORIA DE ENEMIGO
-        colorOfParticles = new Color(1f, 0f, 0f);
-        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
 
     protected override float GetMaxHealth()
     {
         return maxResistance;
+    }
+    protected override void Disappear()
+    {
+        base.Disappear();
+        Color redColor = new Color(1f, 0f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
 
 

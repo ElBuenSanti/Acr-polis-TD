@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 {
@@ -10,6 +11,7 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 
     protected Coroutine stunCoroutine;
     protected Coroutine disappearRoutineCoroutine;
+    protected Coroutine simulatedStartForParticles;
 
     private HealthBarHolder healthBarHolder;
 
@@ -61,12 +63,29 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
             agent.ResetPath();
         }
 
+        if (simulatedStartForParticles != null)
+            StopCoroutine(simulatedStartForParticles);
+
+        simulatedStartForParticles = StartCoroutine(TimeToShootParticles());
+
+
     }
 
-    protected virtual void Start()
+    IEnumerator TimeToShootParticles()
+    {
+        //yield return null;
+        Debug.Log("ENTRO A COROUTINE");
+        yield return new WaitForSeconds(0.1f);
+        Debug.Log("Lanzamiento");
+
+        ShootParticles();
+    }
+
+    protected virtual void ShootParticles()
     {
         FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
+
 
     // LÍNEA RARA / COMPLEJA: Remoción del Registro Estático y Desvinculación de Delegados de Memoria Volátil ('OnDisable').
     // Invocado de forma automática cuando el objeto se apaga o retorna al Pool de reciclaje. Ejecuta una rutina estricta de limpieza física 

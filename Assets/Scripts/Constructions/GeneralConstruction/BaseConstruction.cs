@@ -21,6 +21,7 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     protected Coroutine spawnCoroutine;
     protected Coroutine destructionRoutine;
     protected Coroutine waveRoutine;
+    protected Coroutine simulatedStartForParticles; //
 
     protected float timeToBeDestroyed;
 
@@ -41,7 +42,7 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
         data = newData;
         SetTeam(Team.Ally);
         //timeToSpawnAditaments = data.actionVelocity;
-        StopAllCoroutines();
+        //StopAllCoroutines();
 
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
@@ -71,13 +72,31 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
 
         if (obstacle != null)
             obstacle.enabled = true;
+
+        if (simulatedStartForParticles != null)
+            StopCoroutine(simulatedStartForParticles);
+
+        simulatedStartForParticles = StartCoroutine(TimeToShootParticles());
+
+        Debug.Log("COROUTINE LANZADA");
     }
 
-    protected virtual void Start()
+    IEnumerator TimeToShootParticles()
+    {
+        //yield return null;
+        Debug.Log("ENTRO A COROUTINE");
+        yield return new WaitForSeconds(0.1f);
+        Debug.Log("Lanzamiento");
+
+        ShootParticles();
+    }
+
+    protected virtual void ShootParticles()
     {
         colorOfParticles = new Color(1f, 0.9f, 0f);
         FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
+
 
     // LÍNEA RARA / COMPLEJA: Purga Estricta de Referencias Colectivas y Desactivación Secuencial de Hilos ('OnDisable').
     // Remueve de inmediato su propia instancia de la lista estática para evitar fugas de memoria o referencias muertas ('NullReference'). 
@@ -146,9 +165,7 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     // Dispara las pistas sonoras de colapso ambiental e inicia la secuencia diferida de remoción física
     public virtual void OnDestruction()
     {
-        colorOfParticles = new Color(1f, 0f, 0f);
-        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
-
+      
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 
@@ -162,6 +179,9 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     // Libera la casilla lógica del mapa de cuadrícula (Tile) y retira el objeto de la simulación activa
     public virtual void Die()
     {
+        colorOfParticles = new Color(1f, 0f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
+
         if (parentTile != null)
         {
             parentTile.SetOccupied(false);
