@@ -23,7 +23,7 @@ MonoBehaviour:
     amount: 75
   - type: 0
     amount: 100
-  actionVelocity: 3
+  actionVelocity: 10
   movementSpeed: 0
   range: 0
   proyectileVelocity: 0
@@ -34,4 +34,5 @@ MonoBehaviour:
     amount: 750
   - type: 1
     amount: 800
+  bonusWillToPay: []
   prefab: {fileID: 5189163776860713878, guid: d8212e7a69515f344a460e21d035a75d, type: 3}

@@ -28,6 +28,12 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
         base.Awake();
     }
 
+    protected override void Start()
+    {
+        colorOfParticles = new Color(1f, 0.84f, 0f);
+        base.Start();
+    }
+
     public void Initialize(ConstructionData data, Barracks barrack)
     {
         this.barrack = barrack;
@@ -45,7 +51,7 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
 
     protected override void OnEnable()
     {
-        base.OnEnable(); 
+        base.OnEnable();
 
         currentTarget = null; 
 
@@ -136,6 +142,10 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     protected override void OnDeath()
     {
         currentTarget = null;
+
+        colorOfParticles = new Color(1f, 0.9f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
+
         //AQUÍ ANIMACIÓN DE MUERTE DEL SOLDADO
         if (GameplaySoundPlayer.Instance != null)
             GameplaySoundPlayer.Instance.PlaySoldierDeath();
@@ -162,11 +172,15 @@ public class HandToHandSoldier : NavMeshAgentBehaviour
     {
         base.OnWinningWave();
         //AQUÍ AIMACIÓN DE VICTORIA DE SOLDADO
+        colorOfParticles = new Color(1f, 0.84f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
 
     protected override void OnLoosingWave()
     {
         base.OnLoosingWave();
+        colorOfParticles = new Color(1f, 0f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
         //AQUÍ AIMACIÓN DE DERROTA DE SOLDADO
     }
 

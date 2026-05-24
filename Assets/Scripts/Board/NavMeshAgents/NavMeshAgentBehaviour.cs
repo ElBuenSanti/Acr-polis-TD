@@ -13,6 +13,8 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
 
     private HealthBarHolder healthBarHolder;
 
+    protected Color colorOfParticles;
+
     public static List<NavMeshAgentBehaviour> AllUnits = new List<NavMeshAgentBehaviour>();
 
     protected float resistance;
@@ -59,6 +61,11 @@ public abstract class NavMeshAgentBehaviour : TeamAssigner, IDamageable
             agent.ResetPath();
         }
 
+    }
+
+    protected virtual void Start()
+    {
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
 
     // LÍNEA RARA / COMPLEJA: Remoción del Registro Estático y Desvinculación de Delegados de Memoria Volátil ('OnDisable').

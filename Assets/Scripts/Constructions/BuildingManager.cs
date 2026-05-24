@@ -185,6 +185,27 @@ public class BuildingManager : MonoBehaviour
             }
         }
 
+        int buildingCountIndex = ExistsConstructionOfType(currentBuilding.type);
+        List<WillProduction> bonusWillsToPay =  currentBuilding.bonusWillToPay;
+        List<WillProduction> actualWillsToPay = currentBuilding.willToPay;
+
+        foreach (WillProduction w in actualWillsToPay)
+        {
+            foreach(WillProduction b in bonusWillsToPay)
+            {
+                if(w.type == b.type)
+                {
+                    if (!WillManager.Instance.SpendMoney(w.type, w.amount + (b.amount)*buildingCountIndex))
+                    {
+                        PlayInvalidSound();
+                        ShowStatus("Te falta " + w.amount + " de " + w.type + " para construir.");
+                        //return;
+                    }
+                }
+            }
+        }
+
+        /*
         bool hasSameType = ExistsConstructionOfType(currentBuilding.type);
         List<WillProduction> costList = hasSameType ? currentBuilding.bonusWillToPay : currentBuilding.willToPay;
 
@@ -197,6 +218,7 @@ public class BuildingManager : MonoBehaviour
                 return;
             }
         }
+        */
 
         ConstructionGroup group = null;
 
@@ -379,6 +401,8 @@ public class BuildingManager : MonoBehaviour
         ClearCurrentBuildingSelection();
     }
 
+
+    /*
     // Busca de forma exhaustiva en la escena la presencia de cualquier entidad activa que coincida con el tipo estructural consultado
     private bool ExistsConstructionOfType(ConstructionType type)
     {
@@ -391,6 +415,22 @@ public class BuildingManager : MonoBehaviour
         }
 
         return false;
+    }
+    */
+
+    //HUBO CAMBIOS AQUÍ
+    private int ExistsConstructionOfType(ConstructionType type)
+    {
+        int buildingCountIndex = 0;
+        BaseConstruction[] all = FindObjectsByType<BaseConstruction>(FindObjectsSortMode.None);
+        foreach (BaseConstruction b in all)
+        {
+            if (b != null && b.Data != null && b.Data.type == type)
+            {
+                buildingCountIndex++;
+            }
+        }
+        return buildingCountIndex;
     }
 
     // Retorna la colección de baldosas requeridas para una edificación, anexando vecinos si se trata de un muro compuesto
@@ -429,7 +469,9 @@ public class BuildingManager : MonoBehaviour
         return HasEnoughResources(currentBuilding);
     }
 
+    //HUBO CAMBIOS AQUÍ
     // Compara el inventario monetario global contra el costo de producción indexado de la estructura seleccionada
+    /*
     private bool HasEnoughResources(ConstructionData data)
     {
         if (data == null)
@@ -444,6 +486,26 @@ public class BuildingManager : MonoBehaviour
                 return false;
         }
 
+        return true;
+    }
+    */
+    private bool HasEnoughResources(ConstructionData data)
+    {
+        int buildingCountIndex = ExistsConstructionOfType(currentBuilding.type);
+        List<WillProduction> bonusWillsToPay = currentBuilding.bonusWillToPay;
+        List<WillProduction> actualWillsToPay = currentBuilding.willToPay;
+
+        foreach (WillProduction w in actualWillsToPay)
+        {
+            foreach (WillProduction b in bonusWillsToPay)
+            {
+                if (w.type == b.type)
+                {
+                    if (!WillManager.Instance.HasEnoughMoney(w.type, w.amount))
+                        return false;
+                }
+            }
+        }
         return true;
     }
 

@@ -26,6 +26,8 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
 
     private HealthBarHolder healthBarHolder;
 
+    protected Color colorOfParticles;
+
     public bool IsDestroyed { get; protected set; }
 
     public static List<BaseConstruction> AllConstructions = new List<BaseConstruction>();
@@ -62,11 +64,19 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     // en la jerarquía del motor de juego. Simultáneamente, activa el obstáculo físico si este ya se encuentra instanciado.
     protected virtual void OnEnable()
     {
+       
+
         AllConstructions.Add(this);
         IsDestroyed = false;
 
         if (obstacle != null)
             obstacle.enabled = true;
+    }
+
+    protected virtual void Start()
+    {
+        colorOfParticles = new Color(1f, 0.9f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
     }
 
     // LÍNEA RARA / COMPLEJA: Purga Estricta de Referencias Colectivas y Desactivación Secuencial de Hilos ('OnDisable').
@@ -136,6 +146,9 @@ public abstract class BaseConstruction : TeamAssigner, IDamageable
     // Dispara las pistas sonoras de colapso ambiental e inicia la secuencia diferida de remoción física
     public virtual void OnDestruction()
     {
+        colorOfParticles = new Color(1f, 0f, 0f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
+
         if (spawnCoroutine != null)
             StopCoroutine(spawnCoroutine);
 

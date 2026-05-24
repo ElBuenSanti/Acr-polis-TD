@@ -13,23 +13,22 @@ MonoBehaviour:
   m_Name: Aphrodite Temple_Lv3
   m_EditorClassIdentifier: 
   type: 1
-  god: 3
+  god: 2
   level: 3
-  resistance: 3500
+  resistance: 600
   aditamentResistance: 0
   attackDamage: 0
   willObtaied:
-  - type: 0
-    amount: 18
-  actionVelocity: 3.5
+  - type: 1
+    amount: 100
+  actionVelocity: 5
   movementSpeed: 0
   range: 0
   proyectileVelocity: 0
   willToPay:
-  - type: 0
-    amount: 2100
-  - type: 2
-    amount: 600
   - type: 1
-    amount: 400
+    amount: 5100
+  - type: 0
+    amount: 900
+  bonusWillToPay: []
   prefab: {fileID: 5189163776860713878, guid: 64b0a2ee1162cd643a62cecc55efb829, type: 3}

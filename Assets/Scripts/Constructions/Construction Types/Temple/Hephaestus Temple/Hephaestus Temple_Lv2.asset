@@ -26,7 +26,7 @@ MonoBehaviour:
   range: 0
   proyectileVelocity: 0
   willToPay:
-  - type: 1
-    amount: 200
+  - type: 0
+    amount: 1000
   bonusWillToPay: []
   prefab: {fileID: 5189163776860713878, guid: 2c0667e918785a648aaa646e11742280, type: 3}

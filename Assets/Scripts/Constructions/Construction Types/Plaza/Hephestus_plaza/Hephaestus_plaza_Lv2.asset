@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 380dc6981712e094f87d5b0150ea9856, type: 3}
+  m_Name: Hephaestus_plaza_Lv2
+  m_EditorClassIdentifier: 
+  type: 3
+  god: 3
+  level: 2
+  resistance: 330
+  aditamentResistance: 0
+  attackDamage: 0
+  willObtaied:
+  - type: 1
+    amount: 220
+  actionVelocity: 5
+  movementSpeed: 0
+  range: 0
+  proyectileVelocity: 0
+  willToPay:
+  - type: 0
+    amount: 325
+  bonusWillToPay: []
+  prefab: {fileID: 0}

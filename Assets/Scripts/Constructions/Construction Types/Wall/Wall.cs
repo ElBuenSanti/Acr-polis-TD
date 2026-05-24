@@ -89,6 +89,9 @@ public class Wall : BaseConstruction
     // Sobreescribe el flotante de integridad estructural actualizando el valor con el tope máximo dictado por el contenedor de datos estáticos
     void HealToMax()
     {
+        colorOfParticles = new Color(0.4f, 0f, 0.6f);
+        FXManager.Instance.PlayFX(FXManager.Instance.particulesEffects, transform, colorOfParticles);
+
         resistance = data.resistance;
     }
 
