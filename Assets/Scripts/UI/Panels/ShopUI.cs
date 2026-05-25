@@ -35,9 +35,12 @@ public class ShopUI : MonoBehaviour
     [Header("Confirm Icons")]
     [SerializeField] private GameObject[] confirmIcons;
 
-    // NUEVO
     [Header("Smart Panel")]
     [SerializeField] private SmartSidePanelUI smartSidePanel;
+
+    [Header("Dynamic Cost")]
+    [SerializeField] private float baseBuildCost = 200f;
+    [SerializeField] private float costIncreasePerCopy = 50f;
 
     // Inicializa por código el componente de opacidad si no se asignó en el editor
     private void Awake()
@@ -45,7 +48,6 @@ public class ShopUI : MonoBehaviour
         if (shopCanvasGroup == null)
             shopCanvasGroup = GetComponent<CanvasGroup>();
 
-        // NUEVO
         if (smartSidePanel == null)
             smartSidePanel = FindAnyObjectByType<SmartSidePanelUI>();
     }
@@ -195,7 +197,7 @@ public class ShopUI : MonoBehaviour
                     cardNames[i].text = shopConstructions[i].type.ToString();
 
                 if (cardCosts[i] != null)
-                    cardCosts[i].text = GetFirstCost(shopConstructions[i]).ToString("0");
+                    cardCosts[i].text = GetDynamicBuildCost(shopConstructions[i]).ToString("0");
             }
         }
     }
@@ -296,6 +298,32 @@ public class ShopUI : MonoBehaviour
         // NUEVO
         if (smartSidePanel != null)
             smartSidePanel.SetExpanded();
+    }
+
+    private float GetDynamicBuildCost(ConstructionData data)
+    {
+        if (data == null)
+            return 0f;
+
+        int builtCount = GetBuiltCountOfType(data.type);
+
+        return baseBuildCost + builtCount * costIncreasePerCopy;
+    }
+
+    private int GetBuiltCountOfType(ConstructionType type)
+    {
+        int count = 0;
+
+        foreach (BaseConstruction construction in BaseConstruction.AllConstructions)
+        {
+            if (construction == null || construction.Data == null)
+                continue;
+
+            if (construction.Data.type == type)
+                count++;
+        }
+
+        return count;
     }
 }
 

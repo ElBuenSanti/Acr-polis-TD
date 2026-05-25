@@ -14861,6 +14861,8 @@ MonoBehaviour:
   - {fileID: 316320467}
   - {fileID: 444666828}
   smartSidePanel: {fileID: 863805715}
+  baseBuildCost: 200
+  costIncreasePerCopy: 50
 --- !u!225 &863805714
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -22672,8 +22674,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
