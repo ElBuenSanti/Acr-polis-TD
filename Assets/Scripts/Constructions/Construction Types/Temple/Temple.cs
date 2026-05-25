@@ -7,6 +7,7 @@ public class Temple : Plaza
     // private ConstructionController controller;
 
     public static event Action OnTempleDestruction;
+    private GodType selectedGod = GodType.Base;
 
 
     // Temple Initialization
@@ -38,6 +39,9 @@ public class Temple : Plaza
     // la instrucción se aborta de forma silenciosa sin arrojar excepciones de puntero nulo, permitiendo mutar la jugabilidad dinámicamente.
     public void NotifyGodSelected(GodType god)
     {
+        selectedGod = god;
+        blessingChosen = true;
+
         Debug.Log("El templo fue consagrado al Dios: " + god);
         OnGodSelected?.Invoke(god);
     }
@@ -47,7 +51,7 @@ public class Temple : Plaza
     // Reemplaza de forma polimórfica la rutina de destrucción estándar mediante la directiva 'override'. Primero ejecuta 'base.OnDestruction()' 
     // para procesar los efectos visuales de escombros y el desregistro en las listas de construcciones. Inmediatamente después, dispara 
     // de manera síncrona el evento estático 'OnTempleDestruction?.Invoke()'. Al estar declarado con la palabra clave 'event', blinda la 
-    // difusión para que ninguna otra clase pueda resetear o falsificar este disparo, notificando instantáneamente al GameManager para que 
+    // difusión para que ninguna otra clase pueda resetear o falsificar este disparo, notifying instantáneamente al GameManager para que 
     // conmute la lógica de la partida hacia la pantalla de 'Game Over'.
     public override void OnDestruction()
     {
@@ -69,6 +73,13 @@ public class Temple : Plaza
     {
         blessingChosen = true;
     }
+
+    // Provee un canal de lectura público seguro para que controladores externos de UI o sistemas de juego consulten la deidad activa sin mutar el estado
+    public GodType GetSelectedGod()
+    {
+        return selectedGod;
+    }
+
 }
 
 /*

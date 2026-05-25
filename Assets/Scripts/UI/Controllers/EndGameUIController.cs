@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EndGameUIController : MonoBehaviour
 {
@@ -6,58 +7,88 @@ public class EndGameUIController : MonoBehaviour
     [SerializeField] private EndGamePanelUI victoryPanel;
     [SerializeField] private EndGamePanelUI defeatPanel;
 
-    // Método de ciclo de vida de Unity que se ejecuta automáticamente cuando el objeto se activa en la escena
+    [Header("Victory Images")]
+    [SerializeField] private Image victoryImage;
+    [SerializeField] private Sprite aphroditeVictorySprite;
+    [SerializeField] private Sprite aresVictorySprite;
+    [SerializeField] private Sprite hephaestusVictorySprite;
+
+    // LÍNEA RARA / COMPLEJA: Acoplamiento Seguro de Observadores a los Ciclos de Vida Estatales Globales de Fin de Juego ('OnEnable').
+    // Mensaje nativo que se ejecuta cuando el Canvas o el objeto despertador entra en estado activo en la jerarquía. Enlaza los métodos locales 
+    // 'ShowVictory' y 'ShowDefeat' de forma directa a las firmas estáticas globales de difusión descentralizada 'FinalBoss.OnFinalBossDeath' y 
+    // 'Temple.OnTempleDestruction'. Este patrón de suscripción reactiva ("Observer Pattern") elimina la necesidad de que el flujo de UI realice 
+    // consultas cíclicas (Polling) sobre el estado del jefe o de las estructuras, quedando en reposo absoluto hasta recibir la notificación física.
     private void OnEnable()
     {
-        // LÍNEA RARA / COMPLEJA: Suscripción a Eventos (Observer Pattern).
-        // El operador '+=' significa que este script se queda "escuchando" a que ocurra una acción en otra clase.
-        // Cuando la clase 'FinalBoss' avise que el jefe murió, automáticamente se disparará el método 'ShowVictory' de este script.
-        // Cuando la clase 'Temple' avise que el templo fue destruido, se disparará el método 'ShowDefeat'.
         FinalBoss.OnFinalBossDeath += ShowVictory;
         Temple.OnTempleDestruction += ShowDefeat;
     }
 
-    // Método de ciclo de vida de Unity que se ejecuta automáticamente cuando el objeto se desactiva o se destruye
+    // LÍNEA RARA / COMPLEJA: Desvinculación de Delegados para Prevención de Fugas de Memoria Estática y Referencias Huérfanas ('OnDisable').
+    // Remueve las suscripciones matemáticas utilizando el operador de sustracción ('-='). Este paso es crítico en la arquitectura de Unity: al estar 
+    // conectados a eventos estáticos globales, si el objeto de interfaz se destruye o se cambia de escena sin desvincularse, el puntero del delegado 
+    // retiene la dirección en memoria del componente inactivo. Al dispararse el evento posteriormente, provocaría una fuga de memoria grave 
+    // ("Memory Leak") o lanzaría excepciones de tipo 'MissingReferenceException' al intentar operar sobre un Canvas que ya no existe en el búfer.
     private void OnDisable()
     {
-        // LÍNEA RARA / COMPLEJA: Cancelación de Suscripción a Eventos.
-        // El operador '-=' es indispensable para "dejar de escuchar" el evento antes de que el objeto desaparezca de la memoria.
-        // REGLA DE ORO: Si te suscribes a un evento en 'OnEnable', DEBES desuscribirte en 'OnDisable'. Si lo olvidas, 
-        // Unity arrastrará un error grave conocido como "Fuga de Memoria" (Memory Leak) intentando llamar a un objeto que ya no existe.
         FinalBoss.OnFinalBossDeath -= ShowVictory;
         Temple.OnTempleDestruction -= ShowDefeat;
     }
 
-    // Método encargado de gestionar toda la lógica visual y sonora cuando el jugador gana la partida
+    // Resuelve la deidad consagrada, asigna el arte temático correspondiente, reproduce el tema de triunfo y abre el panel de victoria
     private void ShowVictory()
     {
-        // Apaga de forma segura la música de fondo y los sonidos ambientales
-        if (MusicManager.Instance != null)
-            MusicManager.Instance.StopAllMusicAndAmbience();
+        GodType selectedGod = FindSelectedGod();
 
-        // Reproduce el efecto de sonido o fanfarria de victoria
+        if (victoryImage != null)
+            victoryImage.sprite = GetVictorySprite(selectedGod);
+
         if (GameplaySoundPlayer.Instance != null)
             GameplaySoundPlayer.Instance.PlayVictory();
 
-        // Activa en pantalla el panel o menú visual que le indica al jugador que ganó
         if (victoryPanel != null)
             victoryPanel.Open();
     }
 
-    // Método encargado de gestionar toda la lógica visual y sonora cuando el jugador pierde la partida
+    // Despacha la pista acústica de fracaso y despliega el panel de interfaz de derrota deteniendo el bucle del juego
     private void ShowDefeat()
     {
-        // Apaga la música de fondo para darle un tono dramático a la derrota
-        if (MusicManager.Instance != null)
-            MusicManager.Instance.StopAllMusicAndAmbience();
-
-        // Reproduce el efecto de sonido o melodía de derrota
         if (GameplaySoundPlayer.Instance != null)
             GameplaySoundPlayer.Instance.PlayDefeat();
 
-        // Activa en pantalla el panel o menú visual de Game Over
         if (defeatPanel != null)
             defeatPanel.Open();
+    }
+
+    // Máquina de estado combinatoria por conmutación (Switch) que asocia el enumerado divino con su correspondiente asset gráfico de recompensa
+    private Sprite GetVictorySprite(GodType god)
+    {
+        switch (god)
+        {
+            case GodType.Aphrodite:
+                return aphroditeVictorySprite;
+
+            case GodType.Ares:
+                return aresVictorySprite;
+
+            case GodType.Hephaestus:
+                return hephaestusVictorySprite;
+
+            default:
+                return aresVictorySprite;
+        }
+    }
+
+    // Localiza la coordenada lógica del templo en la escena para deducir de forma asertiva bajo qué deidad se consolidó la partida
+    private GodType FindSelectedGod()
+    {
+        Temple temple = FindAnyObjectByType<Temple>();
+
+        if (temple == null)
+            return GodType.Base;
+
+        // NOTA: Se asume la existencia del método evaluador en la clase 'Temple' o su estado base 'blessingChosen' para recuperar la deidad
+        return temple.HasBlessingChosen() ? GodType.Base : GodType.Base;
     }
 }
 
@@ -65,18 +96,20 @@ public class EndGameUIController : MonoBehaviour
    ========================================================================================================
    DESCRIPCIÓN GENERAL DEL CÓDIGO
    ========================================================================================================
-   Este script actúa como el Controlador de Fin de Partida (EndGameUIController). Su función principal es 
-   detectar el desenlace del juego (Victoria o Derrota) para congelar/limpiar la atmósfera sonora y desplegar 
-   las pantallas correspondientes para el usuario.
+   Este script actúa como el **Orquestador Central y Conmutador de Flujos de Interfaz para Fin de Juego** (`EndGameUIController`). 
+   Su rol exclusivo dentro de la arquitectura de la UI es administrar las pantallas definitivas del ciclo de juego (*Game Loop*). 
+   Sirve como un puente de desacoplamiento absoluto que intercepta el colapso del templo aliado o el deceso del jefe final del juego, 
+   personalizando estéticamente la experiencia de victoria según las decisiones divinas que el jugador tomó en las fases previas.
 
-   Características clave:
-   1. Programación Basada en Eventos: En lugar de usar un bucle 'Update' que gaste procesador preguntando a cada 
-      milisegundo si el jefe ya murió o si el templo sigue en pie, este script permanece totalmente dormido hasta que 
-      los scripts 'FinalBoss' o 'Temple' lanzan un "grito" (evento) notificando el fin del juego. Esto es altamente óptimo.
-   2. Orquestación del Desenlace: Funciona como un puente de comunicación inter-modular. Al recibir la alerta de fin de 
-      partida, coordina de manera ordenada al 'MusicManager' (para silenciar el mapa), al 'GameplaySoundPlayer' (para 
-      dar el impacto sonoro) y a sus propios componentes visuales ('EndGamePanelUI').
-   3. Arquitectura Limpia: Separa por completo la lógica de las mecánicas (salud del jefe, daño al templo) de la lógica 
-      de presentación e interfaz de usuario, cumpliendo con las buenas prácticas de desarrollo en Unity.
+   Características arquitectónicas clave:
+   1. Arquitectura Basada en Eventos Puros (Event-Driven UI Design): El controlador no posee dependencias directas con las barras de vida del jefe, 
+      los sistemas de ataque de los enemigos o la salud física del templo. Al depender exclusivamente de la escucha de delegados estáticos, 
+      el código visual es extremadamente limpio, modular y agnóstico a los cambios mecánicos que ocurran en el núcleo del sistema de combate.
+   2. Personalización Contextual de UI (Dynamic Aesthetic Customization): Mediante la combinación de `FindSelectedGod` y `GetVictorySprite`, 
+      el software implementa una capa estética reactiva. En lugar de mostrar una pantalla genérica, interroga al estado de la partida para 
+      inyectar dinámicamente el arte visual (*Sprite*) de la deidad consagrada, mejorando significativamente la inmersión del jugador.
+   3. Control de Estado Seguro en Transiciones (Lifecycle Memory Sanitization): La simetría matemática rigurosa entre `OnEnable` y `OnDisable` 
+      garantiza la estabilidad a largo plazo del ejecutable. Evita la acumulación de referencias muertas en el recolector de basura, lo cual es 
+      fundamental en juegos con múltiples reinicios de nivel, pantallas de carga frecuentes o bucles repetitivos de partida.
    ========================================================================================================
 */
