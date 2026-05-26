@@ -58,8 +58,6 @@ public class ShopUI : MonoBehaviour
         RefreshCards();
         RefreshResources();
         UpdateFocusVisual();
-
-        // NUEVO
         ShowCardsMode();
     }
 
@@ -78,7 +76,6 @@ public class ShopUI : MonoBehaviour
     // para congelar ciertas interacciones del entorno y aislar los controles del cursor en el carrusel de compras.
     public void Open()
     {
-
         if (WaveSpawner.Instance.IsWaveRunning())
         {
             if (StatusMessageUI.Instance != null)
@@ -88,10 +85,7 @@ public class ShopUI : MonoBehaviour
         }
 
         GameStateController.Instance.SetState(GameState.ShopOpen);
-
         RefreshCards();
-
-        // NUEVO
         ShowCardsMode();
     }
 
@@ -99,10 +93,9 @@ public class ShopUI : MonoBehaviour
     public void Close()
     {
         GameStateController.Instance.SetState(GameState.MapIdle);
-
         RefreshCards();
-
         ShowCardsMode();
+
         if (smartSidePanel != null)
             smartSidePanel.SetCompact();
     }
@@ -146,12 +139,11 @@ public class ShopUI : MonoBehaviour
 
     // LÍNEA RARA / COMPLEJA: Desencadenamiento Transaccional de Construcción en Estado de Colocación ('ConfirmSelection').
     // Valida la escala de tiempo y las oleadas. Si la verificación es exitosa, transfiere el índice seleccionado del carrusel de la tienda 
-    // al subsistema físico 'BuildingManager.Instance.SetConstructionIndex(currentIndex)'. Acto seguido, eleva el estado general del juego 
+    // al subsistema físico 'BuildingManager.Instance.SetConstructionIndex(currentIndex)'. Acto adolescentemente, eleva el estado general del juego 
     // a 'GameState.PlacingTower', cerrando la interactividad del menú para habilitar la proyección del "ghost" o previsualización holográfica 
     // tridimensional de la estructura sobre la cuadrícula o terreno del plano táctico.
     public void ConfirmSelection()
     {
-
         if (WaveSpawner.Instance.IsWaveRunning())
         {
             if (StatusMessageUI.Instance != null)
@@ -164,12 +156,8 @@ public class ShopUI : MonoBehaviour
             return;
 
         BuildingManager.Instance.SetConstructionIndex(currentIndex);
-
         GameStateController.Instance.SetState(GameState.PlacingTower);
-
         RefreshCards();
-
-        // NUEVO
         ShowCardsMode();
     }
 
@@ -194,7 +182,7 @@ public class ShopUI : MonoBehaviour
             if (i < shopConstructions.Length && shopConstructions[i] != null)
             {
                 if (cardNames[i] != null)
-                    cardNames[i].text = shopConstructions[i].type.ToString();
+                    cardNames[i].text = shopConstructions[i].displayName;
 
                 if (cardCosts[i] != null)
                     cardCosts[i].text = GetDynamicBuildCost(shopConstructions[i]).ToString("0");
@@ -271,8 +259,6 @@ public class ShopUI : MonoBehaviour
         }
     }
 
-
-    // Desactiva los datos extendidos del menú para restablecer la vista limpia del carrusel de cartas de compra
     // Desactiva los datos extendidos del menú para restablecer la vista limpia del carrusel de cartas de compra
     public void ShowCardsMode()
     {
@@ -295,7 +281,6 @@ public class ShopUI : MonoBehaviour
         if (detailsArea != null)
             detailsArea.SetActive(true);
 
-        // NUEVO
         if (smartSidePanel != null)
             smartSidePanel.SetExpanded();
     }
@@ -306,7 +291,6 @@ public class ShopUI : MonoBehaviour
             return 0f;
 
         int builtCount = GetBuiltCountOfType(data.type);
-
         return baseBuildCost + builtCount * costIncreasePerCopy;
     }
 

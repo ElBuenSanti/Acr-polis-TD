@@ -28,6 +28,9 @@ public class ConstructionData : ScriptableObject
 
     public int level;
 
+    [Header("UI")]
+    public string displayName;
+
     public float resistance;
     public float aditamentResistance;
     public float attackDamage;

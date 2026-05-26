@@ -81,8 +81,8 @@ public class StatusMessageUI : MonoBehaviour
         canvasGroup.alpha = 1f;
         panelTransform.anchoredPosition = startPosition;
 
-        // Fase de mantenimiento: Detiene el progreso del código de forma exacta en base al reloj de juego sin bloquear la UI
-        yield return new WaitForSeconds(visibleTime);
+        // Fase de mantenimiento: Detiene el progreso del código de forma exacta sin depender del Time.timeScale
+        yield return new WaitForSecondsRealtime(visibleTime);
 
         timer = 0f;
 

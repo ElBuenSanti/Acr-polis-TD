@@ -15,6 +15,7 @@ MonoBehaviour:
   type: 1
   god: 0
   level: 1
+  displayName: Templo Zeus
   resistance: 510
   aditamentResistance: 0
   attackDamage: 0
@@ -26,4 +27,5 @@ MonoBehaviour:
   range: 0
   proyectileVelocity: 0
   willToPay: []
+  bonusWillToPay: []
   prefab: {fileID: 5189163776860713878, guid: bd5d7a6bbefbadb4ea1d9188c9d54fe6, type: 3}

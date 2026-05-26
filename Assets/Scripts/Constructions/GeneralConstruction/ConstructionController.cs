@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
@@ -61,36 +62,78 @@ public class ConstructionController : MonoBehaviour
 
 
     // Verifica la deidad asignada, debita los recursos de actualización y coordina si la mutación es individual o colectiva
-    public void Upgrade()
+    //public void Upgrade()
+    //{
+    //    if (selectedGod == GodType.Base)
+    //    {
+    //        Debug.Log("No se ha eleigo un camino divino");
+    //        return;
+    //    }
+
+    //    nextLevel = level + 1; //int antes
+
+    //    Debug.Log("Se ha evolucionado por el Dios: " + selectedGod);
+
+    //    ConstructionData newData = database.GetData(type, selectedGod, nextLevel);
+
+    //    if (newData == null)
+    //    {
+    //        Debug.Log("No hay más evoluciones con el Dios " + selectedGod);
+    //        return;
+    //    }
+
+    //    foreach (var w in newData.willToPay)
+    //    {
+    //        if (!WillManager.Instance.SpendMoney(w.type, w.amount))
+    //        {
+    //            Debug.Log("Te falta " + w.type + " para mejorar");
+    //            StatusMessageUI.Instance.ShowMessage("Te falta " + w.amount + " de " + w.type + " para mejorar.");
+    //            return;
+    //        }
+
+    //    }
+
+    //    if (group != null && group.members.Count > 0)
+    //    {
+    //        foreach (var member in group.members)
+    //        {
+    //            if (member != null)
+    //                member.UpgradeSingle(newData);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        UpgradeSingle(newData);
+    //    }
+
+    //}
+
+
+    public bool Upgrade()
     {
         if (selectedGod == GodType.Base)
         {
-            Debug.Log("No se ha eleigo un camino divino");
-            return;
+            ShowStatus("Primero elige un camino divino");
+            return false;
         }
 
-        nextLevel = level + 1; //int antes
-
-        Debug.Log("Se ha evolucionado por el Dios: " + selectedGod);
+        nextLevel = level + 1;
 
         ConstructionData newData = database.GetData(type, selectedGod, nextLevel);
 
         if (newData == null)
         {
-            Debug.Log("No hay más evoluciones con el Dios " + selectedGod);
-            return;
+            ShowStatus("No hay más mejoras disponibles");
+            return false;
         }
 
-        foreach (var w in newData.willToPay)
+        if (!CanAffordCost(newData.willToPay, out string missingMessage))
         {
-            if (!WillManager.Instance.SpendMoney(w.type, w.amount))
-            {
-                Debug.Log("Te falta " + w.type + " para mejorar");
-                StatusMessageUI.Instance.ShowMessage("Te falta " + w.amount + " de " + w.type + " para mejorar.");
-                return;
-            }
-
+            ShowStatus(missingMessage);
+            return false;
         }
+
+        SpendCost(newData.willToPay);
 
         if (group != null && group.members.Count > 0)
         {
@@ -105,7 +148,38 @@ public class ConstructionController : MonoBehaviour
             UpgradeSingle(newData);
         }
 
+        return true;
     }
+
+
+
+    private bool CanAffordCost(List<WillProduction> costList, out string missingMessage)
+    {
+        missingMessage = "";
+
+        foreach (WillProduction cost in costList)
+        {
+            float current = WillManager.Instance.GetMoney(cost.type);
+
+            if (current < cost.amount)
+            {
+                float missing = cost.amount - current;
+                missingMessage = "Te faltan " + missing.ToString("0") + " de " + cost.type;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void SpendCost(List<WillProduction> costList)
+    {
+        foreach (WillProduction cost in costList)
+        {
+            WillManager.Instance.SpendMoney(cost.type, cost.amount);
+        }
+    }
+
 
     // LÍNEA RARA / COMPLEJA: Transmutación Dinámica de Entidades con Traspaso de Punteros de Red y Pooling ('UpgradeSingle').
     // Cachea la matriz de transformación física y recupera la baldosa lógica asociada. Envía el objeto actual de vuelta al 
@@ -147,15 +221,15 @@ public class ConstructionController : MonoBehaviour
         if (blessingChosen)
             newController.MarkBlessingChosen();
 
-        var temple = GetComponent<Temple>();
+        var newTemple = newBuilding.GetComponent<Temple>();
 
-        if (temple != null)
+        if (newTemple != null)
         {
-            temple.NotifyGodSelected(selectedGod);
+            newController.MarkBlessingChosen();
+            newTemple.NotifyGodSelected(selectedGod);
         }
 
-        if (StatusMessageUI.Instance != null)
-            StatusMessageUI.Instance.ShowMessage("Mejora aplicada: " + selectedGod + " nivel " + nextLevel);
+        ShowStatus("Mejora aplicada: " + selectedGod + " nivel " + nextLevel);
     }
 
     // Devuelve el estado de activación del modificador o bendición de la estructura
@@ -168,6 +242,12 @@ public class ConstructionController : MonoBehaviour
     public void MarkBlessingChosen()
     {
         blessingChosen = true;
+    }
+
+    private void ShowStatus(string message)
+    {
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage(message);
     }
 
 }

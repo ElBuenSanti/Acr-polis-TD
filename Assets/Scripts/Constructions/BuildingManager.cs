@@ -189,21 +189,52 @@ public class BuildingManager : MonoBehaviour
         List<WillProduction> bonusWillsToPay =  currentBuilding.bonusWillToPay;
         List<WillProduction> actualWillsToPay = currentBuilding.willToPay;
 
+        List<WillProduction> finalCosts = new List<WillProduction>();
+
         foreach (WillProduction w in actualWillsToPay)
         {
-            foreach(WillProduction b in bonusWillsToPay)
+            foreach (WillProduction b in bonusWillsToPay)
             {
-                if(w.type == b.type)
+                if (w.type == b.type)
                 {
-                    if (!WillManager.Instance.SpendMoney(w.type, w.amount + (b.amount)*buildingCountIndex))
-                    {
-                        PlayInvalidSound();
-                        ShowStatus("Te falta " + w.amount + " de " + w.type + " para construir.");
-                        return;
-                    }
+                    float finalAmount = w.amount + (b.amount * buildingCountIndex);
 
+                    finalCosts.Add(new WillProduction
+                    {
+                        type = w.type,
+                        amount = finalAmount
+                    });
                 }
             }
+        }
+
+        // VALIDAR TODO PRIMERO
+        foreach (WillProduction cost in finalCosts)
+        {
+            float currentMoney = WillManager.Instance.GetMoney(cost.type);
+
+            if (currentMoney < cost.amount)
+            {
+                float missing = cost.amount - currentMoney;
+
+                PlayInvalidSound();
+
+                ShowStatus(
+                    "Te faltan "
+                    + missing.ToString("0")
+                    + " de "
+                    + cost.type
+                    + " para construir."
+                );
+
+                return;
+            }
+        }
+
+        // COBRAR TODO DESPUÉS
+        foreach (WillProduction cost in finalCosts)
+        {
+            WillManager.Instance.SpendMoney(cost.type, cost.amount);
         }
 
         /*
@@ -503,7 +534,8 @@ public class BuildingManager : MonoBehaviour
             {
                 if (w.type == b.type)
                 {
-                    if (!WillManager.Instance.HasEnoughMoney(w.type, w.amount))
+                    float finalAmount = w.amount + (b.amount * buildingCountIndex);
+                    if (!WillManager.Instance.HasEnoughMoney(w.type, finalAmount))
                         return false;
                 }
             }

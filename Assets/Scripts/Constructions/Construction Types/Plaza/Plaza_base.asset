@@ -15,6 +15,7 @@ MonoBehaviour:
   type: 3
   god: 0
   level: 1
+  displayName: "Plaza \xC1gora"
   resistance: 300
   aditamentResistance: 0
   attackDamage: 0

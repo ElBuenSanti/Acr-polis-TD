@@ -25,11 +25,25 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private RadialOptionVisual hephaestusHighlight;
     [SerializeField] private RadialOptionVisual sellHighlight;
 
-    [Header("Cost Texts")]
-    [SerializeField] private TextMeshProUGUI aphroditeCostText;
-    [SerializeField] private TextMeshProUGUI aresCostText;
-    [SerializeField] private TextMeshProUGUI hephaestusCostText;
-    [SerializeField] private TextMeshProUGUI sellCostText;
+    [Header("Cost Texts - Aphrodite")]
+    [SerializeField] private TextMeshProUGUI aphroditeAgapeCostText;
+    [SerializeField] private TextMeshProUGUI aphroditeIraCostText;
+    [SerializeField] private TextMeshProUGUI aphroditeMerakiCostText;
+
+    [Header("Cost Texts - Ares")]
+    [SerializeField] private TextMeshProUGUI aresAgapeCostText;
+    [SerializeField] private TextMeshProUGUI aresIraCostText;
+    [SerializeField] private TextMeshProUGUI aresMerakiCostText;
+
+    [Header("Cost Texts - Hephaestus")]
+    [SerializeField] private TextMeshProUGUI hephaestusAgapeCostText;
+    [SerializeField] private TextMeshProUGUI hephaestusIraCostText;
+    [SerializeField] private TextMeshProUGUI hephaestusMerakiCostText;
+
+    [Header("Refund Texts - Sell")]
+    [SerializeField] private TextMeshProUGUI sellAgapeCostText;
+    [SerializeField] private TextMeshProUGUI sellIraCostText;
+    [SerializeField] private TextMeshProUGUI sellMerakiCostText;
 
     [Header("Level Texts")]
     [SerializeField] private TextMeshProUGUI aphroditeLevelText;
@@ -39,7 +53,7 @@ public class RadialMenuUI : MonoBehaviour
 
     [Header("Sell Hold")]
     [SerializeField] private float sellHoldTime = 3f;
-    [SerializeField] private float refundPercent = 0.75f;
+    [SerializeField] private float refundPercent = 0.85f;
     [SerializeField] private GameObject sellHoldFillObject;
     [SerializeField] private Image sellHoldFillImage;
 
@@ -52,11 +66,7 @@ public class RadialMenuUI : MonoBehaviour
     [SerializeField] private float startScale = 0.85f;
     [SerializeField] private float endScale = 1f;
 
-    //[SerializeField] private float invalidSoundCooldown = 0.6f;
-    //private float lastInvalidSoundTime = -999f;
-
     private Coroutine radialAnimationRoutine;
-
     private ConstructionController selectedConstruction;
     private float sellTimer;
 
@@ -217,7 +227,6 @@ public class RadialMenuUI : MonoBehaviour
     // mediante la mutación de datos, actuando como el puente de confirmación definitivo entre la interfaz táctil y las estadísticas del juego.
     public void Confirm()
     {
-
         if (WaveSpawner.Instance.IsWaveRunning())
         {
             if (GameplaySoundPlayer.Instance != null)
@@ -241,26 +250,34 @@ public class RadialMenuUI : MonoBehaviour
         {
             case RadialOption.Aphrodite:
                 selectedConstruction.SetSelectedGod(GodType.Aphrodite);
-                selectedConstruction.Upgrade();
+
+                if (!selectedConstruction.Upgrade())
+                    return;
+
                 GameplaySoundPlayer.Instance.PlayUpgrade();
                 break;
 
             case RadialOption.Ares:
                 selectedConstruction.SetSelectedGod(GodType.Ares);
-                selectedConstruction.Upgrade();
+
+                if (!selectedConstruction.Upgrade())
+                    return;
+
                 GameplaySoundPlayer.Instance.PlayUpgrade();
                 break;
 
             case RadialOption.Hephaestus:
                 selectedConstruction.SetSelectedGod(GodType.Hephaestus);
-                selectedConstruction.Upgrade();
+
+                if (!selectedConstruction.Upgrade())
+                    return;
+
                 GameplaySoundPlayer.Instance.PlayUpgrade();
                 break;
 
             case RadialOption.Sell:
-                ShowStatus("Holdea stick para vender");
-                if (GameplaySoundPlayer.Instance != null)
-                    GameplaySoundPlayer.Instance.PlaySell();
+                ShowStatus("Mantén el stick hacia abajo para vender");
+                GameplaySoundPlayer.Instance.PlaySell();
                 return;
         }
 
@@ -297,10 +314,10 @@ public class RadialMenuUI : MonoBehaviour
         SetHighlight(hephaestusHighlight, selectedOption == RadialOption.Hephaestus);
         SetHighlight(sellHighlight, selectedOption == RadialOption.Sell);
 
-        UpdateCostText(aphroditeCostText, RadialOption.Aphrodite);
-        UpdateCostText(aresCostText, RadialOption.Ares);
-        UpdateCostText(hephaestusCostText, RadialOption.Hephaestus);
-        UpdateCostText(sellCostText, RadialOption.Sell);
+        UpdateCostTextsForOption(RadialOption.Aphrodite);
+        UpdateCostTextsForOption(RadialOption.Ares);
+        UpdateCostTextsForOption(RadialOption.Hephaestus);
+        UpdateCostTextsForOption(RadialOption.Sell);
     }
 
     // Refresca de forma masiva los textos informativos de los niveles de deidades correspondientes
@@ -339,58 +356,6 @@ public class RadialMenuUI : MonoBehaviour
 
         ConstructionData nextData = database.GetData(currentData.type, god, nextLevel);
         text.text = nextData == null ? "MAX" : "Level " + nextLevel;
-    }
-
-    // Calcula de manera contextual el valor numérico del costo o el valor exacto de reembolso por desmantelamiento
-    private void UpdateCostText(TextMeshProUGUI text, RadialOption option)
-    {
-        if (text == null) return;
-
-        bool shouldShow = selectedOption == option;
-        text.gameObject.SetActive(shouldShow);
-
-        if (!shouldShow) return;
-
-        if (option == RadialOption.Sell)
-        {
-            ConstructionData currentData = GetCurrentData();
-
-            if (currentData == null)
-            {
-                text.text = "";
-                return;
-            }
-
-            if (currentData.type == ConstructionType.Temple)
-            {
-                text.text = "No";
-                return;
-            }
-
-            text.text = GetTotalRefund(currentData).ToString("0");
-            return;
-        }
-
-        if (IsOptionLocked(option))
-        {
-            if (GameplaySoundPlayer.Instance != null)
-                GameplaySoundPlayer.Instance.PlayInvalidPlacement();
-            text.text = "Locked";
-            return;
-        }
-
-        ConstructionData data = GetCurrentData();
-        if (data == null)
-        {
-            text.text = "";
-            return;
-        }
-
-        GodType god = GetGodFromOption(option);
-        int nextLevel = data.level + 1;
-        ConstructionData nextData = database.GetData(data.type, god, nextLevel);
-
-        text.text = nextData == null ? "MAX" : GetCostText(nextData);
     }
 
     // Altera la propiedad 'fillAmount' de la imagen radial para mostrar el progreso circular del temporizador de demolición
@@ -476,17 +441,6 @@ public class RadialMenuUI : MonoBehaviour
         }
     }
 
-    // Devuelve la sumatoria aritmética neta de todos los recursos recuperables tras deconstruir la edificación
-    private float GetTotalRefund(ConstructionData currentData)
-    {
-        float total = 0f;
-
-        foreach (WillProduction refund in GetRefundList(currentData))
-            total += refund.amount * refundPercent;
-
-        return total;
-    }
-
     // LÍNEA RARA / COMPLEJA: Cálculo de Reembolso Acumulativo Retroactivo por Niveles ('GetRefundList').
     // Resuelve el problema de devolver los recursos invertidos. No solo extrae el valor del nivel actual, sino que si la torre
     // fue mejorada progresivamente (por ejemplo, de nivel 1 a nivel 3), ejecuta un bucle histórico ('for') que consulta de forma 
@@ -541,15 +495,6 @@ public class RadialMenuUI : MonoBehaviour
             case RadialOption.Hephaestus: return GodType.Hephaestus;
             default: return GodType.Base;
         }
-    }
-
-    // Formatea los arreglos económicos de costo para extraer el primer valor válido en forma de cadena de texto
-    private string GetCostText(ConstructionData data)
-    {
-        if (data.willToPay == null || data.willToPay.Count == 0)
-            return "0";
-
-        return data.willToPay[0].amount.ToString("0");
     }
 
     // Modifica de manera directa el aspecto gráfico del resalte visual de la opción apuntada
@@ -615,44 +560,203 @@ public class RadialMenuUI : MonoBehaviour
             radialCanvasGroup.alpha = 1f;
     }
 
-    // LÍNEA RARA / COMPLEJA: Ventana Estricta de Restricción Acústica por Cooldown ('PlayInvalidSoundWithCooldown').
-    // Utiliza una marca de tiempo basada en 'Time.unscaledTime' para controlar el flujo de llamadas de audio.
-    // Si el jugador realiza comandos erróneos de forma masiva en el joystick (lo que normalmente causaría un solapamiento 
-    // estridente e insoportable del archivo de audio de error), este método bloquea las peticiones sucesivas hasta que 
-    // transcurra la ventana de enfriamiento definida en 'invalidSoundCooldown', protegiendo la integridad acústica del juego.
+    private void UpdateCostTextsForOption(RadialOption option)
+    {
+        bool shouldShow = selectedOption == option;
 
+        if (option == RadialOption.Aphrodite)
+        {
+            SetCostGroupActive(aphroditeAgapeCostText, aphroditeIraCostText, aphroditeMerakiCostText, shouldShow);
 
+            if (shouldShow)
+            {
+                SetUpgradeCostTexts(option, aphroditeAgapeCostText, aphroditeIraCostText, aphroditeMerakiCostText);
+            }
+        }
+        else if (option == RadialOption.Ares)
+        {
+            SetCostGroupActive(aresAgapeCostText, aresIraCostText, aresMerakiCostText, shouldShow);
 
-    //private void PlayInvalidSoundWithCooldown()
-    //{
-    //    if (Time.unscaledTime < lastInvalidSoundTime + invalidSoundCooldown)
-    //        return;
+            if (shouldShow)
+            {
+                SetUpgradeCostTexts(option, aresAgapeCostText, aresIraCostText, aresMerakiCostText);
+            }
+        }
+        else if (option == RadialOption.Hephaestus)
+        {
+            SetCostGroupActive(hephaestusAgapeCostText, hephaestusIraCostText, hephaestusMerakiCostText, shouldShow);
 
-    //    lastInvalidSoundTime = Time.unscaledTime;
+            if (shouldShow)
+            {
+                SetUpgradeCostTexts(option, hephaestusAgapeCostText, hephaestusIraCostText, hephaestusMerakiCostText);
+            }
+        }
+        else if (option == RadialOption.Sell)
+        {
+            SetCostGroupActive(sellAgapeCostText, sellIraCostText, sellMerakiCostText, shouldShow);
 
-    //    if (GameplaySoundPlayer.Instance != null)
-    //        GameplaySoundPlayer.Instance.PlayInvalidPlacement();
-    //}
+            if (shouldShow)
+            {
+                SetSellRefundTexts(sellAgapeCostText, sellIraCostText, sellMerakiCostText);
+            }
+        }
+    }
+
+    private void SetUpgradeCostTexts(
+        RadialOption option,
+        TextMeshProUGUI agapeText,
+        TextMeshProUGUI iraText,
+        TextMeshProUGUI merakiText)
+    {
+        ConstructionData currentData = GetCurrentData();
+
+        if (currentData == null || database == null)
+        {
+            SetThreeCosts(agapeText, iraText, merakiText, 0, 0, 0);
+            return;
+        }
+
+        if (IsOptionLocked(option))
+        {
+            SetText(agapeText, "LOCK");
+            SetText(iraText, "LOCK");
+            SetText(merakiText, "LOCK");
+            return;
+        }
+
+        GodType god = GetGodFromOption(option);
+        int nextLevel = currentData.level + 1;
+
+        ConstructionData nextData = database.GetData(currentData.type, god, nextLevel);
+
+        if (nextData == null)
+        {
+            SetText(agapeText, "MAX");
+            SetText(iraText, "MAX");
+            SetText(merakiText, "MAX");
+            return;
+        }
+
+        SetThreeCosts(
+            agapeText,
+            iraText,
+            merakiText,
+            GetCost(nextData, Will.Agape),
+            GetCost(nextData, Will.Ira),
+            GetCost(nextData, Will.Meraki)
+        );
+    }
+
+    private void SetSellRefundTexts(
+        TextMeshProUGUI agapeText,
+        TextMeshProUGUI iraText,
+        TextMeshProUGUI merakiText)
+    {
+        ConstructionData currentData = GetCurrentData();
+
+        if (currentData == null)
+        {
+            SetThreeCosts(agapeText, iraText, merakiText, 0, 0, 0);
+            return;
+        }
+
+        if (currentData.type == ConstructionType.Temple)
+        {
+            SetText(agapeText, "NO");
+            SetText(iraText, "SELL");
+            SetText(merakiText, "");
+            return;
+        }
+
+        List<WillProduction> refunds = GetRefundList(currentData);
+
+        SetThreeCosts(
+            agapeText,
+            iraText,
+            merakiText,
+            GetRefund(refunds, Will.Agape),
+            GetRefund(refunds, Will.Ira),
+            GetRefund(refunds, Will.Meraki)
+        );
+    }
+
+    private float GetCost(ConstructionData data, Will type)
+    {
+        if (data == null || data.willToPay == null)
+            return 0f;
+
+        foreach (WillProduction cost in data.willToPay)
+        {
+            if (cost.type == type)
+                return cost.amount;
+        }
+
+        return 0f;
+    }
+
+    private float GetRefund(List<WillProduction> refunds, Will type)
+    {
+        if (refunds == null)
+            return 0f;
+
+        foreach (WillProduction refund in refunds)
+        {
+            if (refund.type == type)
+                return refund.amount * refundPercent;
+        }
+
+        return 0f;
+    }
+
+    private void SetThreeCosts(
+        TextMeshProUGUI agapeText,
+        TextMeshProUGUI iraText,
+        TextMeshProUGUI merakiText,
+        float agape,
+        float ira,
+        float meraki)
+    {
+        SetText(agapeText, agape.ToString("0"));
+        SetText(iraText, ira.ToString("0"));
+        SetText(merakiText, meraki.ToString("0"));
+    }
+
+    private void SetText(TextMeshProUGUI text, string value)
+    {
+        if (text != null)
+            text.text = value;
+    }
+
+    private void SetCostGroupActive(
+        TextMeshProUGUI agapeText,
+        TextMeshProUGUI iraText,
+        TextMeshProUGUI merakiText,
+        bool active)
+    {
+        if (agapeText != null) agapeText.gameObject.SetActive(active);
+        if (iraText != null) iraText.gameObject.SetActive(active);
+        if (merakiText != null) merakiText.gameObject.SetActive(active);
+    }
 }
 
 /*
    ========================================================================================================
    DESCRIPCIÓN GENERAL DEL CÓDIGO
    ========================================================================================================
-   Este script actúa como el Menú Radial Interactivo de Gestión y Evolución Divina (RadialMenuUI). Es una pieza central 
-   de la experiencia de usuario (UX) para mecánicas del género Tower Defense o estrategia mitológica. Su labor principal 
+   Este script actúa como el **Menú Radial Interactivo de Gestión y Evolución Divina** (`RadialMenuUI`). Es una pieza central 
+   de la experiencia de usuario (UX) para mecánicas del género *Tower Defense* o estrategia mitológica. Su labor principal 
    es proyectarse dinámicamente sobre el mapa de juego para permitirle al usuario especializar sus edificaciones bajo la 
    influencia de diferentes deidades (Afrodita, Ares, Hefesto) o ejecutar procesos seguros de venta y demolición.
 
    Características clave:
-   1. Proyección Espacial Inteligente: Traduce dinámicamente coordenadas tridimensionales de juego a píxeles exactos 
-      de pantalla ('WorldToScreenPoint'). Además, incorpora algoritmos de protección perimetral ('Clamp') para que el 
-      menú jamás sea renderizado fuera de los límites visibles de la pantalla del monitor.
-   2. Navegación Avanzada por Analógico: Diseñado con un fuerte enfoque multiplataforma (Consolas/PC). Segmenta las 
-      direcciones vectoriales de los mandos mediante una matriz cruzada de valores absolutos, detectando la dirección 
-      deseada por el jugador de manera instantánea y aislando las perturbaciones de ruido mecánico de los sticks.
-   3. Economía de Deconstrucción Retroactiva: Cuenta con un motor financiero inteligente capaz de escanear el árbol 
-      genealógico de mejoras de la edificación apuntada. Al calcular recursivamente la suma de costes históricos de todos 
-      los niveles superados, asegura un reembolso justo ('refundPercent') al jugador tras deconstruir estructuras avanzadas.
+   1. Proyección Espacial Inteligente (World Space Screen Adaptation): Traduce dinámicamente coordenadas tridimensionales de juego 
+      a píxeles exactos de pantalla (`WorldToScreenPoint`). Además, incorpora algoritmos de protección perimetral (`Clamp`) para que el 
+      menú jamás sea renderizado fuera de los límites visibles de la pantalla o los márgenes físicos del monitor.
+   2. Navegación Avanzada por Analógico (Gamepad Cross-Platform Deadzone Isolation): Diseñado con un fuerte enfoque multiplataforma 
+      (Consolas/PC). Segmenta las direcciones vectoriales de los mandos mediante una matriz cruzada de valores absolutos, detectando la dirección 
+      deseada por el jugador de manera instantánea y aislando las perturbaciones de ruido mecánico de los sticks o drifting de zona muerta.
+   3. Economía de Deconstrucción Retroactiva (Historical Cost Currency Compounding): Cuenta con un motor financiero inteligente capaz de 
+      escanear el árbol genealógico de mejoras de la edificación apuntada. Al calcular recursivamente la suma de costes históricos de todos 
+      los niveles superados, asegura un reembolso justo (`refundPercent`) al jugador tras deconstruir estructuras de tier avanzado.
    ========================================================================================================
 */

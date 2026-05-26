@@ -1,6 +1,7 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BlessingChoiceUI : MonoBehaviour
 {
@@ -19,11 +20,25 @@ public class BlessingChoiceUI : MonoBehaviour
     [SerializeField] private float inputDeadZone = 0.6f;
     [SerializeField] private float confirmDelay = 0.25f;
 
+    [Header("Database")]
+    [SerializeField] private ConstructionDatabase database;
+
+    [Header("Cost Texts")]
+    [SerializeField] private TextMeshProUGUI[] agapeCostTexts;
+    [SerializeField] private TextMeshProUGUI[] iraCostTexts;
+    [SerializeField] private TextMeshProUGUI[] merakiCostTexts;
+
     private bool isOpen;
     private bool stickInUse;
     private int currentIndex;
     private float openTime;
     private ConstructionController templeController;
+
+    private void Awake()
+    {
+        if (database == null)
+            database = FindAnyObjectByType<ConstructionDatabase>();
+    }
 
     // Inicializa ocultando el panel al arrancar el juego de forma instantánea
     private void Start()
@@ -50,10 +65,12 @@ public class BlessingChoiceUI : MonoBehaviour
     public void Open(ConstructionController temple)
     {
         templeController = temple;
+        RefreshCostTexts();
         isOpen = true;
         currentIndex = 0;
         stickInUse = false;
         openTime = Time.unscaledTime; // Guarda el segundo exacto en el que el menú apareció en la pantalla
+
 
         if (canvasGroup != null)
         {
@@ -232,8 +249,13 @@ public class BlessingChoiceUI : MonoBehaviour
         Debug.Log("Choosing blessing: " + god);
 
         templeController.SetSelectedGod(god);
-        templeController.MarkBlessingChosen();
-        templeController.Upgrade(); // Dispara la evolución o mejora de la estructura en el escenario 3D
+
+        bool upgraded = templeController.Upgrade();
+
+        if (!upgraded)
+            return; // Dispara la evolución o mejora de la estructura en el escenario 3D
+        if (StatusMessageUI.Instance != null)
+            StatusMessageUI.Instance.ShowMessage("Condición elegida: " + god);
 
         BaseConstruction baseConstruction = templeController.GetComponent<BaseConstruction>();
 
@@ -248,10 +270,55 @@ public class BlessingChoiceUI : MonoBehaviour
         if (GameplaySoundPlayer.Instance != null)
             GameplaySoundPlayer.Instance.PlayBlessing(god);
 
-        if (StatusMessageUI.Instance != null)
-            StatusMessageUI.Instance.ShowMessage("Condición elegida: " + god);
-
         Close(); // Cierra el panel y limpia la interfaz de usuario de la pantalla
+    }
+
+    private void RefreshCostTexts()
+    {
+        SetCardCost(0, GodType.Aphrodite);
+        SetCardCost(1, GodType.Ares);
+        SetCardCost(2, GodType.Hephaestus);
+    }
+
+    private void SetCardCost(int index, GodType god)
+    {
+        if (templeController == null || database == null)
+            return;
+
+        BaseConstruction baseConstruction = templeController.GetComponent<BaseConstruction>();
+
+        if (baseConstruction == null || baseConstruction.Data == null)
+            return;
+
+        ConstructionData currentData = baseConstruction.Data;
+        ConstructionData nextData = database.GetData(currentData.type, god, currentData.level + 1);
+
+        float agape = GetCost(nextData, Will.Agape);
+        float ira = GetCost(nextData, Will.Ira);
+        float meraki = GetCost(nextData, Will.Meraki);
+
+        if (index < agapeCostTexts.Length && agapeCostTexts[index] != null)
+            agapeCostTexts[index].text = agape.ToString("0");
+
+        if (index < iraCostTexts.Length && iraCostTexts[index] != null)
+            iraCostTexts[index].text = ira.ToString("0");
+
+        if (index < merakiCostTexts.Length && merakiCostTexts[index] != null)
+            merakiCostTexts[index].text = meraki.ToString("0");
+    }
+
+    private float GetCost(ConstructionData data, Will type)
+    {
+        if (data == null || data.willToPay == null)
+            return 0f;
+
+        foreach (WillProduction cost in data.willToPay)
+        {
+            if (cost.type == type)
+                return cost.amount;
+        }
+
+        return 0f;
     }
 }
 
@@ -259,19 +326,19 @@ public class BlessingChoiceUI : MonoBehaviour
    ========================================================================================================
    DESCRIPCIÓN GENERAL DEL CÓDIGO
    ========================================================================================================
-   Este script actúa como el Menú de Selección de Bendiciones Divinas (BlessingChoiceUI). Es un componente dinámico 
+   Este script actúa como el **Menú de Selección de Bendiciones Divinas** (`BlessingChoiceUI`). Es un componente dinámico 
    y crítico del HUD encargado de desplegar en pantalla una terna de opciones sagradas (Afrodita, Ares o Hefesto) 
    cuando el jugador interactúa con un templo o alcanza un hito de juego que define su estrategia de combate o victoria.
 
    Características clave:
-   1. Control de Navegación Analógica Profesional: Resuelve mediante software el desfase de entradas continuas de 
+   1. Control de Navegación Analógica Profesional (Gamepad Step Evaluation): Resuelve mediante software el desfase de entradas continuas de 
       los mandos tradicionales. El uso del booleano de control 'stickInUse' transforma el flujo bruto del joystick en un 
-      sistema de pulsación limpia, imitando de forma perfecta el comportamiento de los menús nativos de consolas.
-   2. Seguridad Gráfica y Mecánica Integrada: Incorpora una ventana de tiempo de amortiguación ('confirmDelay') 
+      sistema de pulsación limpia y escalonada, imitando de forma perfecta el comportamiento de los menús nativos de consolas.
+   2. Seguridad Gráfica y Mecánica Integrada (Anti-Spam Input Filter): Incorpora una ventana de tiempo de amortiguación (`confirmDelay`) 
       que inmuniza la interfaz contra clics fantasmas o confirmaciones accidentales derivadas del estrés del combate en tiempo real.
-   3. Conector de Lógica de Negocio (UI a Gameplay): No es un menú meramente cosmético. Se acopla de manera profunda 
+   3. Conector de Lógica de Negocio (UI to Core Data Mutator): No es un menú meramente cosmético. Se acopla de manera profunda 
       con los datos internos de las mecánicas de construcción del juego. Al procesar una selección, altera la metadata 
-      del script del edificio del mapa, detonando sistemas de partículas, actualizaciones de nivel ('Upgrade') e impactando 
-      directamente las mecánicas estratégicas de la partida.
+      del script del edificio del mapa, detonando sistemas de partículas, actualizaciones de nivel (`Upgrade`) e impactando 
+      directamente las mecánicas estratégicas globales de la partida.
    ========================================================================================================
 */
