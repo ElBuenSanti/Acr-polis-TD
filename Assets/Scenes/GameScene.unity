@@ -1789,7 +1789,7 @@ MonoBehaviour:
   scrollingText: {fileID: 327156508}
   startY: -420
   endY: 1700
-  scrollSpeed: 300
+  scrollSpeed: 70
   titleFadeStartY: -150
   fadeSpeed: 8
   uiSoundPlayer: {fileID: 78274378}
@@ -29424,7 +29424,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1549118064}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0

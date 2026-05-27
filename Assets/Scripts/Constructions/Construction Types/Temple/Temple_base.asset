@@ -28,4 +28,4 @@ MonoBehaviour:
   proyectileVelocity: 0
   willToPay: []
   bonusWillToPay: []
-  prefab: {fileID: 5189163776860713878, guid: bd5d7a6bbefbadb4ea1d9188c9d54fe6, type: 3}
+  prefab: {fileID: 6854640734275641675, guid: 5d2bf70b5b283bb428bde684f5a6757d, type: 3}

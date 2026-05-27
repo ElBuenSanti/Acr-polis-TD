@@ -23,7 +23,7 @@ public class BuildingManager : MonoBehaviour
     public int tempVariable = 0;
 
     private bool moveMode;
-    private float hightOffset = 1.5f;
+    private float hightOffset = 1f;
 
     // Inicializa la instancia Singleton global y cachea el sistema de pooling para la reutilización de objetos tridimensionales
     private void Awake()
