@@ -15,6 +15,7 @@ MonoBehaviour:
   type: 2
   god: 0
   level: 0
+  displayName: 
   resistance: 2400
   aditamentResistance: 500
   attackDamage: 0
