@@ -15,6 +15,7 @@ MonoBehaviour:
   type: 2
   god: 3
   level: 3
+  displayName: 
   resistance: 7000
   aditamentResistance: 0
   attackDamage: 0
@@ -29,4 +30,4 @@ MonoBehaviour:
   - type: 0
     amount: 1750
   bonusWillToPay: []
-  prefab: {fileID: 0}
+  prefab: {fileID: 9111215904111434566, guid: 35f23c69e954fe44c988f36caa495d71, type: 3}

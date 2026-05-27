@@ -15,6 +15,7 @@ MonoBehaviour:
   type: 2
   god: 2
   level: 4
+  displayName: 
   resistance: 4000
   aditamentResistance: 0
   attackDamage: 0
@@ -27,4 +28,4 @@ MonoBehaviour:
   proyectileVelocity: 0
   willToPay: []
   bonusWillToPay: []
-  prefab: {fileID: 0}
+  prefab: {fileID: 9111215904111434566, guid: 35f23c69e954fe44c988f36caa495d71, type: 3}

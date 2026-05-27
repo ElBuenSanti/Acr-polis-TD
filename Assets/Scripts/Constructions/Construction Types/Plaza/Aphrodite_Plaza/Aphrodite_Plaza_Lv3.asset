@@ -15,14 +15,19 @@ MonoBehaviour:
   type: 3
   god: 2
   level: 3
-  resistance: 0
+  displayName: 
+  resistance: 240
   aditamentResistance: 0
   attackDamage: 0
-  willObtaied: []
+  willObtaied:
+  - type: 1
+    amount: 75
   actionVelocity: 0
   movementSpeed: 0
   range: 0
   proyectileVelocity: 0
-  willToPay: []
+  willToPay:
+  - type: 1
+    amount: 1000
   bonusWillToPay: []
-  prefab: {fileID: 0}
+  prefab: {fileID: 7350530366797588461, guid: 210d099e598081945b63f4ce649dcda0, type: 3}
